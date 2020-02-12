@@ -9,8 +9,6 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 @EnableRedisHttpSession
 public class pretrialClassificationApplication {
     public static void main(String[] args) {
-        System.out.println("------------------------");
-        System.out.println("---11111111-----");
         SpringApplication.run(pretrialClassificationApplication.class, args);
     }
 }
