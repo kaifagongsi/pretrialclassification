@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kfgs.pretrialclassification.dao.FenleiBaohuMainMapper">
+
+    <select id="findAll" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
+        select  * from  fenlei_baohu_main
+    </select>
+
+    <select id="findMainByState" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
+        select id,
+               mingcheng,
+               simpleclasscode,
+               jinantime,
+               (select worker from fenlei_baohu_result r where r.id = m.id and r.classtype = '主') as worker
+        from fenlei_baohu_main m
+        where state = '1'
+    </select>
+</mapper>

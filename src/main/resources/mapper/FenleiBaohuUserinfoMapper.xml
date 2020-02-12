@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kfgs.pretrialclassification.dao.FenleiBaohuUserinfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt">
+        <id column="loginname" property="loginname" jdbcType="VARCHAR"/>
+        <id column="password" property="password" jdbcType="VARCHAR"/>
+        <id column="name" property="name" jdbcType="VARCHAR"/>
+        <id column="orgname" property="orgname" jdbcType="VARCHAR"/>
+        <id column="areaname" property="areaname" jdbcType="VARCHAR"/>
+        <id column="classlevel" property="classlevel" jdbcType="VARCHAR"/>
+        <id column="workername" property="workername" jdbcType="VARCHAR"/>
+        <id column="email" property="email" jdbcType="VARCHAR"/>
+        <id column="dep1" property="dep1" jdbcType="VARCHAR"/>
+        <id column="dep2" property="dep2" jdbcType="VARCHAR"/>
+        <id column="type" property="type" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--关联到用户的权限信息-->
+    <resultMap type="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt" id="UserBaseResultMap" extends="BaseResultMap">
+        <collection property="authorities" ofType="com.kfgs.pretrialclassification.domain.FenleiBaohuRole">
+            <result column="rolename" property="rolename"/>
+        </collection>
+    </resultMap>
+
+
+    <select id="findAreaName" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo">
+        select areaname,wm_concat(workername || '[' ||classlevel || ']' || '-' || decode(orgname,'FL','分类','JG','加工','')) as workername
+          from fenlei_baohu_userinfo
+        where areaname is not null and classlevel is not null
+        group by areaname
+        order by areaname
+    </select>
+
+    <select id="getUserinfoByLoginName"
+            resultMap="UserBaseResultMap" parameterType="java.lang.String">
+        select u.*,r.rolename as rolename from fenlei_baohu_userinfo u,FENLEI_BAOHU_ROLE r where u.type = r.id AND u.loginname = #{loginname}
+    </select>
+</mapper>

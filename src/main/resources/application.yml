@@ -1,0 +1,76 @@
+server:
+  port: ${PORT:9100}
+spring:
+
+  application:
+    name: PretrialClassification
+  datasource:
+    druid:
+      url: jdbc:oracle:thin:@192.168.254.6:1521:orcl
+      #url: jdbc:oracle:thin:@172.17.0.56:1521:orcl
+      #url: jdbc:mysql://172.17.0.56:3306/test?characterEncoding=utf-8
+      username: zljg
+      password: zljg123456
+      driverClassName: oracle.jdbc.driver.OracleDriver
+      #driverClassName: com.mysql.jdbc.Driver
+      initialSize: 5  #初始建立连接数量
+      minIdle: 5  #最小连接数量
+      maxActive: 20 #最大连接数量
+      maxWait: 10000  #获取连接最大等待时间，毫秒
+      testOnBorrow: true #申请连接时检测连接是否有效
+      testOnReturn: false #归还连接时检测连接是否有效
+      timeBetweenEvictionRunsMillis: 60000 #配置间隔检测连接是否有效的时间（单位是毫秒）
+      minEvictableIdleTimeMillis: 300000  #连接在连接池的最小生存时间（毫秒）
+  freemarker:
+    cache: false #页面不加载缓存，修改即时生效
+    settings:
+      template_update_delay: 0
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java #重启目录
+      exclude: WEB-INF/**
+  session:
+    store-type: redis # 选择使用redis 作为session存储
+  redis:
+    host: 127.0.0.1
+    #host: 172.17.0.56
+    port: 6379
+    password:
+    jedis:
+       pool:
+         min-idle: 8
+         max-idle: 500
+         max-active: 2000
+         max-wait: 10000
+    timeout: 0
+
+
+pretrialclassification:
+  # Swagger相关配置1
+  swagger:
+    basePackage: com.kfgs.pretrialclassification
+    title: 保护中心预审案件分类系统接口文档
+    description: Interface document of pre-trial case classification system of Protection Center
+    version: 2.0
+    author: yu,lsy,lxl
+    url: www.baidu.com
+    email: xxx@qq.com
+    license: Apache 2.0
+    licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.html
+
+mybatis-plus:
+  type-aliases-package: com.kfgs.pretrialclassification.domain
+  mapper-locations: classpath:mapper/*.xml
+  global-config:
+    banner: false
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# JWT 认证配置
+jwt:
+  tokenHeader: Authorization   #请求头
+  secret: w-eyJleHAiOjE1NDMyMDUyODUsInN1YiI6ImFkbWluIiwiY3JlYXRlZCI6MTU0MDYxMzI4N  #加密的字符串
+  expiration: 7200000    #毫秒，这里默认2小时
+  tokenHead: "Bearer "
