@@ -14,4 +14,6 @@ public interface FenleiBaohuUserinfoMapper extends BaseMapper<FenleiBaohuUserinf
     List<FenleiBaohuUserinfo> findAreaName();
 
     List<FenleiBaohuUserinfoExt> getUserinfoByLoginName(String loginname);
+
+    List<FenleiBaohuUserinfoExt> getUserinfoByLoginNameWithRole(String loginname);
 }

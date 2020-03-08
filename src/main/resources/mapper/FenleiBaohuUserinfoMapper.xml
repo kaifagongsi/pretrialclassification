@@ -34,6 +34,11 @@
 
     <select id="getUserinfoByLoginName"
             resultMap="UserBaseResultMap" parameterType="java.lang.String">
+        select u.* from fenlei_baohu_userinfo u  where u.loginname = #{loginname}
+    </select>
+
+    <select id="getUserinfoByLoginNameWithRole"
+            resultMap="UserBaseResultMap" parameterType="java.lang.String">
         select u.*,r.rolename as rolename from fenlei_baohu_userinfo u,FENLEI_BAOHU_ROLE r where u.type = r.id AND u.loginname = #{loginname}
     </select>
 </mapper>

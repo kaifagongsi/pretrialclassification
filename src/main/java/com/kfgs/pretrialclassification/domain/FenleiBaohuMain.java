@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * 
+ *
  *
  * @author mango
  */
@@ -89,4 +89,8 @@ public class FenleiBaohuMain implements Serializable {
      *  分配给谁worker
      */
     private String worker;
+    /* *
+     *  分配给人所在的领域
+     */
+    private String areaname;
 }

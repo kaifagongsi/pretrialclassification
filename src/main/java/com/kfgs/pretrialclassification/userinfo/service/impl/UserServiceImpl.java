@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
         // 从SecurityContextHolder中获取到，当前登录的用户信息。
         FenleiBaohuUserinfoExt userDetails = (FenleiBaohuUserinfoExt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // 根据用户Id，获取用户详细信息。
+        // 根据用户Id，获取用户详细信息。    getUserinfoByLoginNameWithRole
         FenleiBaohuUserinfoExt fenleiBaohuUserinfoExt = userinfoMapper.getUserinfoByLoginName(userDetails.getLoginname()).get(0);
         //设置权限
         Map data = new HashMap<>();

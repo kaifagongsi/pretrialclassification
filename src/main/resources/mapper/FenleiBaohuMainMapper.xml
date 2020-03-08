@@ -7,12 +7,17 @@
     </select>
 
     <select id="findMainByState" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
-        select id,
+        select m.id,
                mingcheng,
                simpleclasscode,
                jinantime,
-               (select worker from fenlei_baohu_result r where r.id = m.id and r.classtype = '主') as worker
-        from fenlei_baohu_main m
-        where state = '1'
+               r.worker as worker,
+               (select u.areaname
+                  from fenlei_baohu_userinfo u
+                 where u.workername = r.worker) as areaname
+          from fenlei_baohu_main m,
+               (select * from fenlei_baohu_result where classtype = '主') r
+         where m.state = '1'
+           and r.id = m.id
     </select>
 </mapper>

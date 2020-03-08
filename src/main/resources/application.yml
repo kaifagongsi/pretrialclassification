@@ -6,7 +6,8 @@ spring:
     name: PretrialClassification
   datasource:
     druid:
-      url: jdbc:oracle:thin:@192.168.254.6:1521:orcl
+      url: jdbc:oracle:thin:@192.168.8.117:1521:orcl
+      #url: jdbc:oracle:thin:@192.168.254.6:1521:orcl
       #url: jdbc:oracle:thin:@172.17.0.56:1521:orcl
       #url: jdbc:mysql://172.17.0.56:3306/test?characterEncoding=utf-8
       username: zljg
@@ -33,7 +34,8 @@ spring:
   session:
     store-type: redis # 选择使用redis 作为session存储
   redis:
-    host: 127.0.0.1
+    #host: 192.168.1.103
+    host: 192.168.8.108
     #host: 172.17.0.56
     port: 6379
     password:
