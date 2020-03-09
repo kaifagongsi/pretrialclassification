@@ -218,6 +218,7 @@
         </dependencies>
 
     <repositories>
+        <!-- 设置 阿里云 仓库-->
         <repository>
             <id>nexus-aliyun</id>
             <name>Nexus aliyun</name>
