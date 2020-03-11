@@ -2,6 +2,7 @@ package com.kfgs.pretrialclassification.caseDisposition.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
+import org.apache.xpath.operations.Bool;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -29,4 +30,6 @@ public interface CaseAllocationService {
     boolean postFenleiBaohuMain(FenleiBaohuMain fenleiBaohuMain);
     //delete 请求测试
     boolean deleteFenleiBaohuMain(FenleiBaohuMain fenleiBaohuMain);
+    //发送邮件
+    boolean sendEmail(String[] ids);
 }

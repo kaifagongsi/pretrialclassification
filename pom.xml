@@ -107,6 +107,12 @@
                 <scope>import</scope>
             </dependency>
 
+            <!-- 邮箱-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-mail</artifactId>
+            </dependency>
+
             <!-- 数据库相关-->
             <dependency>
                 <groupId>com.oracle</groupId>
@@ -214,6 +220,8 @@
                 <artifactId>jaxen</artifactId>
                 <version>1.1-beta-6</version>
             </dependency>
+
+
 
         </dependencies>
 

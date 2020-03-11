@@ -14,17 +14,22 @@ import com.kfgs.pretrialclassification.domain.FenleiBaohuLog;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
+import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class CaseAllocationServiceImpl implements CaseAllocationService {
@@ -39,6 +44,21 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
 
     @Autowired
     FenleiBaohuMainMapper fenleiBaohuMainMapper;
+
+    @Autowired
+    JavaMailSender jms;
+
+    @Value("spring.mail.username")
+    private String username;
+
+    @Value("pretrialclassification.email.toFenlei")
+    private String toFenlei;
+
+    @Value("pretrialclassification.email.toJiagong")
+    private String toJiagong;
+
+    @Value("pretrialclassification.email.toAll")
+    private String toAll;
 
     @Override
     public List findAreaName() {
@@ -138,5 +158,69 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
         }else{
             return false;
         }
+    }
+
+
+    @Override
+    public boolean sendEmail(String[] ids) {
+        String date = DateUtil.getDateFormat(new Date(), DateUtil.FULL_TIME_PATTERN).substring(0,8);
+        List<FenleiBaohuResultExt> fenleiBaohuResultExts = fenleiBaohuResultMapper.AfterDeploymentSendEmail(date);
+        List<String> recipients = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        int state = -1;
+        sb.append("&nbsp;&nbsp;&nbsp;<table  border='1px' cellpadding='5px' style='font-size:14px;border-collapse: collapse;margin: 20px; '><thead><tr><th>预审编号</th><th>部门</th><th>主分人</th><th>发明名称</th><th>粗分号</th><th>分配时间</th></tr></thead><tbody>");
+        for (int i = 0; i < fenleiBaohuResultExts.size(); i++) {
+            FenleiBaohuResultExt r = fenleiBaohuResultExts.get(i);
+            String fenpeitime = r.getFenpeitime();
+            recipients.add(r.getEmail());
+
+            if("FL".equals(r.getOrgname()) && state != 2){//只有分类
+                state = 1;
+            }else if("JG".equals(r.getOrgname()) && state !=1){//只有加工
+                state = 2;
+            }else{
+                state = 3;
+            }
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
+                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMddHHmmss");
+                sb.append("<tr><td>"+ r.getId() + "</td><td>" + r.getDep1() + "</td><td>" + r.getWorker() + "</td><td>" + r.getMingcheng() + "</td><td>" + r.getSimpleclasscode()+ "</td><td>" +  sdf.format(sdf1.parse(fenpeitime)) + "</td></tr>" );
+            } catch (java.text.ParseException e1) {
+                e1.printStackTrace();
+            }
+        }
+        sb.append("</tbody></table>");
+
+        String content = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;各位领导，以下是今天新分配的保护中心案件列表! &nbsp;&nbsp;&nbsp;请注意查收！" + sb.toString();
+        if(state == 1){
+            recipients.addAll(Arrays.asList(toFenlei.split(",")));
+        }else if(state == 2){
+            recipients.addAll(Arrays.asList(toJiagong.split(",")));
+        }else if(state == 3){
+            recipients.addAll(Arrays.asList(toAll.split(",")));
+        }
+
+        //list 去重
+        recipients = distinct(recipients);
+
+        //建立邮件消息
+        SimpleMailMessage mainMessage = new SimpleMailMessage();
+        //发送者
+        mainMessage.setFrom(username);
+        //接收者
+        //List转String
+        mainMessage.setTo(recipients.toArray(new String[recipients.size()]));
+        //发送的标题
+        mainMessage.setSubject("保护中心案件列表");
+        //发送的内容
+        mainMessage.setText("测试");
+        jms.send(mainMessage);
+        return false;
+    }
+
+    private List<String> distinct(List<String> recipients) {
+        HashSet set = new HashSet();
+        set.add(recipients);
+        return new ArrayList<>(set);
     }
 }

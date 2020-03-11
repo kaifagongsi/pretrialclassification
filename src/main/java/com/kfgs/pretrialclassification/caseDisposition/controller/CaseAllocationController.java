@@ -81,6 +81,14 @@ public class CaseAllocationController extends BaseController {
         resultMap.put("data",dataTable);
         return resultMap;
     }
+    @ApiOperation("根据传入的ID进行发送邮件")
+    @PostMapping("/sendEmail")
+    public Map sendEmail(@RequestBody String[] ids){
+        System.out.println(ids);
+        Map resultMap = new HashMap();
+        boolean flag = caseAllocationService.sendEmail(ids);
+        return resultMap;
+    }
 
 
     @ApiOperation("put请求测试")

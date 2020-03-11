@@ -3,4 +3,27 @@
 <mapper namespace="com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper">
 
 
+    <select id="AfterDeploymentSendEmail" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt">
+         select
+              substr(r.worker,1,6) as fldm,
+              substr(r.worker,8) as worker,
+              u.dep1,
+              u.dep2,
+              u.orgname,
+              r.id,
+              m.mingcheng,
+              u.email,
+              r.worker as fldmworker,
+              m.simpleclasscode,
+              m.jinantime,
+              r.fenpeitime
+             from fenlei_baohu_result r
+             left join fenlei_baohu_main m
+             on r.id = m.id
+             left join fenlei_baohu_userinfo u
+             on substr(r.worker,1,6) = u.loginname
+             where r.fenpeiren = '进案'
+                   and substr(r.fenpeitime,1,8) = #{date}
+            order by fldm asc
+    </select>
 </mapper>

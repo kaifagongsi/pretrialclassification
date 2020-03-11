@@ -1,7 +1,6 @@
 server:
   port: ${PORT:9100}
 spring:
-
   application:
     name: PretrialClassification
   datasource:
@@ -46,6 +45,15 @@ spring:
          max-active: 2000
          max-wait: 10000
     timeout: 0
+  mail:
+    host: smtp.qq.com #10.51.44.109 #email.cnipa.gov.cn
+    protocol: smtp
+    username: 727438509@qq.com
+    password: nudlsdwtfjbnbfgd
+    default-encoding: utf-8
+    smtp:
+      auth: true
+
 
 
 pretrialclassification:
@@ -60,6 +68,10 @@ pretrialclassification:
     email: xxx@qq.com
     license: Apache 2.0
     licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.html
+  email:
+     toFenlei: wangwenjing@cnipa.gov.cn,zhoujianjun@cnipa.gov.cn
+     toJiagong: wangmiao@cnipa.gov.cn,mengfanmin@cnipa.gov.cn
+     toAll: daixiaoyu@cnipa.gov.cn,xuyong@cnipa.gov.cn,lixiaoliang@cnipa.gov.cn
 
 mybatis-plus:
   type-aliases-package: com.kfgs.pretrialclassification.domain

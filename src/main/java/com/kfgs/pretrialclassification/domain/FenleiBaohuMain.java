@@ -85,12 +85,18 @@ public class FenleiBaohuMain implements Serializable {
      */
         @TableField("MESSAGE")
     private String message;
+
     /**
      *  分配给谁worker
      */
+    @TableField(exist = false)
     private String worker;
     /* *
      *  分配给人所在的领域
      */
+    @TableField(exist = false)
     private String areaname;
+
+
+
 }
