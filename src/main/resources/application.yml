@@ -6,8 +6,8 @@ spring:
   datasource:
     druid:
       #url: jdbc:oracle:thin:@192.168.8.117:1521:orcl
-      #url: jdbc:oracle:thin:@192.168.254.6:1521:orcl
-      url: jdbc:oracle:thin:@172.17.1.56:1521:orcl
+      url: jdbc:oracle:thin:@192.168.254.6:1521:orcl
+      #url: jdbc:oracle:thin:@172.17.1.56:1521:orcl
       #url: jdbc:mysql://172.17.0.56:3306/test?characterEncoding=utf-8
       username: zljg
       password: zljg123456
