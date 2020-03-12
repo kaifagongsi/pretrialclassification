@@ -19,5 +19,6 @@
                (select * from fenlei_baohu_result where classtype = '主') r
          where m.state = #{state}
            and r.id = m.id
+
     </select>
 </mapper>
