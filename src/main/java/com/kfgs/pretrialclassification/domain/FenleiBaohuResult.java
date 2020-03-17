@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 
 /**
- * 
+ *
  *
  * @author mango
  */
@@ -49,7 +49,7 @@ public class FenleiBaohuResult implements Serializable {
      * 分给我的具体时间
      */
     @TableField("FENPEITIME")
-    private Long fenpeitime;
+    private String fenpeitime;
 
     /**
      * 0-未作业(主);
