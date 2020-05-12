@@ -86,6 +86,13 @@ public class FenleiBaohuMain implements Serializable {
         @TableField("MESSAGE")
     private String message;
 
+
+    /**
+     * 所属保护中心
+     */
+        @TableField("ORAGINIZATION")
+    private String oraginization;
+
     /**
      *  分配给谁worker
      */
