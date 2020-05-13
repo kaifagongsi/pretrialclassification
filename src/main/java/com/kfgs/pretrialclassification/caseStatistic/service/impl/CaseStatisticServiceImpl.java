@@ -2,6 +2,7 @@ package com.kfgs.pretrialclassification.caseStatistic.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.kfgs.pretrialclassification.caseDisposition.service.MailService;
 import com.kfgs.pretrialclassification.caseStatistic.service.CaseStatisticService;
 import com.kfgs.pretrialclassification.common.utils.DateUtil;
 import com.kfgs.pretrialclassification.common.utils.IPUtil;
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CaseStatisticServiceImpl implements CaseStatisticService {
@@ -42,8 +44,9 @@ public class CaseStatisticServiceImpl implements CaseStatisticService {
     @Autowired
     FenleiBaohuMainMapper fenleiBaohuMainMapper;
 
+
     @Autowired
-    JavaMailSender jms;
+    private MailService mailService;
 
     @Value("spring.mail.username")
     private String username;
@@ -174,8 +177,7 @@ public class CaseStatisticServiceImpl implements CaseStatisticService {
 
     @Override
     public boolean sendEmail(String[] ids) {
-        String date = DateUtil.getDateFormat(new Date(), DateUtil.FULL_TIME_PATTERN).substring(0,8);
-        List<FenleiBaohuResultExt> fenleiBaohuResultExts = fenleiBaohuResultMapper.AfterDeploymentSendEmail(date);
+        List<FenleiBaohuResultExt> fenleiBaohuResultExts = fenleiBaohuResultMapper.AfterDeploymentSendEmail(ids);
         List<String> recipients = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         int state = -1;
@@ -212,21 +214,11 @@ public class CaseStatisticServiceImpl implements CaseStatisticService {
         }
 
         //list 去重
-        recipients = distinct(recipients);
+        recipients = recipients.stream().distinct().collect(Collectors.toList());
+        //转为String[] 数组
+        String[] to = recipients.toArray(new String[recipients.size()]);
 
-        //建立邮件消息
-        SimpleMailMessage mainMessage = new SimpleMailMessage();
-        //发送者
-        mainMessage.setFrom(username);
-        //接收者
-        //List转String
-        mainMessage.setTo(recipients.toArray(new String[recipients.size()]));
-        //发送的标题
-        mainMessage.setSubject("保护中心案件列表");
-        //发送的内容
-        mainMessage.setText("测试");
-        jms.send(mainMessage);
-        return false;
+        return mailService.sendHtmlMail(to, "保护中心案件列表", content);
     }
 
     private List<String> distinct(List<String> recipients) {

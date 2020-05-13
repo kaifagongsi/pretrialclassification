@@ -22,8 +22,11 @@
              on r.id = m.id
              left join fenlei_baohu_userinfo u
              on substr(r.worker,1,6) = u.loginname
-             where r.fenpeiren = '进案'
-                   and substr(r.fenpeitime,1,8) = #{date}
+             where r.fenpeiren = '进案' and r.id in
+             <foreach collection="array" open="(" close=")" separator="," item="item">
+                 #{item}
+             </foreach>
+
             order by fldm asc
     </select>
 

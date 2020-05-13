@@ -5,6 +5,8 @@ import com.kfgs.pretrialclassification.caseDisposition.service.CaseAllocationSer
 import com.kfgs.pretrialclassification.common.controller.BaseController;
 import com.kfgs.pretrialclassification.common.exception.PretrialClassificationException;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
+import com.kfgs.pretrialclassification.domain.response.CommonCode;
+import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +60,6 @@ public class CaseAllocationController extends BaseController {
     public Map findMainByState(String page,String limit){
         Map resultMap = new HashMap();
         Map<String, Object> dataTable = getDataTable(caseAllocationService.findMainByState(page,limit));
-        //Map<String, Object> dataTable = getDataTable(fenleiBaohuMainService.findMainByState(page,limit));
         resultMap.put("code",20000);
         resultMap.put("data",dataTable);
         return resultMap;
@@ -81,15 +82,18 @@ public class CaseAllocationController extends BaseController {
         resultMap.put("data",dataTable);
         return resultMap;
     }
+
     @ApiOperation("根据传入的ID进行发送邮件")
     @PostMapping("/sendEmail")
-    public Map sendEmail(@RequestBody String[] ids){
-        System.out.println(ids);
-        Map resultMap = new HashMap();
+    public QueryResponseResult sendEmail(@RequestBody String[] ids){
         boolean flag = caseAllocationService.sendEmail(ids);
-        return resultMap;
-    }
+        if(flag){
+            return new QueryResponseResult(CommonCode.SUCCESS,null);
+        }else{
+            return new QueryResponseResult(CommonCode.FAIL,null);
+        }
 
+    }
 
     @ApiOperation("put请求测试")
     @PutMapping("/update")

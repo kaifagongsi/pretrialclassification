@@ -32,7 +32,7 @@ public class MailServiceImpl implements MailService {
      * @param content 内容
      */
     @Override
-    public void sendHtmlMail(String[] to, String subject, String content) {
+    public boolean sendHtmlMail(String[] to, String subject, String content) {
         MimeMessage message=mailSender.createMimeMessage();
         try {
             //true表示需要创建一个multipart message
@@ -45,8 +45,10 @@ public class MailServiceImpl implements MailService {
             helper.setText(content,true);
             mailSender.send(message);
             System.out.println("html格式邮件发送成功");
+            return  true;
         }catch (Exception e){
             System.out.println("html格式邮件发送失败");
+            return false;
         }
     }
 }

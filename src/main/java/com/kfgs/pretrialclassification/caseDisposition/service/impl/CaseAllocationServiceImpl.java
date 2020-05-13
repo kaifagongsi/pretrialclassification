@@ -3,6 +3,7 @@ package com.kfgs.pretrialclassification.caseDisposition.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.caseDisposition.service.CaseAllocationService;
+import com.kfgs.pretrialclassification.caseDisposition.service.MailService;
 import com.kfgs.pretrialclassification.common.utils.DateUtil;
 import com.kfgs.pretrialclassification.common.utils.IPUtil;
 import com.kfgs.pretrialclassification.common.utils.UserUtil;
@@ -23,13 +24,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CaseAllocationServiceImpl implements CaseAllocationService {
@@ -45,20 +50,18 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
     @Autowired
     FenleiBaohuMainMapper fenleiBaohuMainMapper;
 
-    @Autowired
-    JavaMailSender jms;
 
-    @Value("spring.mail.username")
-    private String username;
-
-    @Value("pretrialclassification.email.toFenlei")
+    @Value("${pretrialclassification.email.toFenlei}")
     private String toFenlei;
 
-    @Value("pretrialclassification.email.toJiagong")
+    @Value("${pretrialclassification.email.toJiagong}")
     private String toJiagong;
 
-    @Value("pretrialclassification.email.toAll")
+    @Value("${pretrialclassification.email.toAll}")
     private String toAll;
+
+    @Autowired
+    private MailService mailService;
 
     @Override
     public List findAreaName() {
@@ -163,8 +166,7 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
 
     @Override
     public boolean sendEmail(String[] ids) {
-        String date = DateUtil.getDateFormat(new Date(), DateUtil.FULL_TIME_PATTERN).substring(0,8);
-        List<FenleiBaohuResultExt> fenleiBaohuResultExts = fenleiBaohuResultMapper.AfterDeploymentSendEmail(date);
+        List<FenleiBaohuResultExt> fenleiBaohuResultExts = fenleiBaohuResultMapper.AfterDeploymentSendEmail(ids);
         List<String> recipients = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         int state = -1;
@@ -201,26 +203,11 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
         }
 
         //list 去重
-        recipients = distinct(recipients);
+        recipients = recipients.stream().distinct().collect(Collectors.toList());
+        //转为String[] 数组
+        String[] to = recipients.toArray(new String[recipients.size()]);
 
-        //建立邮件消息
-        SimpleMailMessage mainMessage = new SimpleMailMessage();
-        //发送者
-        mainMessage.setFrom(username);
-        //接收者
-        //List转String
-        mainMessage.setTo(recipients.toArray(new String[recipients.size()]));
-        //发送的标题
-        mainMessage.setSubject("保护中心案件列表");
-        //发送的内容
-        mainMessage.setText("测试");
-        jms.send(mainMessage);
-        return false;
+        return mailService.sendHtmlMail(to, "保护中心案件列表", content);
     }
 
-    private List<String> distinct(List<String> recipients) {
-        HashSet set = new HashSet();
-        set.add(recipients);
-        return new ArrayList<>(set);
-    }
 }

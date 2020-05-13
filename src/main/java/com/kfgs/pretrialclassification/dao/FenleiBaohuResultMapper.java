@@ -17,7 +17,7 @@ import java.util.List;
  */
 public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
 
-    List<FenleiBaohuResultExt> AfterDeploymentSendEmail(String date);
+    List<FenleiBaohuResultExt> AfterDeploymentSendEmail(String[] ids);
 
     IPage<FenleiBaohuResultExt> selectCaseOut(Page<FenleiBaohuResult> page);
 

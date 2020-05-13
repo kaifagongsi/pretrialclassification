@@ -7,5 +7,5 @@ public interface MailService {
      * @param subject
      * @param content
      */
-    void sendHtmlMail(String[] to,String subject,String content);
+    boolean sendHtmlMail(String[] to,String subject,String content);
 }
