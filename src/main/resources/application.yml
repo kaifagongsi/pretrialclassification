@@ -47,10 +47,10 @@ spring:
          max-wait: 10000
     timeout: 0
   mail:
-    host: smtp.qq.com #10.51.44.109 #email.cnipa.gov.cn
+    host:  10.51.44.109 #email.cnipa.gov.cn
     protocol: smtp
-    username: 727438509@qq.com
-    password: dtussizedbllbdgc
+    username: lixiaoliang@cnipa.gov.cn
+    password: sipo@426
     default-encoding: utf-8
     smtp:
       auth: true
@@ -70,13 +70,13 @@ pretrialclassification:
     license: Apache 2.0
     licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.html
   email:
-     toFenlei: wangwenjing@cnipa.gov.cn,zhoujianjun@cnipa.gov.cn
-     toJiagong: 632538483@qq.com
+     toFenlei: wangwenjing@cnipa.gov.cn,zhoujianjun@cnipa.gov.cn,jixiaoqiang@cnipa.gov.cn,xuyong@cnipa.gov.cn
+     toJiagong: wangmiao@cnipa.gov.cn,mengfanmin@cnipa.gov.cn,jixiaoqiang@cnipa.gov.cn,xuyong@cnipa.gov.cn
      toAll: daixiaoyu@cnipa.gov.cn,xuyong@cnipa.gov.cn,lixiaoliang@cnipa.gov.cn
 
 mybatis-plus:
   type-aliases-package: com.kfgs.pretrialclassification.domain
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations: classpath*:mapper/*.xml
   global-config:
     banner: false
   configuration:
