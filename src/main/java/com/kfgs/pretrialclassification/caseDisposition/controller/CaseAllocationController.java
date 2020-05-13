@@ -5,6 +5,7 @@ import com.kfgs.pretrialclassification.caseDisposition.service.CaseAllocationSer
 import com.kfgs.pretrialclassification.common.controller.BaseController;
 import com.kfgs.pretrialclassification.common.exception.PretrialClassificationException;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
+import com.kfgs.pretrialclassification.domain.response.CaseAllocationCode;
 import com.kfgs.pretrialclassification.domain.response.CommonCode;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 import io.swagger.annotations.Api;
@@ -88,9 +89,9 @@ public class CaseAllocationController extends BaseController {
     public QueryResponseResult sendEmail(@RequestBody String[] ids){
         boolean flag = caseAllocationService.sendEmail(ids);
         if(flag){
-            return new QueryResponseResult(CommonCode.SUCCESS,null);
+            return new QueryResponseResult(CaseAllocationCode.SUCCESS,null);
         }else{
-            return new QueryResponseResult(CommonCode.FAIL,null);
+            return new QueryResponseResult(CaseAllocationCode.FAIL,null);
         }
 
     }
