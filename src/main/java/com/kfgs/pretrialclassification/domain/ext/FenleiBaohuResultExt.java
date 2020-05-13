@@ -48,4 +48,19 @@ public class FenleiBaohuResultExt  extends FenleiBaohuResult {
      * 进案时间
      */
     private String jinantime;
+
+    /* *
+     * 发明件数
+     */
+    private String fmCount; //发明件数
+
+    /* *
+     * 新型件数
+     */
+    private String xxCount; //新型件数
+
+    /* *
+     * 总件数
+     */
+    private String totalCount; //总件数
 }

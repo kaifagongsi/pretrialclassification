@@ -21,4 +21,19 @@
            and r.id = m.id
 
     </select>
+
+    <select id="selectCaseIn" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainExt" >
+       select oraginization,
+           count(1) as totalCount,
+           sum(decode(type,'FM',1,'XX',0)) as fmCount,
+           sum(decode(type,'FM',0,'XX',1)) as xxCount,
+           sum(decode(state,'0',1,0)) as wfpCount,
+           sum(decode(state,'1',1,0)) as wccCount,
+           sum(decode(state,'2',1,0)) as ywcCount,
+           sum(decode(state,'7',1,0)) as cjCount
+      from FENLEI_BAOHU_MAIN group by oraginization
+    </select>
+
+
+
 </mapper>

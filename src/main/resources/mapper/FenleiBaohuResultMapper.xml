@@ -26,4 +26,18 @@
                    and substr(r.fenpeitime,1,8) = #{date}
             order by fldm asc
     </select>
+
+    <select id="selectCaseOut" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt" >
+        select t.worker,
+                t.classtype,
+                (select concat(u.dep1, u.dep2)  from FENLEI_BAOHU_USERINFO u   where u.workername = t.worker) as orgname,
+                sum(decode(a.type, 'FM', 1, 0)) fmCount,
+                sum(decode(a.type, 'XX', 1, 0)) xxCount,
+                count(distinct t.id) totalCount
+        from fenlei_baohu_main a, fenlei_baohu_result t
+        where substr(t.chuantime, 1, 8) between '20200101' and '20200430'
+        and a.id = t.id
+        group by t.worker, t.classtype order by worker asc,classtype desc
+    </select>
+
 </mapper>

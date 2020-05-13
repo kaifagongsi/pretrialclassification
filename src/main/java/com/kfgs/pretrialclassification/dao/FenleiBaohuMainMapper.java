@@ -17,4 +17,7 @@ public interface FenleiBaohuMainMapper extends BaseMapper<FenleiBaohuMain> {
     List<FenleiBaohuMain> findAll();
 
     IPage<FenleiBaohuMain> findMainByState(Page<FenleiBaohuMain> page, @Param("state") String state);
+
+    IPage<FenleiBaohuMain> selectCaseIn(Page<FenleiBaohuMain> page, @Param("state") String state);
+
 }
