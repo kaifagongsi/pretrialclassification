@@ -5,12 +5,17 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.caseQuery.service.CaseConditionQueryService;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuMainMapper;
+import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
+import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
+import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -19,39 +24,19 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
     @Autowired
     FenleiBaohuMainMapper fenleiBaohuMainMapper;
 
+    @Autowired
+    FenleiBaohuResultMapper fenleiBaohuResultMapper;
+
     @Override
     @Transactional
     //查询所有案件
-    public IPage findAll(String pageNo, String limit,String id,String name,String sqr,String sqh) {
+    public IPage findAll(String pageNo, String limit,String id,String name,String sqr,String sqh,String state,String begintime,String endtime) {
         Map resultMap = new HashMap();
         //判断是否有输入条件
         int flag = 0;
-        Page<FenleiBaohuMain> page = new Page<>(Long.parseLong(pageNo),Long.parseLong(limit));
-        QueryWrapper queryWrapper = new QueryWrapper();
-        if(id != "" && id != null && id.length()!=0){
-            flag = 1;
-            queryWrapper.like("id",id);
-        }
-        if(name != "" && name != null && name.length()!=0){
-            flag = 1;
-            queryWrapper.like("name",name);
-        }
-        if(sqr != "" && name != null && name.length()!=0){
-            flag = 1;
-            queryWrapper.like("sqr",sqr);
-        }
-        if(sqh != "" && sqh != null && sqh.length()!= 0){
-            flag = 1;
-            queryWrapper.like("sqh",sqh);
-        }
-        if(flag == 1){
-            IPage<FenleiBaohuMain> iPage = fenleiBaohuMainMapper.selectPage(page, queryWrapper);
-            flag = 0;
-            return iPage;
-        } else{
-            IPage<FenleiBaohuMain> iPage = fenleiBaohuMainMapper.selectPage(page, null);
-            return iPage;
-        }
+        Page<FenleiBaohuMainResultExt> page = new Page<>(Long.parseLong(pageNo),Long.parseLong(limit));
+        IPage<FenleiBaohuMainResultExt> iPage = fenleiBaohuMainMapper.selectByCondition(page,id,name,sqr,sqh,state,begintime,endtime);
+        return iPage;
     }
 
     @Override
@@ -77,15 +62,31 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
     }
     @Override
     @Transactional
+    //根据案件状态查询案件
+    public IPage findCaseByState(String pageNo,String limit,String state){
+        Map resultMap = new HashMap();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        /*state:
+        0:进案未分配
+        1：进案已分配未出案
+        2：已出案
+         */
+        queryWrapper.eq("state",state);
+        Page<FenleiBaohuMain> page = new Page<>(Long.parseLong(pageNo),Long.parseLong(limit));
+        IPage<FenleiBaohuMain> iPage = fenleiBaohuMainMapper.selectPage(page,queryWrapper);
+        return iPage;
+    }
+
+    @Override
+    @Transactional
     //根据预审编号查询案件
-    public IPage findById(String pageNo, String limit,String id) {
+    public List<FenleiBaohuResult> findClassInfoByID(String id) {
         QueryWrapper queryWrapper = new QueryWrapper();
         //模糊查询
-        queryWrapper.like("id",id);
+        queryWrapper.eq("id",id);
         Map resultMap = new HashMap();
-        Page<FenleiBaohuMain> page = new Page<>(Long.parseLong(pageNo),Long.parseLong(limit));
-        IPage<FenleiBaohuMain> iPage = fenleiBaohuMainMapper.selectPage(page, queryWrapper);
-        return iPage;
+        List<FenleiBaohuResult> list = fenleiBaohuResultMapper.selectList(queryWrapper);
+        return list;
     }
 
     @Override

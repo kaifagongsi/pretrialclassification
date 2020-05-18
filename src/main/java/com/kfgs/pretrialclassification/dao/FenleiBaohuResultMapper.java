@@ -21,5 +21,6 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
 
     IPage<FenleiBaohuResultExt> selectCaseOut(Page<FenleiBaohuResult> page);
 
+    List<FenleiBaohuResult> findClassInfoByID(String id);
 
 }

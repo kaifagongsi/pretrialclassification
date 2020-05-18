@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,19 +29,39 @@ public class caseConditionQueryController extends BaseController{
 
     @ApiOperation("main表，查询所有案件")
     @GetMapping("/findAllCase")
-    public Map findAllCase(String page,String limit,String id,String name,String sqr,String sqh) throws PretrialClassificationException {
+    public Map findAllCase(String page,String limit,String id,String name,String sqr,String sqh,String state,String beginTime,String endTime) throws PretrialClassificationException {
+        //获取查询条件
         Map resultMap = new HashMap();
-        Map<String, Object> dataTable = getDataTable(caseConditionQueryService.findAll(page,limit,id,name,sqr,sqh));
+        if(state == "all" || state.equals("all") || state == null || state==""){
+            state = "";
+        }
+        if(beginTime != null && endTime != null){
+            beginTime = beginTime.replace("-","")+"000000";
+            endTime = endTime.replace("-","")+"235959";
+        }else{
+            beginTime="";
+            endTime="";
+        }
+        Map<String, Object> dataTable = getDataTable(caseConditionQueryService.findAll(page,limit,id,name,sqr,sqh,state,beginTime,endTime));
         resultMap.put("code",20000);
         resultMap.put("data",dataTable);
         return resultMap;
     }
 
-    @ApiOperation("main表，根据预审编号查询案件")
-    @GetMapping("/findById")
-    public Map findById(String page,String limit,String id) throws PretrialClassificationException{
+    @ApiOperation("main表，按案件状态查询案件")
+    @GetMapping("/findCaseByState")
+    public Map findCaseByState(String page,String limit,String state) throws PretrialClassificationException{
         Map resultMap = new HashMap();
-        Map<String,Object> dataTable = getDataTable(caseConditionQueryService.findById(page,limit,id));
+        Map<String,Object> dataTable = getDataTable(caseConditionQueryService.findCaseByState(page,limit,state));
+        return resultMap;
+    }
+
+    @ApiOperation("main表，根据预审编号查询案件分类信息")
+    @GetMapping("/findClassInfoByID")
+    public Map findClassInfoByID(String id) throws PretrialClassificationException{
+
+        Map resultMap = new HashMap();
+        List dataTable = caseConditionQueryService.findClassInfoByID(id);
         resultMap.put("code",20000);
         resultMap.put("data",dataTable);
         return resultMap;
