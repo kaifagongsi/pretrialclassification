@@ -43,4 +43,12 @@
         group by t.worker, t.classtype order by worker asc,classtype desc
     </select>
 
+    <select id="findClassInfoByID" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuResult">
+        select r.id,r.worker,r.classtype,r.fenpeiren,r.state,r.cci,r.cca,r.csets,r.ipca,r.ipci,
+        (to_date(fenpeitime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as fenpeitime,
+        (to_date(chuantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as chuantime
+        from fenlei_baohu_result r
+        where r.id=#{id}
+    </select>
+
 </mapper>

@@ -2,18 +2,22 @@ package com.kfgs.pretrialclassification.caseQuery.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
+import java.util.List;
 import java.util.Map;
 
 public interface CaseConditionQueryService {
 
     //查询所有案件
-    IPage findAll(String pageNo, String limit,String id,String name,String sqr,String sqh);
+    IPage findAll(String pageNo, String limit,String id,String name,String sqr,String sqh,String state,String begintime,String endtime);
 
     //根据搜索条件查询案件
     IPage findByCondition(String pageNo, String limit, Map conList);
 
+    //根据案件状态查询案件
+    IPage findCaseByState(String pageNo,String limit,String state);
+
     //根据预审编号查询案件
-    IPage findById(String pageNo,String limit,String id);
+    List findClassInfoByID(String id);
 
     //根据申请号查询案件
     IPage findBySQH(String pageNo,String limit,String sqh);
