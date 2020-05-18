@@ -36,7 +36,7 @@ spring:
     #host: 192.168.1.103
     #host: 192.168.8.107
     host: 172.17.1.56
-    #host: 172.17.1.249
+    #host: 10.75.109.128
     port: 6379
     password:
     jedis:
@@ -47,7 +47,7 @@ spring:
          max-wait: 10000
     timeout: 0
   mail:
-    host:  10.51.44.109 #email.cnipa.gov.cn
+    host:  10.51.44.109
     protocol: smtp
     username: lixiaoliang@cnipa.gov.cn
     password: sipo@426
@@ -70,9 +70,10 @@ pretrialclassification:
     license: Apache 2.0
     licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.html
   email:
-     toFenlei: wangwenjing@cnipa.gov.cn,zhoujianjun@cnipa.gov.cn,jixiaoqiang@cnipa.gov.cn,xuyong@cnipa.gov.cn
-     toJiagong: wangmiao@cnipa.gov.cn,mengfanmin@cnipa.gov.cn,jixiaoqiang@cnipa.gov.cn,xuyong@cnipa.gov.cn
-     toAll: daixiaoyu@cnipa.gov.cn,xuyong@cnipa.gov.cn,lixiaoliang@cnipa.gov.cn
+     toFenlei:  jixiaoqiang@cnipa.gov.cn,xuyong@cnipa.gov.cn,zhangyunpeng@cnipa.gov.cn,zhangtingting_1@cnipa.gov.cn,wangwenjing@cnipa.gov.cn,zhangxing@cnipa.gov.cn,changdongying@cnipa.gov.cn,xiegaijun@cnipa.gov.cn,liujun_7@cnipa.gov.cn,wangzhiyun@cnipa.gov.cn,dongqian@cnipa.gov.cn,zhoujianjun@cnipa.gov.cn,lixiaoliang@cnipa.gov.cn
+     toJiagong: jixiaoqiang@cnipa.gov.cn,xuyong@cnipa.gov.cn,zhangyunpeng@cnipa.gov.cn,zhangtingting_1@cnipa.gov.cn,wangmiao@cnipa.gov.cn,liujingsheng@cnipa.gov.cn,yuhong@cnipa.gov.cn,lizhongning@cnipa.gov.cn,zhangguogang@cnipa.gov.cn,niehong@cnipa.gov.cn,lihao@cnipa.gov.cn,qinlu@cnipa.gov.cn,yujialing@cnipa.gov.cn,maxiaomei@cnipa.gov.cn,mengfanmin@cnipa.gov.cn,liuhaiyan@cnipa.gov.cn,gaojianye@cnipa.gov.cn,lixiaoliang@cnipa.gov.cn
+     toAll:  jixiaoqiang@cnipa.gov.cn,xuyong@cnipa.gov.cn,zhangyunpeng@cnipa.gov.cn,zhangtingting_1@cnipa.gov.cn,wangwenjing@cnipa.gov.cn,zhangxing@cnipa.gov.cn,changdongying@cnipa.gov.cn,xiegaijun@cnipa.gov.cn,liujun_7@cnipa.gov.cn,wangzhiyun@cnipa.gov.cn,dongqian@cnipa.gov.cn,zhoujianjun@cnipa.gov.cn,wangmiao@cnipa.gov.cn,liujingsheng@cnipa.gov.cn,yuhong@cnipa.gov.cn,lizhongning@cnipa.gov.cn,zhangguogang@cnipa.gov.cn,niehong@cnipa.gov.cn,lihao@cnipa.gov.cn,qinlu@cnipa.gov.cn,yujialing@cnipa.gov.cn,maxiaomei@cnipa.gov.cn,mengfanmin@cnipa.gov.cn,liuhaiyan@cnipa.gov.cn,gaojianye@cnipa.gov.cn,lixiaoliang@cnipa.gov.cn
+     title: 保护中心案件列表
 
 mybatis-plus:
   type-aliases-package: com.kfgs.pretrialclassification.domain
