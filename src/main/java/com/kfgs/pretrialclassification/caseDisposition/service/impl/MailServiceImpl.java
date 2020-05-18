@@ -25,6 +25,9 @@ public class MailServiceImpl implements MailService {
     @Value("${spring.mail.username}")
     private String username;
 
+    @Value("${pretrialclassification.email.title}")
+    private String subject;
+
     /**
      * 发送html格式的邮件
      * @param to 接受者
@@ -41,6 +44,34 @@ public class MailServiceImpl implements MailService {
             helper.setFrom(username);
             //接受者
             helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(content,true);
+            mailSender.send(message);
+            System.out.println("html格式邮件发送成功");
+            return  true;
+        }catch (Exception e){
+            System.out.println("html格式邮件发送失败");
+            return false;
+        }
+    }
+
+    /**
+     * 发送html格式的邮件
+     * @param to 接受者
+     * @param cc 抄送
+     * @param content 内容
+     */
+    @Override
+    public boolean sendHtmlMail(String[] to,String[] cc,String content) {
+        MimeMessage message=mailSender.createMimeMessage();
+        try {
+            //true表示需要创建一个multipart message
+            MimeMessageHelper helper=new MimeMessageHelper(message,true);
+            //发送者
+            helper.setFrom(username);
+            //接受者
+            helper.setTo(to);
+            helper.setCc(cc);
             helper.setSubject(subject);
             helper.setText(content,true);
             mailSender.send(message);

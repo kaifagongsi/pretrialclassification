@@ -167,14 +167,15 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
     @Override
     public boolean sendEmail(String[] ids) {
         List<FenleiBaohuResultExt> fenleiBaohuResultExts = fenleiBaohuResultMapper.AfterDeploymentSendEmail(ids);
-        List<String> recipients = new ArrayList<>();
+        List<String> to = new ArrayList<>();
+        List<String> cc = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         int state = -1;
         sb.append("&nbsp;&nbsp;&nbsp;<table  border='1px' cellpadding='5px' style='font-size:14px;border-collapse: collapse;margin: 20px; '><thead><tr><th>预审编号</th><th>部门</th><th>主分人</th><th>发明名称</th><th>粗分号</th><th>分配时间</th></tr></thead><tbody>");
         for (int i = 0; i < fenleiBaohuResultExts.size(); i++) {
             FenleiBaohuResultExt r = fenleiBaohuResultExts.get(i);
             String fenpeitime = r.getFenpeitime();
-            recipients.add(r.getEmail());
+            to.add(r.getEmail());
 
             if("FL".equals(r.getOrgname()) && state != 2){//只有分类
                 state = 1;
@@ -195,19 +196,21 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
 
         String content = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;各位领导，以下是今天新分配的保护中心案件列表! &nbsp;&nbsp;&nbsp;请注意查收！" + sb.toString();
         if(state == 1){
-            recipients.addAll(Arrays.asList(toFenlei.split(",")));
+            cc.addAll(Arrays.asList(toFenlei.split(",")));
         }else if(state == 2){
-            recipients.addAll(Arrays.asList(toJiagong.split(",")));
+            cc.addAll(Arrays.asList(toJiagong.split(",")));
         }else if(state == 3){
-            recipients.addAll(Arrays.asList(toAll.split(",")));
+            cc.addAll(Arrays.asList(toAll.split(",")));
         }
 
         //list 去重
-        recipients = recipients.stream().distinct().collect(Collectors.toList());
+        to = to.stream().distinct().collect(Collectors.toList());
+        cc = cc.stream().distinct().collect(Collectors.toList());
         //转为String[] 数组
-        String[] to = recipients.toArray(new String[recipients.size()]);
+        String[] toString = to.toArray(new String[to.size()]);
+        String[] ccString = cc.toArray(new String[cc.size()]);
 
-        return mailService.sendHtmlMail(to, "保护中心案件列表", content);
+        return mailService.sendHtmlMail(toString,ccString, content);
     }
 
 }
