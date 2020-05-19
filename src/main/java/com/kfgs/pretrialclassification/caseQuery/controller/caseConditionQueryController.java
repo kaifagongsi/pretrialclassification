@@ -32,7 +32,7 @@ public class caseConditionQueryController extends BaseController{
     public Map findAllCase(String page,String limit,String id,String name,String sqr,String sqh,String state,String beginTime,String endTime) throws PretrialClassificationException {
         //获取查询条件
         Map resultMap = new HashMap();
-        if(state == "all" || state.equals("all") || state == null || state==""){
+        if(state == null || state == "all" || state.equals("all") || state==""){
             state = "";
         }
         if(beginTime != null && endTime != null){
