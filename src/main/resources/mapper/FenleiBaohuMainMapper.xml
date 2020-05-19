@@ -35,7 +35,7 @@
     </select>
 
     <select id="selectByCondition" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt">
-       select m.id,m.mingcheng,m.type,m.sqr,m.sqh,m.pdf_path,m.state,m.simpleclasscode,m.message,
+       select m.id,m.mingcheng,m.type,m.sqr,m.sqh,m.pdf_path,m.state,m.simpleclasscode,m.message,m.oraginization,
         (to_date(jinantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as jinantime,
         (to_date(chuantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as chuantime,
        t2.maintype,t2.mainworker,t1.asstype,t1.assworker from
