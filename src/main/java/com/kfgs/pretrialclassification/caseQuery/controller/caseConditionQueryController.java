@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +37,10 @@ public class caseConditionQueryController extends BaseController{
         if(state == null || state == "all" || state.equals("all") || state==""){
             state = "";
         }
-        if(beginTime != null && endTime != null){
+        if(endTime == null || endTime == ""){
+            endTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString();
+        }
+        if(beginTime != null){
             beginTime = beginTime.replace("-","")+"000000";
             endTime = endTime.replace("-","")+"235959";
         }else{
