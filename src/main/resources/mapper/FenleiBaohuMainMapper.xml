@@ -35,17 +35,20 @@
     </select>
 
     <select id="selectByCondition" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt">
-       select m.id,m.mingcheng,m.type,m.sqr,m.sqh,m.pdf_path,m.state,m.simpleclasscode,m.message,m.oraginization,
+        select m.id,m.mingcheng,m.type,m.sqr,m.sqh,m.pdf_path,m.state,m.simpleclasscode,m.message,m.oraginization,
         (to_date(jinantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as jinantime,
         (to_date(chuantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as chuantime,
-       t2.maintype,t2.mainworker,t1.asstype,t1.assworker from
-       (select r.id,wm_concat(distinct r.classtype) as asstype,wm_concat(r.worker) as assworker from FENLEI_BAOHU_RESULT r where r.classtype='副' group by r.id)t1,
-       (select r.id,r.worker as mainworker,r.classtype as maintype from FENLEI_BAOHU_RESULT r where r.classtype='主')t2,
-       FENLEI_BAOHU_MAIN m
-       where t1.id=t2.id and m.id=t1.id
-       <if test="id!=''">
-        AND m.id = #{id}
-       </if>
+        t_mr.maintype,t_mr.mainworker,t_mr.asstype,t_mr.assworker,t_mr.ipci
+        from FENLEI_BAOHU_MAIN m
+        left join
+        (select t2.id,t2.maintype,t2.mainworker,t2.ipci,t1.asstype,t1.assworker from
+        (select r.id,r.worker as mainworker,r.classtype as maintype,r.ipci from FENLEI_BAOHU_RESULT r where r.classtype='主')t2
+        left join
+        (select r.id,wm_concat(distinct r.classtype) as asstype,wm_concat(r.worker) as assworker from FENLEI_BAOHU_RESULT r where r.classtype='副' group by r.id)t1
+        on t2.id=t1.id)t_mr on m.id=t_mr.id where 1=1
+        <if test="id!=''">
+            AND m.id = #{id}
+        </if>
         <if test="name!=''">
             AND m.mingcheng = #{name}
         </if>

@@ -37,10 +37,29 @@ public class caseConditionQueryController extends BaseController{
         if(state == null || state == "all" || state.equals("all") || state==""){
             state = "";
         }
-        if(endTime == null || endTime == ""){
-            endTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString();
+        if(name == null){
+            name = "";
         }
-        if(beginTime != null){
+        if(sqr == null){
+            sqr = "";
+        }
+        if(sqh == null){
+            sqh = "";
+        }
+        if(beginTime == null){
+            beginTime = "";
+        }
+        if (endTime == null){
+            endTime = "";
+        }
+        if(beginTime == "" && endTime != ""){
+            beginTime = "19000000000000";
+            endTime = endTime.replace("-","")+"235959";
+        }else if(beginTime != "" && endTime == ""){
+            beginTime = beginTime.replace("-","")+"000000";
+            endTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString();
+            endTime = endTime.replace("-","")+"235959";
+        }else if(beginTime != "" && endTime != ""){
             beginTime = beginTime.replace("-","")+"000000";
             endTime = endTime.replace("-","")+"235959";
         }else{

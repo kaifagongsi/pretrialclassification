@@ -35,6 +35,7 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
         //判断是否有输入条件
         int flag = 0;
         Page<FenleiBaohuMainResultExt> page = new Page<>(Long.parseLong(pageNo),Long.parseLong(limit));
+        //IPage<FenleiBaohuMain> iPage = fenleiBaohuMainMapper.selectPage(page, null);
         IPage<FenleiBaohuMainResultExt> iPage = fenleiBaohuMainMapper.selectByCondition(page,id,name,sqr,sqh,state,begintime,endtime);
         return iPage;
     }
