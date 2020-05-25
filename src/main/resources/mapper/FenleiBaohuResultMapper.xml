@@ -42,6 +42,9 @@
         <if test="begintime!=''and endtime!=''">
             AND t.chuantime between #{begintime} and #{endtime}
         </if>
+        <if test="type!='' ">
+            AND t.classtype=#{type}
+        </if>
         group by t.worker, t.classtype order by worker asc,classtype desc
     </select>
 
