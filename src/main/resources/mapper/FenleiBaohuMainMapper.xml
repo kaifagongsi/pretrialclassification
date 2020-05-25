@@ -31,7 +31,11 @@
            sum(decode(state,'1',1,0)) as wccCount,
            sum(decode(state,'2',1,0)) as ywcCount,
            sum(decode(state,'7',1,0)) as cjCount
-      from FENLEI_BAOHU_MAIN group by oraginization
+      from FENLEI_BAOHU_MAIN
+        <if test="begintime!=''and endtime!=''">
+            where jinantime between #{begintime} and #{endtime}
+        </if>
+      group by oraginization
     </select>
 
     <select id="selectByCondition" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt">

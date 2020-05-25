@@ -112,9 +112,9 @@ public class CaseStatisticServiceImpl implements CaseStatisticService {
 
     //进案量统计
     @Override
-    public IPage countCaseIn(String pageNo, String limit) {
+    public IPage countCaseIn(String pageNo, String limit,String begintime,String endtime) {
         Page<FenleiBaohuMain> page = new Page<FenleiBaohuMain>(Long.parseLong(pageNo),Long.parseLong(limit));
-        return fenleiBaohuMainMapper.selectCaseIn(page,"1");
+        return fenleiBaohuMainMapper.selectCaseIn(page,begintime,endtime);
     }
 
     //出案量统计
@@ -127,7 +127,7 @@ public class CaseStatisticServiceImpl implements CaseStatisticService {
     @Override
     public IPage selectByExample(String pageNo, String limit) {
         Page<FenleiBaohuMain> page = new Page<FenleiBaohuMain>(Long.parseLong(pageNo),Long.parseLong(limit));
-        return fenleiBaohuMainMapper.selectCaseIn(page,"1");
+        return fenleiBaohuMainMapper.selectCaseIn(page,null,null);
     }
 
     @Override

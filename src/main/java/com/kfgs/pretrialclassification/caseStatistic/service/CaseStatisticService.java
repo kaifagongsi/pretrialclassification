@@ -13,7 +13,7 @@ public interface CaseStatisticService {
     List findAreaName();
 
     //进案量统计
-    IPage countCaseIn(String pageNo, String limit);
+    IPage countCaseIn(String pageNo, String limit,String beginTime,String endTime);
 
     //出案量统计
     IPage countCaseOut(String pageNo, String limit,String beginTime, String endTime);
