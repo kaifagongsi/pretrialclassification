@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,9 +69,29 @@ public class  CaseStatisticController extends BaseController {
 
     @ApiOperation("出案量统计")
     @GetMapping("/countCaseOut")
-    public Map countCaseOut(String page,String limit){
+    public Map countCaseOut(String page,String limit,String beginTime,String endTime){
         Map resultMap = new HashMap();
-        Map<String, Object> dataTable = getDataTable(caseStatisticService.countCaseOut(page,limit));
+        if(beginTime == null){
+            beginTime = "";
+        }
+        if (endTime == null){
+            endTime = "";
+        }
+        if(beginTime == "" && endTime != ""){
+            beginTime = "19000000000000";
+            endTime = endTime.replace("-","")+"235959";
+        }else if(beginTime != "" && endTime == ""){
+            beginTime = beginTime.replace("-","")+"000000";
+            endTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString();
+            endTime = endTime.replace("-","")+"235959";
+        }else if(beginTime != "" && endTime != ""){
+            beginTime = beginTime.replace("-","")+"000000";
+            endTime = endTime.replace("-","")+"235959";
+        }else{
+            beginTime="";
+            endTime="";
+        }
+        Map<String, Object> dataTable = getDataTable(caseStatisticService.countCaseOut(page,limit,beginTime,endTime));
         resultMap.put("code",20000);
         resultMap.put("data",dataTable);
         return resultMap;

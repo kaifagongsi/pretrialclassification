@@ -38,8 +38,10 @@
                 sum(decode(a.type, 'XX', 1, 0)) xxCount,
                 count(distinct t.id) totalCount
         from fenlei_baohu_main a, fenlei_baohu_result t
-        where substr(t.chuantime, 1, 8) between '20200101' and '20200430'
-        and a.id = t.id
+        where  a.id = t.id
+        <if test="begintime!=''and endtime!=''">
+            AND t.chuantime between #{begintime} and #{endtime}
+        </if>
         group by t.worker, t.classtype order by worker asc,classtype desc
     </select>
 
