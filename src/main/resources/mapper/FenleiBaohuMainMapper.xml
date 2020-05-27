@@ -9,12 +9,13 @@
     <select id="findMainByState" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
         select m.id,
                mingcheng,
-               simpleclasscode,
+               m.simpleclasscode,
                (to_date(jinantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as jinantime,
                r.worker as worker,
                (select u.areaname
                   from fenlei_baohu_userinfo u
-                 where u.workername = r.worker) as areaname
+                 where u.workername = r.worker) as areaname,
+               m.type
           from fenlei_baohu_main m,
                (select * from fenlei_baohu_result where classtype = '主') r
          where m.state = #{state}
