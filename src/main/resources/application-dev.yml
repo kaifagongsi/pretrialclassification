@@ -1,0 +1,87 @@
+server:
+  port: 9100
+spring:
+  application:
+    name: PretrialClassification
+  profiles:
+    active: @activatedProperties@
+  datasource:
+    druid:
+      url: jdbc:oracle:thin:@172.17.1.56:1521:orcl
+      username: zljg
+      password: zljg123456
+      driverClassName: oracle.jdbc.driver.OracleDriver
+      initialSize: 5  #初始建立连接数量
+      minIdle: 5  #最小连接数量
+      maxActive: 20 #最大连接数量
+      maxWait: 10000  #获取连接最大等待时间，毫秒
+      testOnBorrow: true #申请连接时检测连接是否有效
+      testOnReturn: false #归还连接时检测连接是否有效
+      timeBetweenEvictionRunsMillis: 60000 #配置间隔检测连接是否有效的时间（单位是毫秒）
+      minEvictableIdleTimeMillis: 300000  #连接在连接池的最小生存时间（毫秒）
+  freemarker:
+    cache: false #页面不加载缓存，修改即时生效
+    settings:
+      template_update_delay: 0
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java #重启目录
+      exclude: WEB-INF/**
+  session:
+    store-type: redis # 选择使用redis 作为session存储
+  redis:
+    host: 172.17.1.56
+    port: 6379
+    password:
+    jedis:
+       pool:
+         min-idle: 8
+         max-idle: 500
+         max-active: 2000
+         max-wait: 10000
+    timeout: 0
+  mail:
+    host:  10.51.44.109
+    protocol: smtp
+    username: lixiaoliang@cnipa.gov.cn
+    password: sipo@426
+    default-encoding: utf-8
+    smtp:
+      auth: true
+
+
+
+pretrialclassification:
+  # Swagger相关配置1
+  swagger:
+    basePackage: com.kfgs.pretrialclassification
+    title: 保护中心预审案件分类系统接口文档
+    description: Interface document of pre-trial case classification system of Protection Center
+    version: 2.0
+    author: yu,lsy,lxl
+    url: www.baidu.com
+    email: xxx@qq.com
+    license: Apache 2.0
+    licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.html
+  email:
+     toFenlei:  jixiaoqiang@cnipa.gov.cn,xuyong@cnipa.gov.cn,zhangyunpeng@cnipa.gov.cn,zhangtingting_1@cnipa.gov.cn,wangwenjing@cnipa.gov.cn,zhangxing@cnipa.gov.cn,changdongying@cnipa.gov.cn,xiegaijun@cnipa.gov.cn,liujun_7@cnipa.gov.cn,wangzhiyun@cnipa.gov.cn,dongqian@cnipa.gov.cn,zhoujianjun@cnipa.gov.cn,lixiaoliang@cnipa.gov.cn
+     toJiagong: jixiaoqiang@cnipa.gov.cn,xuyong@cnipa.gov.cn,zhangyunpeng@cnipa.gov.cn,zhangtingting_1@cnipa.gov.cn,wangmiao@cnipa.gov.cn,liujingsheng@cnipa.gov.cn,yuhong@cnipa.gov.cn,lizhongning@cnipa.gov.cn,zhangguogang@cnipa.gov.cn,niehong@cnipa.gov.cn,lihao@cnipa.gov.cn,qinlu@cnipa.gov.cn,yujialing@cnipa.gov.cn,maxiaomei@cnipa.gov.cn,mengfanmin@cnipa.gov.cn,liuhaiyan@cnipa.gov.cn,gaojianye@cnipa.gov.cn,lixiaoliang@cnipa.gov.cn
+     toAll:  jixiaoqiang@cnipa.gov.cn,xuyong@cnipa.gov.cn,zhangyunpeng@cnipa.gov.cn,zhangtingting_1@cnipa.gov.cn,wangwenjing@cnipa.gov.cn,zhangxing@cnipa.gov.cn,changdongying@cnipa.gov.cn,xiegaijun@cnipa.gov.cn,liujun_7@cnipa.gov.cn,wangzhiyun@cnipa.gov.cn,dongqian@cnipa.gov.cn,zhoujianjun@cnipa.gov.cn,wangmiao@cnipa.gov.cn,liujingsheng@cnipa.gov.cn,yuhong@cnipa.gov.cn,lizhongning@cnipa.gov.cn,zhangguogang@cnipa.gov.cn,niehong@cnipa.gov.cn,lihao@cnipa.gov.cn,qinlu@cnipa.gov.cn,yujialing@cnipa.gov.cn,maxiaomei@cnipa.gov.cn,mengfanmin@cnipa.gov.cn,liuhaiyan@cnipa.gov.cn,gaojianye@cnipa.gov.cn,lixiaoliang@cnipa.gov.cn
+     title: 保护中心案件列表
+
+mybatis-plus:
+  type-aliases-package: com.kfgs.pretrialclassification.domain
+  mapper-locations: classpath*:mapper/*.xml
+  global-config:
+    banner: false
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# JWT 认证配置
+jwt:
+  tokenHeader: Authorization   #请求头
+  secret: w-eyJleHAiOjE1NDMyMDUyODUsInN1YiI6ImFkbWluIiwiY3JlYXRlZCI6MTU0MDYxMzI4N  #加密的字符串
+  expiration: 7200000    #毫秒，这里默认2小时
+  tokenHead: "Bearer "
