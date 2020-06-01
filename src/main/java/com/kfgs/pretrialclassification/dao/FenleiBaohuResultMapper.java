@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
+import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,5 +24,7 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
     IPage<FenleiBaohuResultExt> selectCaseOut(Page<FenleiBaohuResult> page, @Param("begintime") String begintime, @Param("endtime") String endtime, @Param("type") String type);
 
     List<FenleiBaohuResult> findClassInfoByID(String id);
+
+    IPage<FenleiBaohuMainResultExt> selectCaseByState(IPage<FenleiBaohuMainResultExt> page, @Param("state") String state,@Param("classtype") String classtype, @Param("user") String user);
 
 }
