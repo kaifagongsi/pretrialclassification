@@ -1,6 +1,7 @@
 package com.kfgs.pretrialclassification.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -89,5 +90,28 @@ public class FenleiBaohuUserinfo  implements Serializable {
     @TableField("TYPE")
     private String type;
 
+    @TableField("IPCS")
+    private String ipcs;
+
+    @TableField("FIELDS")
+    private String fields;
+
+    /**
+     * 上一次做案子的时间
+     */
+    @TableField("LAST_TIME")
+    private String lastTime;
+
+    /**
+     * 上一次做案子的ipc
+     */
+    @TableField("LAST_IPC")
+    private String lastIpc;
+
+    /**
+     * 1在 0不在
+     */
+    @TableField("IS_ONLINE")
+    private String isOnline;
 
 }
