@@ -108,4 +108,12 @@ public class LoginController {
         redisTemplate.opsForValue().set(codeKey, codeText, 60, TimeUnit.MINUTES);
         ImageIO.write(image.getImage(), "JPEG", response.getOutputStream());
     }
+
+    @ApiOperation(value = "退出操作")
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request,HttpServletResponse response){
+        loginService.logout(request,response);
+    }
+
+
 }

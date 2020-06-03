@@ -19,7 +19,7 @@ import java.util.Scanner;
 public class OracleCodeGenerator {
 
     // 数据库 URL
-    private static final String URL = "jdbc:oracle:thin:@172.17.0.56:1521:orcl";
+    private static final String URL = "jdbc:oracle:thin:@172.17.1.56:1521:orcl";
     // 数据库驱动
     private static final String DRIVER_NAME = "oracle.jdbc.driver.OracleDriver";
     // 数据库用户名
@@ -60,7 +60,6 @@ public class OracleCodeGenerator {
         // 数据源配置
         DataSourceConfig dataSourceConfig = new DataSourceConfig();
         dataSourceConfig.setDbType(DbType.ORACLE);
-        //dataSourceConfig.setDbType(DbType.MYSQL);
         dataSourceConfig.setUrl(URL);
         dataSourceConfig.setDriverName(DRIVER_NAME);
         dataSourceConfig.setUsername(USERNAME);
@@ -89,7 +88,7 @@ public class OracleCodeGenerator {
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);
         strategy.setEntityLombokModel(true);
         strategy.setRestControllerStyle(true);
-        strategy.setInclude(scanner("表名"));
+        strategy.setInclude(scanner("fenlei_baohu_userinfo"));
         //strategy.setSuperEntityColumns("id");
         strategy.setControllerMappingHyphenStyle(true);
         //strategy.setTablePrefix(packageConfig.getModuleName() + "_");

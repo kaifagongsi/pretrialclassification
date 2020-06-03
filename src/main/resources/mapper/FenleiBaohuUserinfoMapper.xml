@@ -16,6 +16,10 @@
         <id column="type" property="type" jdbcType="VARCHAR"/>
     </resultMap>
 
+    <sql id="Base_Column_List" >
+        loginname,password,name,ORGNAME,AREANAME,CLASSLEVEL,WORKERNAME,EMAIL,DEP1,DEP2,TYPE,IPCS,FIELDS,LAST_TIME,LAST_IPC,IS_ONLINE
+    </sql>
+
     <!--关联到用户的权限信息-->
     <resultMap type="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt" id="UserBaseResultMap" extends="BaseResultMap">
         <collection property="authorities" ofType="com.kfgs.pretrialclassification.domain.FenleiBaohuRole">
@@ -40,5 +44,35 @@
     <select id="getUserinfoByLoginNameWithRole"
             resultMap="UserBaseResultMap" parameterType="java.lang.String">
         select u.*,r.rolename as rolename from fenlei_baohu_userinfo u,FENLEI_BAOHU_ROLE r where u.type = r.id AND u.loginname = #{loginname}
+    </select>
+    <select id="getUserList" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo">
+        select loginname,name,dep1,dep2,type from fenlei_baohu_userinfo
+        <where>
+            <if test="dep1 != null">
+                and dep1 = #{dep1}
+            </if>
+            <if test="dep2 != null">
+                and dep2 = #{dep2}
+            </if>
+            <if test="isOnline != null">
+                and is_online = #{isOnline}
+            </if>
+        </where>
+    </select>
+
+
+    <insert id="insertEntity" parameterType="com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo">
+        INSERT INTO FENLEI_BAOHU_USERINFO  (
+          LOGINNAME, PASSWORD, NAME, ORGNAME, AREANAME, CLASSLEVEL, WORKERNAME, EMAIL, DEP1, DEP2, TYPE, IPCS, FIELDS,   IS_ONLINE )
+        VALUES  (
+          #{loginname},#{password},#{name},#{orgname},#{areaname},#{classlevel},#{workername},#{email},#{dep1},#{dep2},#{type},#{ipcs},#{fields},#{isOnline}
+         )
+    </insert>
+
+    <select id="selectOneByLoginname" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo" >
+      select
+        <include refid="Base_Column_List"/>
+       from  FENLEI_BAOHU_USERINFO
+       where loginname = #{loginname}
     </select>
 </mapper>

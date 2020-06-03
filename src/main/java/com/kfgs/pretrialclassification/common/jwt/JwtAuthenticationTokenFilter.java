@@ -60,7 +60,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             final String tokenValue = jwtTokenUtils.interceptCompleteToken(completeToken);
             // 根据 token值，获取 用户的 username
             String username = jwtTokenUtils.getUsernameFromToken(tokenValue);
-            log.info("JwtAuthenticationTokenFilter[doFilterInternal] checking authentication {} ", username);
+            log.info("JwtAuthenticationTokenFilter[doFilterInternal] 开始检查用户是否合法 {} ", username);
             // 验证用户账号是否合法
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 // 根据username去 redis 中查询user数据，足够信任token的情况下，可以省略这一步

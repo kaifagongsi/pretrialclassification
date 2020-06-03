@@ -55,8 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/auth/**", "/actuator/**").permitAll()
-                .antMatchers("/caseDisposition/caseAllocation/findAll").permitAll()
-                .antMatchers("/caseStatistic/**").permitAll()
+                .antMatchers("/**/**").permitAll()
                 // 跨域预检请求
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/auth/**", "/actuator/**").permitAll()

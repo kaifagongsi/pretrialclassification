@@ -36,7 +36,7 @@ public class CustomUserDetailsService  implements UserDetailsService {
         List<FenleiBaohuUserinfoExt> userinfoByLoginName = fenleiBaohuUserinfoMapper.getUserinfoByLoginName(s);
         if(Objects.isNull(userinfoByLoginName)){
             try {
-                throw  new PretrialClassificationException("error.user.not.exist");
+                throw  new PretrialClassificationException("用户不存在");
             } catch (PretrialClassificationException e) {
                 e.printStackTrace();
             }
