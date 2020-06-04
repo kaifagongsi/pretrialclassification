@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
         // 此处是权限
         data.put("roles",fenleiBaohuUserinfoExt.getAuthorities());
         //此处是用户名称，无关权限
-        data.put("introduction",(fenleiBaohuUserinfoExt.getType() == "admin") ? "管理员" : "用户");
+        data.put("introduction",fenleiBaohuUserinfoExt.getType());
         data.put("name",fenleiBaohuUserinfoExt.getName());
         result.put("code",200);
         result.put("data",data);

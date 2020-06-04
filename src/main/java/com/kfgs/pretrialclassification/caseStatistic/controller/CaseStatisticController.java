@@ -66,7 +66,7 @@ public class  CaseStatisticController extends BaseController {
         Map userMap = userService.findUserInfo();
         String userName = "";
         if(userMap != null && userMap.size() > 0){
-            if(userMap.get("introduction") != null && StringUtils.equals("管理员",userMap.get("introduction").toString())){
+            if(userMap.get("introduction") != null && StringUtils.equals("admin",userMap.get("introduction").toString())){
             }else{
                 userName = userMap.get("name").toString();
             }
