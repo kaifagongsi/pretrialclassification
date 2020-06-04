@@ -45,6 +45,9 @@
         <if test="type!='' ">
             AND t.classtype=#{type}
         </if>
+        <if test="userName!='' ">
+            AND  substr(t.worker,instr(t.worker,'-')+1)=#{userName}
+        </if>
         group by t.worker, t.classtype order by worker asc,classtype desc
     </select>
 

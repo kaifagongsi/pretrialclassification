@@ -21,7 +21,7 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
 
     List<FenleiBaohuResultExt> AfterDeploymentSendEmail(String[] ids);
 
-    IPage<FenleiBaohuResultExt> selectCaseOut(Page<FenleiBaohuResult> page, @Param("begintime") String begintime, @Param("endtime") String endtime, @Param("type") String type);
+    IPage<FenleiBaohuResultExt> selectCaseOut(Page<FenleiBaohuResult> page, @Param("begintime") String begintime, @Param("endtime") String endtime, @Param("type") String type, @Param("userName") String userName);
 
     List<FenleiBaohuResult> findClassInfoByID(String id);
 
