@@ -63,6 +63,9 @@
         <if test="sqh!=''">
             AND m.id = #{sqh}
         </if>
+        <if test="worker!=''">
+            AND t_mr.mainworker like concat('%',#{worker}) or t_mr.assworker like concat(concat('%',#{worker}),'%')
+        </if>
         <if test="state!=''">
             AND m.state = #{state}
         </if>

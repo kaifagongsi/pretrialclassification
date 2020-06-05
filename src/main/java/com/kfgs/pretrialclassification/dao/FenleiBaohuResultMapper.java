@@ -9,6 +9,7 @@ import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Date: 2020-01-19-10-27
@@ -27,4 +28,7 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
 
     IPage<FenleiBaohuMainResultExt> selectCaseByState(IPage<FenleiBaohuMainResultExt> page, @Param("state") String state,@Param("classtype") String classtype, @Param("user") String user);
 
+    Map selectCaseInfo (@Param("id")String id, @Param("worker") String worker);
+
+    int selectCaseStateCount(@Param("id") String id);
 }

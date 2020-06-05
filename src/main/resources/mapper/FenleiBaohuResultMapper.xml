@@ -65,7 +65,7 @@
         (to_date(r.fenpeitime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as jinantime,
         (to_date(r.chuantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as chuantime
         from fenlei_baohu_result r,fenlei_baohu_main m
-        where r.worker=#{user} and r.id=m.id
+        where r.worker like concat('%',#{user}) and r.id=m.id
         <if test="state!='' and classtype!=''">
             AND r.state = #{state} and r.classtype = #{classtype}
         </if>
@@ -75,6 +75,17 @@
         <if test="state!='' and classtype == ''">
             AND r.state = #{state}
         </if>
+    </select>
+
+    <select id="selectCaseInfo" resultType="java.util.Map">
+        select r.id,r.worker,r.classtype,r.ipci,r.cci,r.cca,r.csets,r.state,
+        m.type
+        from fenlei_baohu_main m,fenlei_baohu_result r
+        where m.id=r.id and r.worker like concat('%',#{worker}) and r.id=#{id}
+    </select>
+
+    <select id="selectCaseStateCount" resultType="java.lang.Integer">
+        select count(1) from fenlei_baohu_result where id=#{id} and state &lt; 2
     </select>
 
 </mapper>
