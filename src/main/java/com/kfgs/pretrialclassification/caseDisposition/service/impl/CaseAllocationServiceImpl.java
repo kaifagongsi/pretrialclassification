@@ -94,6 +94,7 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
     @Override
     public boolean updateWorker(FenleiBaohuMain fenleiBaohuMain, HttpServletRequest request) {
         FenleiBaohuResult databases = fenleiBaohuResultMapper.selectById(fenleiBaohuMain.getId());
+        String worker_old = fenleiBaohuMain.getWorker();
         String worker_new = fenleiBaohuMain.getPdfPath();
         databases.setWorker(worker_new.substring(0,worker_new.indexOf("[")));
         int i = fenleiBaohuResultMapper.updateById(databases);
@@ -103,8 +104,7 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
             FenleiBaohuLog log = new FenleiBaohuLog();
             log.setId(databases.getId());
             log.setTime(DateUtil.formatFullTime(LocalDateTime.now()));
-            //log.setMessage("案件调配：主机ip为：" + ipAddr + "， 当前用户："  + request.getSession().getAttribute("USER_IN_SESSION"));
-            log.setMessage("案件调配：主机ip为：" + ipAddr + "， 当前用户："  + UserUtil.getLoginUser().getWorkername());
+            log.setMessage("案件调配：主机ip为：" + ipAddr + "， 当前用户："  + UserUtil.getLoginUser().getWorkername() + " 将 "+worker_old+" 的案件" + fenleiBaohuMain.getId() + " 调配到：" + fenleiBaohuMain.getWorker()  );
             log.setResult("调配成功");
             fenleiBaohuLogMapper.insert(log);
             return true;
