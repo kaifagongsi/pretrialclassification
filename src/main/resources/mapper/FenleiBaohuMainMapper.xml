@@ -2,8 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kfgs.pretrialclassification.dao.FenleiBaohuMainMapper">
 
+    <sql id="Base_Column_List">
+        ID,MINGCHENG,TYPE,SQR,SQH,PDF_PATH,STATE,SIMPLECLASSCODE,CHUANTIME,JINANTIME,MESSAGE,ORAGINIZATION
+    </sql>
+
     <select id="findAll" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
-        select  * from  fenlei_baohu_main
+        select  <include refid="Base_Column_List"/> from  fenlei_baohu_main
     </select>
 
     <select id="findMainByState" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">

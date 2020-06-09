@@ -16,7 +16,11 @@
         <id column="type" property="type" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <sql id="Base_Column_List" >
+    <sql id="Base_Column_List_Befor" >
+        loginname,password,name,ORGNAME,AREANAME,CLASSLEVEL,WORKERNAME,EMAIL,DEP1,DEP2,TYPE
+    </sql>
+
+    <sql id="Base_Column_List_After" >
         loginname,password,name,ORGNAME,AREANAME,CLASSLEVEL,WORKERNAME,EMAIL,DEP1,DEP2,TYPE,IPCS,FIELDS,LAST_TIME,LAST_IPC,IS_ONLINE
     </sql>
 
@@ -38,12 +42,12 @@
 
     <select id="getUserinfoByLoginName"
             resultMap="UserBaseResultMap" parameterType="java.lang.String">
-        select u.* from fenlei_baohu_userinfo u  where u.loginname = #{loginname}
+        select u.loginname,u.password,u.name,u.ORGNAME,u.AREANAME,u.CLASSLEVEL,u.WORKERNAME,u.EMAIL,u.DEP1,u.DEP2,TYPE from fenlei_baohu_userinfo u  where u.loginname = #{loginname}
     </select>
 
     <select id="getUserinfoByLoginNameWithRole"
             resultMap="UserBaseResultMap" parameterType="java.lang.String">
-        select u.*,r.rolename as rolename from fenlei_baohu_userinfo u,FENLEI_BAOHU_ROLE r where u.type = r.id AND u.loginname = #{loginname}
+        select u.loginname,u.password,u.name,u.ORGNAME,u.AREANAME,u.CLASSLEVEL,u.WORKERNAME,u.EMAIL,u.DEP1,u.DEP2,u.TYPE ,r.rolename as rolename from fenlei_baohu_userinfo u,FENLEI_BAOHU_ROLE r where u.type = r.id AND u.loginname = #{loginname}
     </select>
     <select id="getUserList" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo">
         select loginname,name,dep1,dep2,type from fenlei_baohu_userinfo
@@ -71,7 +75,7 @@
 
     <select id="selectOneByLoginname" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo" >
       select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List_After"/>
        from  FENLEI_BAOHU_USERINFO
        where loginname = #{loginname}
     </select>
