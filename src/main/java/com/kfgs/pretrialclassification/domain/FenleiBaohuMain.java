@@ -106,6 +106,21 @@ public class FenleiBaohuMain implements Serializable {
 
     private String areaname;
 
+    @TableField("CCI")
+    private String cci;
 
+    @TableField("CCA")
+    private String cca;
 
+    @TableField("CSETS")
+    private String csets;
+
+    @TableField("IPCI")
+    private String ipci;
+
+    @TableField("IS_EXPORT")
+    private String isExport;
+
+    @TableField("EXPORT_TIME")
+    private String exportTime;
 }
