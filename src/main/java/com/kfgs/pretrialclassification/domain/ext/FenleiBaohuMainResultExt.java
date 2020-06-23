@@ -3,25 +3,7 @@ package com.kfgs.pretrialclassification.domain.ext;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 
 public class FenleiBaohuMainResultExt extends FenleiBaohuMain {
-    /*
-    ipci,分类号
-     */
-    private String ipci;
 
-    /*
-    CCI
-     */
-    private String cci;
-
-    /*
-    CCA
-     */
-    private String cca;
-
-    /*
-    CSETS
-     */
-    private String csets;
 
     public String getMainworker() {
         return mainworker;
@@ -75,36 +57,5 @@ public class FenleiBaohuMainResultExt extends FenleiBaohuMain {
      */
     private String asstype;
 
-    public String getIpci() {
-        return ipci;
-    }
-
-    public void setIpci(String ipci) {
-        this.ipci = ipci;
-    }
-
-    public String getCci() {
-        return cci;
-    }
-
-    public void setCci(String cci) {
-        this.cci = cci;
-    }
-
-    public String getCca() {
-        return cca;
-    }
-
-    public void setCca(String cca) {
-        this.cca = cca;
-    }
-
-    public String getCsets() {
-        return csets;
-    }
-
-    public void setCsets(String csets) {
-        this.csets = csets;
-    }
 
 }
