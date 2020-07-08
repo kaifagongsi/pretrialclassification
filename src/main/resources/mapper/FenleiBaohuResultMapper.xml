@@ -59,6 +59,7 @@
         where r.id=#{id}
     </select>
 
+
     <select id="selectCaseByState" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt">
         select r.id,r.worker,r.classtype,r.fenpeiren,r.state,r.cci,r.cca,r.csets,r.ipci,r.ipca,
         m.mingcheng,m.type,m.sqr,m.simpleclasscode,
@@ -75,6 +76,9 @@
         <if test="state!='' and classtype == ''">
             AND r.state = #{state}
         </if>
+        <if test="begintime!=''and endtime!=''">
+            AND r.chuantime between #{begintime} and #{endtime}
+        </if>
     </select>
 
     <select id="selectCaseInfo" resultType="java.util.Map">
@@ -86,6 +90,10 @@
 
     <select id="selectCaseStateCount" resultType="java.lang.Integer">
         select count(1) from fenlei_baohu_result where id=#{id} and state &lt; 2
+    </select>
+
+    <select id="getTransWorkerList" resultType="java.lang.String">
+        select r.worker from fenlei_baohu_result r where r.id=#{id}
     </select>
 
 </mapper>

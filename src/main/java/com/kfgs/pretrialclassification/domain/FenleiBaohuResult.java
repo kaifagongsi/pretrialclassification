@@ -57,13 +57,13 @@ public class FenleiBaohuResult implements Serializable {
 2-已完成(主、副)
      */
     @TableField("STATE")
-    private Long state;
+    private String state;
 
     /**
      * 出案时间
      */
     @TableField("CHUANTIME")
-    private String chuantime;
+    private Long chuantime;
 
     /**
      * CCI
