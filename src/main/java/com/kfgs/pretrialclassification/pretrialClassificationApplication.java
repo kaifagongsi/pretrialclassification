@@ -11,10 +11,6 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 
 @SpringBootApplication
 @EnableRedisHttpSession
-@ComponentScan( value = {
-        "com.kfgs.pretrialclassification",
-        "com.kfgs.pretrialclassification.common.exception",
-        })
 public class pretrialClassificationApplication {
     public static void main(String[] args) {
         SpringApplication.run(pretrialClassificationApplication.class, args);
