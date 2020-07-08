@@ -84,16 +84,26 @@ public class FenleiBaohuResult implements Serializable {
     private String csets;
 
     /**
-     * IPCI
+     * IPCI 由IPCA，IPCMI，IPCOI组合
      */
     @TableField("IPCI")
     private String ipci;
 
     /**
-     * IPCA
+     * IPCA 附加信息
      */
     @TableField("IPCA")
     private String ipca;
 
+    /**
+     * IPCMI 主分类号IPCMI主要发明信息
+     */
+    @TableField("IPCMI")
+    private String IPCMI;
 
+    /**
+     * IPCOI 副分类号IPCOI其他发明信息
+     */
+    @TableField("IPCOI")
+    private String IPCOI;
 }
