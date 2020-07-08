@@ -17,11 +17,6 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
         })
 public class pretrialClassificationApplication {
     public static void main(String[] args) {
-        ApplicationContext applicationContext = SpringApplication.run(pretrialClassificationApplication.class, args);
-
-        for (String name : applicationContext.getBeanDefinitionNames()) {
-            System.out.println(name);
-        }
-
+        SpringApplication.run(pretrialClassificationApplication.class, args);
     }
 }
