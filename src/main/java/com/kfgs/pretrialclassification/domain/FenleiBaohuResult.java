@@ -106,4 +106,7 @@ public class FenleiBaohuResult implements Serializable {
      */
     @TableField("IPCOI")
     private String IPCOI;
+
+    @TableField("MESSAGE")
+    private String MESSAGE;
 }
