@@ -23,6 +23,11 @@ public class ResponseResult implements Response {
     String message;
 
 
+    public ResponseResult(int code, String message){
+        this.code =code;
+        this.message =message;
+    }
+
     public ResponseResult(ResultCode resultCode){
         this.success = resultCode.success();
         this.code = resultCode.code();
