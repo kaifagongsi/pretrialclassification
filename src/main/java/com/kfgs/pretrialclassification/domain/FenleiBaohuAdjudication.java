@@ -28,44 +28,6 @@ public class FenleiBaohuAdjudication implements Serializable {
     private String id;
 
     /**
-     * 分类员
-     */
-    @TableField("WORKER")
-    private String worker;
-
-    /**
-     * 主分，副分
-     */
-    @TableField("CLASSTYPE")
-    private String classtype;
-
-    /**
-     * 案件来源，谁分给我的
-     */
-    @TableField("FENPEIREN")
-    private String fenpeiren;
-
-    /**
-     * 分给我的具体时间
-     */
-    @TableField("FENPEITIME")
-    private String fenpeitime;
-
-    /**
-     * 0-未作业(主);
-     * 1-未完成(主、副);
-     * 2-已完成(主、副)
-     */
-    @TableField("STATE")
-    private Long state;
-
-    /**
-     * 出案时间
-     */
-    @TableField("CHUANTIME")
-    private String chuantime;
-
-    /**
      * CCI
      */
     @TableField("CCI")
@@ -113,7 +75,7 @@ public class FenleiBaohuAdjudication implements Serializable {
     private String MESSAGE;
 
     /**
-     *  处理人员（某个室主任），登录者
+     *  处理人员（某个室主任），登录者,会有多个
      */
     @TableField("PROCESSINGPERSON")
     private String processingPerson;
@@ -136,5 +98,24 @@ public class FenleiBaohuAdjudication implements Serializable {
     @TableField("FINISHTIME")
     private String finishTime;
 
+    /**
+     * 裁决组长
+     */
+    @TableField("CHIEFJUDGE")
+    private String chiefjudge;
+
+    /**
+     * 裁决员
+     */
+    @TableField("ADJUDICATOR")
+    private String adjudicator;
+
+    /**
+     * 0-未作业(主);
+     * 1-未完成(主、副);
+     * 2-已完成(主、副);7:需要裁决;8裁决完成
+     */
+    @TableField("STATE")
+    private String state;
 
 }
