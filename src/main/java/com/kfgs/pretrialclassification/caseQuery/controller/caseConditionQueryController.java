@@ -37,6 +37,9 @@ public class caseConditionQueryController extends BaseController{
         if(state == null || state == "all" || state.equals("all") || state==""){
             state = "";
         }
+        if (id == null){
+            id = "";
+        }
         if(name == null){
             name = "";
         }
@@ -88,9 +91,9 @@ public class caseConditionQueryController extends BaseController{
     public Map findClassInfoByID(String id) throws PretrialClassificationException{
 
         Map resultMap = new HashMap();
-        List dataTable = caseConditionQueryService.findClassInfoByID(id);
+        List list = caseConditionQueryService.findClassInfoByID(id);
         resultMap.put("code",20000);
-        resultMap.put("data",dataTable);
+        resultMap.put("data",list);
         return resultMap;
     }
 

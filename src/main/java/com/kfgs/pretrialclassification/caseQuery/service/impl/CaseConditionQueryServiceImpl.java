@@ -32,8 +32,6 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
     //查询所有案件
     public IPage findAll(String pageNo, String limit,String id,String name,String sqr,String sqh,String worker,String state,String begintime,String endtime) {
         Map resultMap = new HashMap();
-        //判断是否有输入条件
-        int flag = 0;
         Page<FenleiBaohuMainResultExt> page = new Page<>(Long.parseLong(pageNo),Long.parseLong(limit));
         //IPage<FenleiBaohuMain> iPage = fenleiBaohuMainMapper.selectPage(page, null);
         IPage<FenleiBaohuMainResultExt> iPage = fenleiBaohuMainMapper.selectByCondition(page,id,name,sqr,sqh,worker,state,begintime,endtime);

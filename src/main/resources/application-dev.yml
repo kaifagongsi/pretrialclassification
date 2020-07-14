@@ -12,6 +12,7 @@ spring:
   datasource:
     druid:
       url: jdbc:oracle:thin:@172.17.1.56:1521:orcl
+      #url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
       username: zljg
       password: zljg123456
       driverClassName: oracle.jdbc.driver.OracleDriver
