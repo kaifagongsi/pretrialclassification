@@ -53,8 +53,8 @@ public class FenleiBaohuResult implements Serializable {
 
     /**
      * 0-未作业(主);
-1-未完成(主、副);
-2-已完成(主、副)
+     * 1-未完成(主、副);
+     * 2-已完成(主、副)
      */
     @TableField("STATE")
     private Long state;

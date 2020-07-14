@@ -21,7 +21,7 @@ import java.io.Serializable;
 @TableName("FENLEI_BAOHU_ADJUDICATION")
 public class FenleiBaohuAdjudication implements Serializable {
 
-    /**
+    /**ipcmi
      * 保护中心编号
      */
     @TableField("ID")
@@ -61,21 +61,21 @@ public class FenleiBaohuAdjudication implements Serializable {
      * IPCMI 主分类号IPCMI主要发明信息
      */
     @TableField("IPCMI")
-    private String IPCMI;
+    private String ipcmi;
 
     /**
      * IPCOI 副分类号IPCOI其他发明信息
      */
     @TableField("IPCOI")
-    private String IPCOI;
+    private String ipcoi;
     /**
      *  转案记录
      */
     @TableField("MESSAGE")
-    private String MESSAGE;
+    private String message;
 
     /**
-     *  处理人员（某个室主任），登录者,会有多个
+     *  处理人员（某个室主任），登录者,  裁决组长
      */
     @TableField("PROCESSINGPERSON")
     private String processingPerson;
@@ -97,12 +97,6 @@ public class FenleiBaohuAdjudication implements Serializable {
      */
     @TableField("FINISHTIME")
     private String finishTime;
-
-    /**
-     * 裁决组长
-     */
-    @TableField("CHIEFJUDGE")
-    private String chiefjudge;
 
     /**
      * 裁决员
