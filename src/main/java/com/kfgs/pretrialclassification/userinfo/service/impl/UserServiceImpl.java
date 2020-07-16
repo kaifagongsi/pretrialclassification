@@ -60,7 +60,6 @@ public class UserServiceImpl implements UserService {
     public Map findUserInfo() {
         Map result = new HashMap<>();
         // 从SecurityContextHolder中获取到，当前登录的用户信息。
-        Object o = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         FenleiBaohuUserinfoExt userDetails = null;
         try{
             userDetails = (FenleiBaohuUserinfoExt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

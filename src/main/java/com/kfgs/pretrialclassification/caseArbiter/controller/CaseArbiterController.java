@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
+
 /**
  * Date: 2020-07-08-15-25
  * Module:
@@ -33,5 +35,11 @@ public class CaseArbiterController {
     @PostMapping("/saveAribiterClassfication")
     public QueryResponseResult saveAribiterClassfication(@RequestBody FenleiBaohuAdjudicationExt fenleiBaohuAdjudicationExt){
         return caseArbiterService.saveAribiterClassfication(fenleiBaohuAdjudicationExt);
+    }
+
+    @ApiOperation("传入分类号进行校验")
+    @GetMapping("/checkIPC")
+    public QueryResponseResult checkIPC_CCI_CCA(@RequestParam("fenleihao") String fenleihao, @RequestParam("code") String code ){
+        return caseArbiterService.checkIPC_CCI_CCA(fenleihao,code);
     }
 }

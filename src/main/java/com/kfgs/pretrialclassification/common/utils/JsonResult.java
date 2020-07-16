@@ -239,7 +239,7 @@ public class JsonResult<T> implements Serializable {
          * @author Wang Chen Chen<932560435@qq.com>
          * @date 2019/12/12 21:08
          */
-        FAIL(0, "Fail"),
+        FAIL(4400, "Fail"),
 
         /**
          * 404 为找到
