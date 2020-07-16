@@ -104,5 +104,34 @@
         </if>
     </select>
 
+    <select id="findDoubleByID" resultType="java.lang.Integer">
+        select count(1) from FENLEI_BAOHU_MAIN where 1=1
+        <if test="id!=''">
+            AND id=#{id}
+        </if>
+        <if test="oraginization!=''">
+            AND oraginization=#{oraginization}
+        </if>
+    </select>
+
+    <insert id="insertEntity" parameterType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
+        INSERT INTO FENLEI_BAOHU_MAIN  (
+        id,mingcheng,type,sqr,pdf_path,state,oraginization,jinantime
+        )
+        VALUES  (
+        #{id},#{mingcheng},#{type},#{sqr},#{pdfPath},#{state},#{oraginization},to_char(sysdate,'YYYYMMDDHH24MISS')
+        )
+    </insert>
+
+    <select id="findByState" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
+        select m.id,m.mingcheng,m.type,m.sqr,m.sqh,m.pdf_path pdfPath,m.state,m.simpleclasscode,m.message,m.oraginization,
+        (to_date(jinantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as jinantime,
+        (to_date(chuantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as chuantime
+        from  fenlei_baohu_main m where 1=1
+        <if test="state!=''">
+            AND m.state = #{state}
+        </if>
+        ORDER BY jinantime desc
+    </select>
 
 </mapper>
