@@ -31,4 +31,10 @@ public interface FenleiBaohuMainMapper extends BaseMapper<FenleiBaohuMain> {
     FenleiBaohuMain searchByCondition(@Param("id") String id,@Param("sqh") String sqh,@Param("mingcheng") String mingcheng);
 
     String getCaseID(@Param("sqh") String sqh,@Param("mingcheng") String mingcheng);
+
+    int insertEntity(FenleiBaohuMain fenleiBaohuMain);
+
+    int findDoubleByID(@Param("id") String id, @Param("oraginization") String oraginization);
+
+    IPage<FenleiBaohuMain> findByState(Page<FenleiBaohuMain> page, @Param("state") String state);
 }
