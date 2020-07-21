@@ -23,5 +23,7 @@ public class FenleiBaohuAdjudicationExt extends FenleiBaohuAdjudication   {
     private String jinantime;
     //sqh
     private String sqh;
+    //案件类型
+    private String type;
 
 }

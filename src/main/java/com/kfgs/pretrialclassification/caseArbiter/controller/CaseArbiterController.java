@@ -38,8 +38,14 @@ public class CaseArbiterController {
     }
 
     @ApiOperation("传入分类号进行校验")
-    @GetMapping("/checkIPC")
-    public QueryResponseResult checkIPC_CCI_CCA(@RequestParam("fenleihao") String fenleihao, @RequestParam("code") String code ){
-        return caseArbiterService.checkIPC_CCI_CCA(fenleihao,code);
+    @PostMapping("/checkIPC/{code}")
+    public QueryResponseResult checkIPC_CCI_CCA(@RequestBody FenleiBaohuAdjudicationExt ext, @PathVariable("code") String code ){
+        return caseArbiterService.checkIPC_CCI_CCA(ext,code);
+    }
+
+    @ApiOperation("传入分类号进行校验")
+    @PostMapping("/checkCsets")
+    public QueryResponseResult checkIPC_CCI_CCA( @RequestBody FenleiBaohuAdjudicationExt ext ){
+        return caseArbiterService.checkClassCodeCsets(ext);
     }
 }
