@@ -61,12 +61,12 @@ public class  CaseStatisticController extends BaseController {
 
     @ApiOperation("出案量统计")
     @GetMapping("/countCaseOut")
-    public Map countCaseOut(String page,String limit,String beginTime,String endTime, String type){
+    public Map countCaseOut(String page,String limit,String beginTime,String endTime, String type, String dept){
         //获取当前登录用户信息
         Map userMap = userService.findUserInfo();
         String userName = "";
         if(userMap != null && userMap.size() > 0){
-            if(userMap.get("introduction") != null && StringUtils.equals("admin",userMap.get("introduction").toString())){
+            if(userMap.get("introduction") != null && StringUtils.equals("管理员",userMap.get("introduction").toString())){
             }else{
                 userName = userMap.get("name").toString();
             }
@@ -74,6 +74,9 @@ public class  CaseStatisticController extends BaseController {
         Map resultMap = new HashMap();
         if(type == null){
             type = "";
+        }
+        if(dept == null){
+            dept = "";
         }
         if(beginTime == null){
             beginTime = "";
@@ -95,7 +98,7 @@ public class  CaseStatisticController extends BaseController {
             beginTime="";
             endTime="";
         }
-        Map<String, Object> dataTable = getDataTable(caseStatisticService.countCaseOut(page,limit,beginTime,endTime,type,userName));
+        Map<String, Object> dataTable = getDataTable(caseStatisticService.countCaseOut(page,limit,beginTime,endTime,type,dept,userName));
         resultMap.put("code",20000);
         resultMap.put("data",dataTable);
         return resultMap;

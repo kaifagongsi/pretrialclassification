@@ -14,6 +14,6 @@ public interface CaseStatisticService {
     IPage countCaseIn(String pageNo, String limit,String beginTime,String endTime);
 
     //出案量统计
-    IPage countCaseOut(String pageNo, String limit,String beginTime, String endTime, String type, String userName);
+    IPage countCaseOut(String pageNo, String limit,String beginTime, String endTime, String type,  String dept, String userName);
 
 }
