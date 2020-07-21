@@ -32,13 +32,21 @@
 
     <select id="selectCaseOut" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt" >
         select t.worker,
-                t.classtype,
-                (select concat(u.dep1, u.dep2)  from FENLEI_BAOHU_USERINFO u   where u.workername = t.worker) as orgname,
-                sum(decode(a.type, 'FM', 1, 0)) fmCount,
-                sum(decode(a.type, 'XX', 1, 0)) xxCount,
-                count(distinct t.id) totalCount
+                substr(t.worker,1,instr(t.worker,'-',1)-1) fldm,
+                substr(t.worker,instr(t.worker,'-',1)+1) workerName,
+                (select concat(u.dep1, u.dep2) from FENLEI_BAOHU_USERINFO u where u.workername = t.worker) as dep1,
+                (select u.areaname from FENLEI_BAOHU_USERINFO u where u.workername = t.worker) as areaName,
+                sum(decode(a.type,'FM',decode(t.classtype, '主',decode(coalesce(t.ipci, t.ipca, t.ipcmi,t.ipcoi, t.cci,t.cca,t.csets), NULL, 0, 1), 0), 0)) fmzfNumCount,
+                sum(decode(a.type,'FM',decode(t.classtype, '副',decode(coalesce(t.ipci, t.ipca, t.ipcmi,t.ipcoi, t.cci,t.cca,t.csets), NULL, 0, 1), 0), 0)) fmffNumCount,
+                sum(decode(a.type,'FM',decode(coalesce(t.ipci, t.ipca, t.ipcmi,t.ipcoi, t.cci,t.cca,t.csets), NULL, 1, 0), 0)) fmNoNumCount,
+                sum(decode(a.type,'XX',decode(t.classtype, '主',decode(coalesce(t.ipci, t.ipca, t.ipcmi,t.ipcoi, t.cci,t.cca,t.csets), NULL, 0, 1), 0), 0)) xxzfNumCount,
+                sum(decode(a.type,'XX',decode(t.classtype, '副',decode(coalesce(t.ipci, t.ipca, t.ipcmi,t.ipcoi, t.cci,t.cca,t.csets), NULL, 0, 1), 0), 0)) xxffNumCount,
+                sum(decode(a.type,'XX',decode(coalesce(t.ipci, t.ipca, t.ipcmi,t.ipcoi, t.cci,t.cca,t.csets), NULL, 1, 0), 0)) xxNoNumCount,
+                (select count(distinct id) from FENLEI_BAOHU_ADJUDICATION ad  where ad.processingperson = t.worker) cjNum,
+                (select count(distinct id) from FENLEI_BAOHU_ADJUDICATION ad where (ad.adjudicator like '%' || t.worker || '%')) cjyNum
+
         from fenlei_baohu_main a, fenlei_baohu_result t
-        where  a.id = t.id
+        where a.id = t.id
         <if test="begintime!=''and endtime!=''">
             AND t.chuantime between #{begintime} and #{endtime}
         </if>
@@ -48,7 +56,10 @@
         <if test="userName!='' ">
             AND  substr(t.worker,instr(t.worker,'-')+1)=#{userName}
         </if>
-        group by t.worker, t.classtype order by worker asc,classtype desc
+        <if test="dept!='' ">
+            AND  t.worker in (select workername from FENLEI_BAOHU_USERINFO where orgname =#{dept})
+        </if>
+        group by t.worker
     </select>
 
     <select id="findClassInfoByID" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuResult">

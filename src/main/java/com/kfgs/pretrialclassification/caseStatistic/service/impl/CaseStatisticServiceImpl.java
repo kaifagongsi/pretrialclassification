@@ -53,9 +53,9 @@ public class CaseStatisticServiceImpl implements CaseStatisticService {
 
     //出案量统计
     @Override
-    public IPage countCaseOut(String pageNo, String limit,String begintime,String endtime,String type, String userName) {
+    public IPage countCaseOut(String pageNo, String limit,String begintime,String endtime,String type, String dept,String userName) {
         Page<FenleiBaohuResult> page = new Page<FenleiBaohuResult>(Long.parseLong(pageNo),Long.parseLong(limit));
-        return fenleiBaohuResultMapper.selectCaseOut(page,begintime,endtime,type,userName);
+        return fenleiBaohuResultMapper.selectCaseOut(page,begintime,endtime,type,dept,userName);
     }
 
 }
