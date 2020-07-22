@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
         // 根据用户Id，获取用户详细信息。    //   getUserinfoByLoginName
         //getUserinfoByLoginNameWithRole  改表以后携带权限查询
         //getUserinfoByLoginName         改表之前不带权限查询
-        FenleiBaohuUserinfoExt fenleiBaohuUserinfoExt = userinfoMapper.getUserinfoByLoginName(userDetails.getLoginname()).get(0);
+        FenleiBaohuUserinfoExt fenleiBaohuUserinfoExt = userinfoMapper.getUserinfoByLoginNameWithRole(userDetails.getLoginname()).get(0);
         //设置权限
         Map data = new HashMap<>();
         // 此处是权限
