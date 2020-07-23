@@ -37,4 +37,6 @@ public interface FenleiBaohuMainMapper extends BaseMapper<FenleiBaohuMain> {
     int findDoubleByID(@Param("id") String id, @Param("oraginization") String oraginization);
 
     IPage<FenleiBaohuMain> findByState(Page<FenleiBaohuMain> page, @Param("state") String state);
+
+    int updateIpciCciCcaCsetsById(@Param("ipci") String ipci, @Param("cci")String cci, @Param("cca")String cca, @Param("csets") String csets, @Param("id") String id);
 }

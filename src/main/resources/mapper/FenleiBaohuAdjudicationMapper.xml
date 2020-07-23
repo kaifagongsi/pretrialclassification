@@ -24,16 +24,56 @@
           and
             ad.state = '7'
     </select>
+    <select id="selectAdjudicatorWorker" resultType="java.lang.String">
+        select ADJUDICATOR from FENLEI_BAOHU_ADJUDICATION where id = #{id}
+    </select>
 
 
     <update id="saveAribiterClassfication" parameterType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuAdjudicationExt">
         update FENLEI_BAOHU_ADJUDICATION
-        set
-          IPCA = #{ext.ipca},IPCMI = #{ext.ipcmi},IPCOI = #{ext.ipcoi},
-          CCI = #{ext.cci},CCA = #{ext.cca}, CSETS = #{ext.csets}
+        <set>
+            <if test="ext.ipca != null">
+                ipca = #{ext.ipca},
+            </if>
+            <if test="ext.ipcmi != null">
+                IPCMI = #{ext.ipcmi},
+            </if>
+            <if test="ext.ipcoi != null">
+                IPCOI = #{ext.ipcoi},
+            </if>
+            <if test="ext.cci != null">
+                CCI = #{ext.cci},
+            </if>
+            <if test="ext.cca != null">
+                CCA = #{ext.cca},
+            </if>
+            <if test="ext.csets != null">
+                CSETS = #{ext.csets},
+            </if>
+        </set>
+
         where
            id = #{ext.id}
           and
            PROCESSINGPERSON = #{username}
     </update>
+    <update id="updateAdjudicatorById">
+        update FENLEI_BAOHU_ADJUDICATION
+        set adjudicator =
+            replace(replace(replace(
+                <foreach collection="list" open="'" close="'" item="item" separator=",">
+                    ${item.person}
+                </foreach>
+            ,chr(13),''),chr(10),''),' '  ,'')
+        where id = #{id}
+    </update>
+    <update id="updateCaseState">
+        update FENLEI_BAOHU_ADJUDICATION set state = #{state} where id = #{id}
+    </update>
+    <!--<update id="updateAdjudicatorById">
+        update FENLEI_BAOHU_ADJUDICATION
+        set adjudicator = #{adjudicator}
+        where id = #{id}
+    </update>-->
+
 </mapper>

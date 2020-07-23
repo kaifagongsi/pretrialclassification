@@ -24,6 +24,7 @@
         loginname,password,name,ORGNAME,AREANAME,CLASSLEVEL,WORKERNAME,EMAIL,DEP1,DEP2,TYPE,IPCS,FIELDS,LAST_TIME,LAST_IPC,IS_ONLINE
     </sql>
 
+
     <!--关联到用户的权限信息-->
     <resultMap type="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt" id="UserBaseResultMap" extends="BaseResultMap">
         <collection property="authorities" ofType="com.kfgs.pretrialclassification.domain.FenleiBaohuRole">
@@ -79,4 +80,17 @@
        from  FENLEI_BAOHU_USERINFO
        where loginname = #{loginname}
     </select>
+    <select id="selectListByDep1AndDep2" resultType="java.lang.String">
+        select workername from FENLEI_BAOHU_USERINFO where orgname = #{dep1} and dep2 = #{dep2}   and IS_ONLINE = '1'
+    </select>
+    <select id="selectListByWorkerName"
+            resultType="com.kfgs.pretrialclassification.domain.request.ArbiterParam">
+        select dep1 as dep1,dep2 as dep2, workername as person from FENLEI_BAOHU_USERINFO
+        where workername in
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
+
+
 </mapper>

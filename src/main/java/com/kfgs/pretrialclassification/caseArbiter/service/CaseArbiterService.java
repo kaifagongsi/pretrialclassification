@@ -1,18 +1,21 @@
 package com.kfgs.pretrialclassification.caseArbiter.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.common.exception.ArbiterEnum;
-import com.kfgs.pretrialclassification.dao.FenleiBaohuAdjudicationMapper;
-import com.kfgs.pretrialclassification.dao.FenleiBaohuCPCMapper;
-import com.kfgs.pretrialclassification.dao.FenleiBaohuIPCMapper;
+import com.kfgs.pretrialclassification.dao.*;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuAdjudication;
+import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
+import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuAdjudicationExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
+import com.kfgs.pretrialclassification.domain.request.ArbiterParam;
 import com.kfgs.pretrialclassification.domain.response.ArbiterResponseEnum;
 import com.kfgs.pretrialclassification.domain.response.CommonCode;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 import com.kfgs.pretrialclassification.domain.response.QueryResult;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,11 +36,16 @@ public class CaseArbiterService   {
 
     @Autowired
     FenleiBaohuAdjudicationMapper fenleiBaohuAdjudicationMapper;
-
     @Autowired
     FenleiBaohuCPCMapper fenleiBaohuCPCMapper;
     @Autowired
     FenleiBaohuIPCMapper fenleiBaohuIPCMapper;
+    @Autowired
+    FenleiBaohuResultMapper fenleiBaohuResultMapper;
+    @Autowired
+    FenleiBaohuUserinfoMapper fenleiBaohuUserinfoMapper;
+    @Autowired
+    FenleiBaohuMainMapper fenleiBaohuMainMapper;
 
     /**
      * 获取待裁决案件列表
@@ -133,7 +141,7 @@ public class CaseArbiterService   {
                     return new QueryResponseResult(ArbiterResponseEnum.CANNOT_RESOLVE_ABBREVIATION,null);
                 }
             }else{
-                return new QueryResponseResult(ArbiterResponseEnum.CANNOT_RESOLVE_ABBREVIATION,null);
+                return new QueryResponseResult(ArbiterResponseEnum.CANNOT_RESOLVE_ABBREVIATION_error,null);
             }
         }
         //校验当前分类号的版本
@@ -163,8 +171,18 @@ public class CaseArbiterService   {
             ext.setCca(newIpc);
         }
         //判断彼此之间的重复 ipcoi,ipcmi,ipca
-        if( ! (checkRepeatIpc(ext) && checkRepeatCpc(ext)) ){
+        /*if( ! (checkRepeatIpc(ext) && checkRepeatCpc(ext)) ){
             return new QueryResponseResult(ArbiterResponseEnum.IPCMI_IPCOI_IPCA_REPEAT,null);
+        }*/
+        if("IPC".equalsIgnoreCase(codeType)){
+            if( !checkRepeatIpc(ext)){
+                return new QueryResponseResult(ArbiterResponseEnum.IPCMI_IPCOI_IPCA_REPEAT,null);
+            }
+        }
+        if("CPC".equalsIgnoreCase(codeType)){
+            if(!checkRepeatCpc(ext)){
+                return new QueryResponseResult(ArbiterResponseEnum.CCI_CCA_REPEAT,null);
+            }
         }
         Map map = new HashMap<>();
         map.put("newClassification",newIpc);
@@ -172,8 +190,6 @@ public class CaseArbiterService   {
         queryResult.setMap(map);
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
     }
-
-
 
     //校验csets
     public QueryResponseResult checkClassCodeCsets(FenleiBaohuAdjudicationExt ext) {
@@ -185,10 +201,45 @@ public class CaseArbiterService   {
         if(strs.length > 99){
             return new QueryResponseResult(ArbiterResponseEnum.CSETS_TOO_MORE_ZU,null);
         }
-        ArrayList list = new ArrayList();
+        // 存放每个大组
+        ArrayList<ArrayList<String> > list_zu = new ArrayList<ArrayList<String>>();
+        // 存放所有的分类号
+        ArrayList<String> list = new ArrayList();
         //循环每组
         for(String str : strs){
+            // 存放每组中的分类号
+            ArrayList<String> temp = new ArrayList();
             String[] s = str.split(",");
+            //list = getAllClassification(s);
+            //往下10行写
+            String subClass = "";
+            String dazuClass = "";
+            for(String s_csets : s){
+                if(s_csets.matches("[A-H][0-9][0-9][A-Z][0-9]+/[0-9]+")){
+                    subClass = s_csets.substring(0,4);
+                    dazuClass = s_csets.substring(0,s_csets.indexOf("/"));
+                    list.add(s_csets);
+                    temp.add(s_csets);
+                }else if(s_csets.matches("[0-9]+/[0-9]+")){
+                    if(!subClass.equals("")){
+                        s_csets = subClass + s_csets;
+                        list.add(s_csets);
+                        temp.add(s_csets);
+                    }else{
+                        return new QueryResponseResult(ArbiterResponseEnum.CANNOT_RESOLVE_ABBREVIATION,null);
+                    }
+                }else if(s_csets.matches("[0-9]+")){
+                    if(StringUtils.isNotBlank(dazuClass)){
+                        s_csets = dazuClass + s_csets;
+                        list.add(s_csets);
+                        temp.add(s_csets);
+                    }else{
+                        return new QueryResponseResult(ArbiterResponseEnum.CANNOT_RESOLVE_ABBREVIATION,null);
+                    }
+                }else{
+                    return new QueryResponseResult(ArbiterResponseEnum.CANNOT_RESOLVE_ABBREVIATION_error,null);
+                }
+            }
             //每组不超过99个
             if(s.length > 99  || s.length < 2){
                 return new QueryResponseResult(ArbiterResponseEnum.CSETS_TOO_MORE_GE,null);
@@ -202,44 +253,34 @@ public class CaseArbiterService   {
                 }
             }else{
                 //判断为非2000系列 6位的 A24C5/396 或者 A44B13/02
-                if( ext.getCca() == null || ext.getCci() == null  || ((ext.getCca().indexOf(first) ==-1 ) && (ext.getCci().indexOf(first) == -1))){
+               /* if( ext.getCca() == null || ext.getCci() == null  || ((ext.getCca().indexOf(first) ==-1 ) && (ext.getCci().indexOf(first) == -1))){
                     return new QueryResponseResult(ArbiterResponseEnum.CSETS_2000_MUST_IN_CCA_OR_CCI,null);
-                }
-            }
-            //list = getAllClassification(s);
-            //往下10行写
-            String subClass = "";
-            String dazuClass = "";
-            for(String s_csets : s){
-                if(s_csets.matches("[A-H][0-9][0-9][A-Z][0-9]+/[0-9]+")){
-                    subClass = s_csets.substring(0,4);
-                    dazuClass = s_csets.substring(0,s_csets.indexOf("/"));
-                    list.add(s_csets);
-                }else if(s_csets.matches("[0-9]+/[0-9]+")){
-                    if(!subClass.equals("")){
-                        s_csets = subClass + s_csets;
-                        list.add(s_csets);
-                    }else{
-                        return new QueryResponseResult(ArbiterResponseEnum.CANNOT_RESOLVE_ABBREVIATION,null);
-                    }
-                }else if(s_csets.matches("[0-9]+")){
-                    if(StringUtils.isNotBlank(dazuClass)){
-                        s_csets = dazuClass + s_csets;
-                        list.add(s_csets);
-                    }else{
-                        return new QueryResponseResult(ArbiterResponseEnum.CANNOT_RESOLVE_ABBREVIATION,null);
-                    }
+                }*/
+                if(ext.getCca() == null && ext.getCci() == null ){
+                    return new QueryResponseResult(ArbiterResponseEnum.CSETS_2000_MUST_IN_CCA_OR_CCI,null);
                 }else{
-                    return new QueryResponseResult(ArbiterResponseEnum.CANNOT_RESOLVE_ABBREVIATION,null);
+                    String cci_cca = ext.getCca() + ext.getCci();
+                    if(cci_cca.indexOf(first) == -1){
+                        return new QueryResponseResult(ArbiterResponseEnum.CSETS_2000_MUST_IN_CCA_OR_CCI,null);
+                    }
                 }
-                list.add(s_csets);
+
             }
+            list_zu.add(temp);
         }
         if(!checkClassCodeVersion(list,"CPC")){
             return new QueryResponseResult(ArbiterResponseEnum.CANNOT_RESOLVE_CLASSVERSION,null);
         }
+        // 将处理好的分类号返回
+        String newCsets= "";
+        for(ArrayList<String> zu : list_zu){
+            for(String str : zu){
+                newCsets =  newCsets + str + ",";
+            }
+            newCsets = newCsets.substring(0,newCsets.length()-1) + ";";
+        }
         Map map = new HashMap<>();
-        map.put("newClassification",csets);
+        map.put("newClassification",newCsets.substring(0,newCsets.length()-1));
         QueryResult queryResult = new QueryResult();
         queryResult.setMap(map);
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
@@ -315,6 +356,70 @@ public class CaseArbiterService   {
         }else{
             return false;
         }
+    }
+
+    public QueryResponseResult findClassInfoByID(String id) {
+        //查找list
+        QueryWrapper queryWrapper = new QueryWrapper();
+        //模糊查询
+        queryWrapper.eq("id",id);
+        Map resultMap = new HashMap();
+        List<FenleiBaohuResult> list = fenleiBaohuResultMapper.selectList(queryWrapper);
+        resultMap.put("data",list);
+        //查找裁决员给出的分类号
+        FenleiBaohuAdjudication adjudication = fenleiBaohuAdjudicationMapper.selectById(id);
+        resultMap.put("ipcmi",adjudication.getIpcmi());
+        resultMap.put("ipcoi",adjudication.getIpcoi());
+        resultMap.put("ipca",adjudication.getIpca());
+        resultMap.put("cci",adjudication.getCci());
+        resultMap.put("cca",adjudication.getCca());
+        resultMap.put("csets",adjudication.getCsets());
+        QueryResult queryResult = new QueryResult();
+        queryResult.setMap(resultMap);
+        return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
+    }
+
+    public QueryResponseResult findAribiterPersonList(ArbiterParam arbiterParam) {
+        List<String> name_list =  fenleiBaohuUserinfoMapper.selectListByDep1AndDep2(arbiterParam.getDep1(),arbiterParam.getDep2());
+        QueryResult queryResult = new QueryResult();
+        queryResult.setList(name_list);
+        return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
+    }
+
+    public QueryResponseResult updateAribiterPerson(ArrayList<ArbiterParam> list, String id) {
+        int i = fenleiBaohuAdjudicationMapper.updateAdjudicatorById(list,id);
+        if(1 == i){
+            return new QueryResponseResult(CommonCode.SUCCESS,null);
+        }else{
+            return new QueryResponseResult(CommonCode.FAIL,null);
+        }
+    }
+
+    public QueryResponseResult findAdjudicatorWorker(String id) {
+        String workerName = fenleiBaohuAdjudicationMapper.selectAdjudicatorWorker(id);
+        List list =  Arrays.asList(workerName.split(","));
+        List<ArbiterParam> arbiterParamList = fenleiBaohuUserinfoMapper.selectListByWorkerName(list);
+        QueryResult queryResult = new QueryResult();
+        queryResult.setList(arbiterParamList);
+        return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
+    }
+
+    public QueryResponseResult arbiterChuAn(String id) {
+        //1.修改案件状态
+        // 没卡人员不知道是否存在bug
+        int i = fenleiBaohuAdjudicationMapper.updateCaseState("8",id);
+        //2.将分类号插入main表中
+        FenleiBaohuAdjudication adjudication = fenleiBaohuAdjudicationMapper.selectById(id);
+        //2.1 拼装分类号 主分，副分*附加信息
+        String ipci =  adjudication.getIpcmi() + ","+adjudication.getIpcoi() + "*" + adjudication.getIpca();
+        int main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id);
+        if(main_j == 1 && i == 1){
+            return new QueryResponseResult(CommonCode.SUCCESS,null);
+        }else{
+            int c = 1/0;
+            return new QueryResponseResult(CommonCode.FAIL,null);
+        }
+
     }
 
     /*private ArrayList getAllClassification(String[] classifications ){

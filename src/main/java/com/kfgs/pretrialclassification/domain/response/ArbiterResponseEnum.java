@@ -19,12 +19,14 @@ import lombok.ToString;
 public enum ArbiterResponseEnum implements ResultCode{
 
     CANNOT_RESOLVE_ABBREVIATION(false,23000,"系统无法解析您的简写方式，请进一步完善填写内筒"),
-    CANNOT_RESOLVE_CLASSVERSION(false,23001,"填入分类号的版本不对"),
+    CANNOT_RESOLVE_CLASSVERSION(false,23001,"填入分类号不存在"),
     CSETS_2000_CANNOT_BE_HERE(false,23002,"Csets的各组第一个2000系列的号必须在CCA中出现"),
     CSETS_2000_MUST_IN_CCA_OR_CCI(false,23003,"Csets的各组第一个非2000系列的号必须在CCA或CCI中出现"),
-    IPCMI_IPCOI_IPCA_REPEAT(false,23004,"主分、副分、附加信息或者CCI、CCA中有重复分类号"),
+    IPCMI_IPCOI_IPCA_REPEAT(false,23004,"主分、副分、附加信息有重复分类号"),
     CSETS_TOO_MORE_ZU(false,23005,"csets超过99组"),
-    CSETS_TOO_MORE_GE(false,23006,"csets超过99个,或者小于2个");
+    CSETS_TOO_MORE_GE(false,23006,"csets超过99个,或者小于2个"),
+    CCI_CCA_REPEAT(false,23007,"CCI、CCA中有重复分类号"),
+    CANNOT_RESOLVE_ABBREVIATION_error(false,23008,"分类号格式错误");
 
 
     private ArbiterResponseEnum(Boolean success, int code, String message){

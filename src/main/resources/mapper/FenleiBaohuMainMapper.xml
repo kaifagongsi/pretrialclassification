@@ -5,6 +5,25 @@
     <sql id="Base_Column_List">
         ID,MINGCHENG,TYPE,SQR,SQH,PDF_PATH,STATE,SIMPLECLASSCODE,CHUANTIME,JINANTIME,MESSAGE,ORAGINIZATION
     </sql>
+    <update id="updateIpciCciCcaCsetsById">
+        update fenlei_baohu_main
+        <set>
+            <if test="ipci != null">
+                ipci = #{ipci},
+            </if>
+            <if test="cci != null">
+                cci = #{cci},
+            </if>
+            <if test="cca != null">
+                cca = #{cca},
+            </if>
+            <if test="csets != null">
+                csets = #{csets}
+            </if>
+        </set>
+        where
+            id = #{id}
+    </update>
 
     <select id="findAll" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
         select  <include refid="Base_Column_List"/> from  fenlei_baohu_main
