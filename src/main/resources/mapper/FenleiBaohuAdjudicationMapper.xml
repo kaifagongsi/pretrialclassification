@@ -58,14 +58,20 @@
            PROCESSINGPERSON = #{username}
     </update>
     <update id="updateAdjudicatorById">
-        update FENLEI_BAOHU_ADJUDICATION
-        set adjudicator =
+        <if test="list.size == 0">
+            update FENLEI_BAOHU_ADJUDICATION
+            set adjudicator = '' where id = #{id}
+        </if>
+        <if test="list.size != 0">
+            update FENLEI_BAOHU_ADJUDICATION
+            set adjudicator =
             replace(replace(replace(
-                <foreach collection="list" open="'" close="'" item="item" separator=",">
-                    ${item.person}
-                </foreach>
+            <foreach collection="list" open="'" close="'" item="item" separator=",">
+                ${item.person}
+            </foreach>
             ,chr(13),''),chr(10),''),' '  ,'')
-        where id = #{id}
+            where id = #{id}
+        </if>
     </update>
     <update id="updateCaseState">
         update FENLEI_BAOHU_ADJUDICATION set state = #{state} where id = #{id}
