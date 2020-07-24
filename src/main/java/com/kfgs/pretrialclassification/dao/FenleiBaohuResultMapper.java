@@ -34,4 +34,20 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
     int selectCaseStateCount(@Param("id") String id);
 
     List<String> getTransWorkerList(@Param("id") String id);
+
+    List<String> getCaseUnFinish(@Param("id") String id);
+
+    List<String> getIPCMI(@Param("id") String id);
+
+    List<String> getIPCOI(@Param("id") String id);
+
+    List<String> getIPCA(@Param("id") String id);
+
+    List<String> getCSETS(@Param("id") String id);
+
+    List<String> getCCI(@Param("id") String id);
+
+    List<String> getCCA(@Param("id") String id);
+
+    int updateCaseRule(@Param("id") String id,@Param("state") String state);
 }

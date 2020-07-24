@@ -73,7 +73,7 @@
 
     <select id="selectCaseByState" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt">
         select r.id,r.worker,r.classtype,r.fenpeiren,r.state,r.cci,r.cca,r.csets,r.ipci,r.ipca,
-        m.mingcheng,m.type,m.sqr,m.simpleclasscode,
+        m.mingcheng,m.type,m.sqr,m.simpleclasscode,m.pdf_path,
         (to_date(r.fenpeitime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as jinantime,
         (to_date(r.chuantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as chuantime
         from fenlei_baohu_result r,fenlei_baohu_main m
@@ -106,5 +106,37 @@
     <select id="getTransWorkerList" resultType="java.lang.String">
         select r.worker from fenlei_baohu_result r where r.id=#{id}
     </select>
+
+    <select id="getCaseUnFinish" resultType="java.lang.String">
+        select r.worker from fenlei_baohu_result r where r.state &lt; 2 and r.id=#{id}
+    </select>
+
+    <select id="getIPCMI" resultType="java.lang.String">
+        select r.ipcmi from fenlei_baohu_result r where r.id=#{id} and r.ipcmi is not null
+    </select>
+
+    <select id="getIPCOI" resultType="java.lang.String">
+        select r.ipcoi from fenlei_baohu_result r where r.id=#{id} and r.ipcoi is not null
+    </select>
+
+    <select id="getIPCA" resultType="java.lang.String">
+        select r.ipca from fenlei_baohu_result r where r.id=#{id} and r.ipca is not null
+    </select>
+
+    <select id="getCSETS" resultType="java.lang.String">
+        select r.csets from fenlei_baohu_result r where r.id=#{id} and r.csets is not null
+    </select>
+
+    <select id="getCCI" resultType="java.lang.String">
+        select r.cci from fenlei_baohu_result r where r.id=#{id} and r.cci is not null
+    </select>
+
+    <select id="getCCA" resultType="java.lang.String">
+        select r.cca from fenlei_baohu_result r where r.id=#{id} and r.cca is not null
+    </select>
+
+    <update id="updateCaseRule">
+        update fenlei_baohu_result r set r.state=#{state} where r.id=#{id}
+    </update>
 
 </mapper>

@@ -8,9 +8,13 @@ import com.kfgs.pretrialclassification.common.utils.DateUtil;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
+import com.kfgs.pretrialclassification.domain.response.CommonCode;
+import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
+import com.kfgs.pretrialclassification.domain.response.QueryResult;
 import com.kfgs.pretrialclassification.userinfo.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -67,11 +71,12 @@ public class caseClassificationController extends BaseController {
             }
             //分类号更正待审
             if (state == "4" || state.equals("4")) {
-
+                state = "9";
             }
             //分类号裁决待审
             if (state == "5" || state.equals("5")) {
-
+                state = "7";
+                classtype = "";
             }
             if(beginTime == null){
                 beginTime = "";
@@ -187,63 +192,63 @@ public class caseClassificationController extends BaseController {
 
     @ApiOperation("result表，根据案件id和人员id出案")
     @GetMapping("/caseFinish")
-    public void caseFinish(String ids,String user){
+    public QueryResponseResult caseFinish(String ids, String user){
 
+        //待出案的id
         String[] list = ids.split(",");
         String id = "";
         for(int i=0;i<list.length;i++){
+            int res = 0;
             id = list[i];
-            //是否可以出案
-            boolean flag = false;
-            //获取案件详情
-            Map<String,String> map = new HashMap<>();
-            map = caseClassificationService.getCaseInfo(id,user);
-
-            String classtype = map.get("CLASSTYPE");
-            String ipc = map.get("IPCI");
-            String cca = map.get("CCA");
-            String cci = map.get("CCI");
-            String csets = map.get("CSETS");
-            String type = map.get("TYPE");
-            String state = map.get("STATE");
-            /*
-            根据案件类型确定出案标准：
-            FM的IPC和CCI不能为空，XX的IPC必须不为空，CPC必须全为空
-             */
-            if(classtype.equals("副")){
-                flag = true;
-            }else{
-                if (type.equals("FM")){
-                    if (ipc != null && cci != null){
-                        flag = true;
+            //是否最后一个出案
+            //查询除自己以外其他未出案
+            boolean isLast = false;
+            List<String> unFinish = new ArrayList<>();
+            unFinish = caseClassificationService.getCaseUnFinish(id);
+            if (unFinish.size() == 1){
+                isLast = true;
+                //最后一个出案,判断是否进裁决,不用裁决则出案完成更改main表案件状态，否则进入裁决
+                //校验：无主分、多个主分、超过两人给出组合码且总数大于99组,FM案件CPC为空
+                /*String test="";
+                test = caseClassificationService.caseRule(id);*/
+                QueryResponseResult result = caseClassificationService.caseRule(id);
+                QueryResult queryResult = new QueryResult();
+                int test = result.getCode();
+                String message = result.getMessage();
+                Map map = new HashMap();
+                queryResult = result.getQueryResult();
+                map = queryResult.getMap();
+                if (test == 20000){
+                    FenleiBaohuMain fenleiBaohuMain = new FenleiBaohuMain();
+                    fenleiBaohuMain = (FenleiBaohuMain)map.get("mainUpdateInfo");
+                    //分类号校验通过，完成个人出案
+                    res += caseClassificationService.updateResult(id,user,"2");
+                    //更新main表信息
+                    res += caseClassificationService.updateMain(fenleiBaohuMain);
+                    //分类号校验通过，完成个人出案
+                    //caseClassificationService.updateResult(id,user,"2");
+                    //更改main表状态出案
+                    //caseClassificationService.updateMain(id,"2");
+                    if (res == 2){
+                        //出案成功
+                        return new QueryResponseResult(CommonCode.SUCCESS,null);
                     }
-                }else if(type.equals("XX")){
-                    if (ipc != null && cci == null && cca==null && csets==null){
-                        flag = true;
+                }else{
+                    //进入裁决，传id和理由
+
+                    //更改案件状态为裁决
+                    String ruleState = "7";
+                    res = caseClassificationService.updateCaseRule(id,ruleState);
+                    if (res == 1){
+                        return result;
                     }
                 }
+            }else {
+                //不是最后一个出案,个人直接出案,不改变main表
+                res = caseClassificationService.updateResult(id,user,"2");
             }
-            if (!flag){
-                System.out.println("出案失败:FM的IPC和CCI不能为空，XX的IPC必须不为空，CPC必须全为空");
-                return;
-            }
-            /*//个人单一出案
-            int unfinish = caseClassificationService.updateResult(id,user,state);
-
-            //判断是否都出案了，若是则更新main表中的state，出案结束
-            if (unfinish == 0){
-                //在main表中出案
-                caseClassificationService.updateMain(id);
-            }*/
         }
-
-    }
-
-    private String checkCode(String str,String codeName){
-        if (str.equals("")){
-            return str;
-        }
-        return str;
+        return null;
     }
 
 }

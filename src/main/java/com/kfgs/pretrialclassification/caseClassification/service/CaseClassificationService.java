@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
+import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 
 import java.util.List;
 import java.util.Map;
@@ -19,8 +20,8 @@ public interface CaseClassificationService {
     //个人单一出案
     int updateResult(String id,String worker,String state);
 
-    //案件结束出案
-    int updateMain(String id);
+    //main表，案件结束出案
+    int updateMain(FenleiBaohuMain fenleiBaohuMain);
 
     //分类员条件查询案件
     FenleiBaohuMain searchByCondition(String id, String sqh, String mingcheng);
@@ -33,4 +34,15 @@ public interface CaseClassificationService {
 
     //转案
     boolean caseTrans(List<FenleiBaohuResult> list);
+
+    //获取案件出案状态
+    List<String> getCaseUnFinish(String id);
+
+    //判断案件是否需要进裁决,返回理由或分类号
+    QueryResponseResult caseRule(String id);
+
+
+    //更改案件状态为裁决
+    int  updateCaseRule(String id,String ruleState);
+
 }

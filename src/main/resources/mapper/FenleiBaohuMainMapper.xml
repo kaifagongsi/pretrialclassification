@@ -152,5 +152,12 @@
         </if>
         ORDER BY jinantime desc
     </select>
+    <select id="getType" resultType="java.lang.String">
+        select m.type from fenlei_baohu_main m where m.id=#{id}
+    </select>
+
+    <update id="updateCaseRule">
+        update fenlei_baohu_main m set m.state=#{state} where m.id=#{id}
+    </update>
 
 </mapper>

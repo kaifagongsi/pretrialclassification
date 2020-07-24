@@ -1,6 +1,7 @@
 package com.kfgs.pretrialclassification.caseDisposition.controller;
 
 
+import com.kfgs.pretrialclassification.caseQuery.service.CaseConditionQueryService;
 import com.kfgs.pretrialclassification.caseDisposition.service.CaseAllocationService;
 import com.kfgs.pretrialclassification.common.controller.BaseController;
 import com.kfgs.pretrialclassification.common.exception.PretrialClassificationException;
