@@ -21,5 +21,7 @@ public interface FenleiBaohuAdjudicationMapper extends BaseMapper<FenleiBaohuAdj
 
     int updateCaseState(@Param("state") String state, @Param("id") String id);
 
+    IPage<FenleiBaohuAdjudicationExt> getArbiterPersonInitList(Page<FenleiBaohuAdjudicationExt> page, @Param("username")String loginname);
+
     //int updateAdjudicatorById(@Param("adjudicator") String adjudicator, @Param("id") String id);
 }
