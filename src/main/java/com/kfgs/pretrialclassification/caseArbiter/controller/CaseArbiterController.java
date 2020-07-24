@@ -3,6 +3,7 @@ package com.kfgs.pretrialclassification.caseArbiter.controller;
 import com.kfgs.pretrialclassification.caseArbiter.service.CaseArbiterService;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuAdjudicationExt;
 import com.kfgs.pretrialclassification.domain.request.ArbiterParam;
+import com.kfgs.pretrialclassification.domain.response.CaseFinishResponseEnum;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,10 +28,15 @@ public class CaseArbiterController {
     @Autowired
     CaseArbiterService caseArbiterService;
 
-    @ApiOperation("获取裁决初始化列表")
+    @ApiOperation("获取裁决组长初始化列表")
     @GetMapping("/getArbiterInitList/{pageNum}/{pageSize}")
     public QueryResponseResult getArbiterInitList(@PathVariable("pageNum") int pageNum,@PathVariable("pageSize") int pageSize){
         return  caseArbiterService.getArbiterInitList(pageNum,pageSize);
+    }
+    @ApiOperation("获取裁决员初始化列表")
+    @GetMapping("/getArbiterPersonInitList/{pageNum}/{pageSize}")
+    public QueryResponseResult getArbiterPersonInitList(@PathVariable("pageNum") int pageNum,@PathVariable("pageSize") int pageSize){
+        return  caseArbiterService.getArbiterPersonInitList(pageNum,pageSize);
     }
 
     @ApiOperation("根据传入的实体的id更新分类号")
@@ -79,5 +85,11 @@ public class CaseArbiterController {
     @GetMapping("/arbiterChuAn/{id}")
     public QueryResponseResult arbiterChuAn(@PathVariable("id") String id){
         return caseArbiterService.arbiterChuAn(id);
+    }
+
+    @ApiOperation("案件出发裁决，向裁决表中添加数据")
+    @PostMapping("/insertIntoAdjudication/{id}")
+    public QueryResponseResult insertIntoAdjudication(@PathVariable("id") String id, CaseFinishResponseEnum caseFinishResponseEnum){
+        return caseArbiterService.insertIntoAdjudication(id,caseFinishResponseEnum);
     }
 }

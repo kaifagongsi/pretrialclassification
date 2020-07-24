@@ -11,10 +11,7 @@ import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuAdjudicationExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.request.ArbiterParam;
-import com.kfgs.pretrialclassification.domain.response.ArbiterResponseEnum;
-import com.kfgs.pretrialclassification.domain.response.CommonCode;
-import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
-import com.kfgs.pretrialclassification.domain.response.QueryResult;
+import com.kfgs.pretrialclassification.domain.response.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +45,7 @@ public class CaseArbiterService   {
     FenleiBaohuMainMapper fenleiBaohuMainMapper;
 
     /**
-     * 获取待裁决案件列表
+     * 获取裁决组长案件列表
      * @param pageNum 起始页
      * @param pageSize 每页条数
      * @return
@@ -59,6 +56,25 @@ public class CaseArbiterService   {
         FenleiBaohuUserinfoExt authentication = (FenleiBaohuUserinfoExt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         ArbiterEnum.GET_USERNAME_FAILE.assertNotNull(authentication);
         IPage<FenleiBaohuAdjudicationExt> iPage = fenleiBaohuAdjudicationMapper.getArbiterInitList(page,authentication.getLoginname());
+        //IPage<FenleiBaohuAdjudicationExt> iPage = fenleiBaohuAdjudicationMapper.getArbiterInitList(page,"000000");
+        QueryResult quertResult =new QueryResult();
+        quertResult.setList(iPage.getRecords());
+        quertResult.setTotal(iPage.getTotal());
+        QueryResponseResult queryResponseResult = new QueryResponseResult(CommonCode.SUCCESS, quertResult);
+        return queryResponseResult;
+    }
+
+    /**
+     * 获取待裁决员案件列表
+     * @param pageNum 起始页
+     * @param pageSize 每页条数
+     * @return
+     */
+    public QueryResponseResult getArbiterPersonInitList( int pageNum,int pageSize){
+        Page<FenleiBaohuAdjudicationExt> page = new Page<>(pageNum,pageSize);
+        FenleiBaohuUserinfoExt authentication = (FenleiBaohuUserinfoExt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ArbiterEnum.GET_USERNAME_FAILE.assertNotNull(authentication);
+        IPage<FenleiBaohuAdjudicationExt> iPage = fenleiBaohuAdjudicationMapper.getArbiterPersonInitList(page,authentication.getLoginname());
         //IPage<FenleiBaohuAdjudicationExt> iPage = fenleiBaohuAdjudicationMapper.getArbiterInitList(page,"000000");
         QueryResult quertResult =new QueryResult();
         quertResult.setList(iPage.getRecords());
@@ -357,7 +373,7 @@ public class CaseArbiterService   {
             return false;
         }
     }
-
+    //根据id查询裁决员给出的分类号
     public QueryResponseResult findClassInfoByID(String id) {
         //查找list
         QueryWrapper queryWrapper = new QueryWrapper();
@@ -378,14 +394,14 @@ public class CaseArbiterService   {
         queryResult.setMap(resultMap);
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
     }
-
+    // 根据部门去查询具有裁决权限的人员
     public QueryResponseResult findAribiterPersonList(ArbiterParam arbiterParam) {
         List<String> name_list =  fenleiBaohuUserinfoMapper.selectListByDep1AndDep2(arbiterParam.getDep1(),arbiterParam.getDep2());
         QueryResult queryResult = new QueryResult();
         queryResult.setList(name_list);
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
     }
-
+    // 更新裁决员
     public QueryResponseResult updateAribiterPerson(ArrayList<ArbiterParam> list, String id) {
         int i = fenleiBaohuAdjudicationMapper.updateAdjudicatorById(list,id);
         if(1 == i){
@@ -394,7 +410,7 @@ public class CaseArbiterService   {
             return new QueryResponseResult(CommonCode.FAIL,null);
         }
     }
-
+    // 查询某个裁决案件的裁决员信息
     public QueryResponseResult findAdjudicatorWorker(String id) {
         String workerName = fenleiBaohuAdjudicationMapper.selectAdjudicatorWorker(id);
         List list =  Arrays.asList(workerName.split(","));
@@ -403,7 +419,7 @@ public class CaseArbiterService   {
         queryResult.setList(arbiterParamList);
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
     }
-
+    // 出案
     public QueryResponseResult arbiterChuAn(String id) {
         //1.修改案件状态
         // 没卡人员不知道是否存在bug
@@ -411,7 +427,14 @@ public class CaseArbiterService   {
         //2.将分类号插入main表中
         FenleiBaohuAdjudication adjudication = fenleiBaohuAdjudicationMapper.selectById(id);
         //2.1 拼装分类号 主分，副分*附加信息
-        String ipci =  adjudication.getIpcmi() + ","+adjudication.getIpcoi() + "*" + adjudication.getIpca();
+        //主分必定不为空
+        String ipci =  adjudication.getIpcmi();
+        if(adjudication.getIpcoi() != null){
+            ipci = ipci + ","+adjudication.getIpcoi();
+        }
+        if(adjudication.getIpca() != null){
+            ipci = ipci + "*" + adjudication.getIpca();
+        }
         int main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id);
         if(main_j == 1 && i == 1){
             return new QueryResponseResult(CommonCode.SUCCESS,null);
@@ -419,7 +442,11 @@ public class CaseArbiterService   {
             int c = 1/0;
             return new QueryResponseResult(CommonCode.FAIL,null);
         }
+    }
 
+    public QueryResponseResult insertIntoAdjudication(String id, CaseFinishResponseEnum caseFinishResponseEnum){
+
+        return null;
     }
 
     /*private ArrayList getAllClassification(String[] classifications ){
