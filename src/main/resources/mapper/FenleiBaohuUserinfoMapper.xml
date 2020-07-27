@@ -91,6 +91,9 @@
             #{item}
         </foreach>
     </select>
+    <select id="selectAdjudicatorByWorkerName" resultType="java.lang.String">
+        select ADJUDICATOR from fenlei_baohu_userinfo where  workername = #{workerName}
+    </select>
 
 
 </mapper>

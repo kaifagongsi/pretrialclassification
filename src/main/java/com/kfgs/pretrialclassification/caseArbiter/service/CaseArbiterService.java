@@ -9,9 +9,11 @@ import com.kfgs.pretrialclassification.domain.FenleiBaohuAdjudication;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuAdjudicationExt;
+import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.request.ArbiterParam;
 import com.kfgs.pretrialclassification.domain.response.*;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -28,8 +31,10 @@ import java.util.*;
  *
  * @author:
  */
+@Slf4j
 @Service
 public class CaseArbiterService   {
+
 
     @Autowired
     FenleiBaohuAdjudicationMapper fenleiBaohuAdjudicationMapper;
@@ -445,8 +450,193 @@ public class CaseArbiterService   {
     }
 
     public QueryResponseResult insertIntoAdjudication(String id, CaseFinishResponseEnum caseFinishResponseEnum){
+        //String message = caseFinishResponseEnum.message();
+        FenleiBaohuAdjudication fenleiBaohuAdjudication = new FenleiBaohuAdjudication();
+        //设置id
+        fenleiBaohuAdjudication.setId(id);
+        //设置时间
+        String date = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        fenleiBaohuAdjudication.setRukuTime(date);
+        fenleiBaohuAdjudication.setState("7");
+        //获取相应参数根据id获取实体 此sql有排序
+        List<FenleiBaohuResultExt> fenleiBaohuResultExtList =  fenleiBaohuResultMapper.selectSimpleClassCodeAndClassificationById(id);
+        //获取主分类号ipcmi
+        List<String> ipcmiList = new ArrayList<>();
+        ipcmiList = fenleiBaohuResultMapper.getIPCMI(id);
+        //获取副分类号ipcoi
+        List<String> ipcoiList = new ArrayList<>();
+        ipcoiList = fenleiBaohuResultMapper.getIPCOI(id);
+        //获取附加信息ipca
+        List<String> ipcaList = new ArrayList<>();
+        ipcaList = fenleiBaohuResultMapper.getIPCA(id);
+        //获取CCI
+        List<String> cciList = new ArrayList<>();
+        cciList = fenleiBaohuResultMapper.getCCI(id);
+        //获取案件类型
+        String type = fenleiBaohuMainMapper.getType(id);
+        //1.无分类号
+        if( ipcmiList.size() == 0 && ipcoiList.size() ==0 && ipcaList.size() == 0){
+            fenleiBaohuAdjudication.setProcessingreasons("无分类号");
+            //设置裁决组长
+            //获取案件处理人员
+            String worker = fenleiBaohuResultExtList.get(0).getWorker();
+            String Adjudicator = fenleiBaohuUserinfoMapper.selectAdjudicatorByWorkerName(worker);
+            fenleiBaohuAdjudication.setProcessingPerson(Adjudicator);
+            int insert = fenleiBaohuAdjudicationMapper.insert(fenleiBaohuAdjudication);
+            if( insert == 1){
+                return new QueryResponseResult(CaseFinishResponseEnum.NO_CLASSIFICATION,null);
+            }else{
+                return new QueryResponseResult(CommonCode.FAIL,null);
+            }
+        } else if(ipcmiList.size() > 1){//2.多个主分
+            //设置随机裁决组长
+            int xiabiao = getArrayXiaoBiao(fenleiBaohuResultExtList,"ipcmi");
+            //int xiabiao =(int) ( fenleiBaohuResultExtList.size() * Math.random());
+            // 获取到随机到给出主分号的某个人
+            String workerName = fenleiBaohuResultExtList.get(xiabiao).getWorker();
+            //获取对应人的裁决组长
+            String Adjudicator = fenleiBaohuUserinfoMapper.selectAdjudicatorByWorkerName(workerName);
+            fenleiBaohuAdjudication.setProcessingPerson(Adjudicator);
+            int insert = fenleiBaohuAdjudicationMapper.insert(fenleiBaohuAdjudication);
+            if( insert == 1){
+                return new QueryResponseResult(CaseFinishResponseEnum.ONE_MORE_IPCMI,null);
+            }else{
+                return new QueryResponseResult(CommonCode.FAIL,null);
+            }
+        } else if(ipcmiList.size() == 0){ //3.无主分
+            if(ipcoiList.size() == 1){
+                //3.1无主分有一个分类员给副分：案件发给副分分类员对应的裁决组长
+                String workerName = fenleiBaohuResultExtList.get(0).getWorker();
+                //获取对应人的裁决组长
+                String Adjudicator = fenleiBaohuUserinfoMapper.selectAdjudicatorByWorkerName(workerName);
+                fenleiBaohuAdjudication.setProcessingPerson(Adjudicator);
+                int insert = fenleiBaohuAdjudicationMapper.insert(fenleiBaohuAdjudication);
+                if( insert == 1){
+                    return new QueryResponseResult(CaseFinishResponseEnum.NO_IPCMI_ONE_IPCOI,null);
+                }else{
+                    return new QueryResponseResult(CommonCode.FAIL,null);
+                }
 
-        return null;
+            }else if(ipcoiList.size() > 1){
+                //3.2无主分有多个个分类元给副分：案件发给随机裁决组长
+                // 获取到随机到给出副分号的某个人
+                int xiabiao = getArrayXiaoBiao(fenleiBaohuResultExtList,"ipcoi");
+                String workerName = fenleiBaohuResultExtList.get(xiabiao).getWorker();
+                //获取对应人的裁决组长
+                String Adjudicator = fenleiBaohuUserinfoMapper.selectAdjudicatorByWorkerName(workerName);
+                fenleiBaohuAdjudication.setProcessingPerson(Adjudicator);
+                int insert = fenleiBaohuAdjudicationMapper.insert(fenleiBaohuAdjudication);
+                if( insert == 1){
+                    return new QueryResponseResult(CaseFinishResponseEnum.NO_IPCMI_MORE_IPCOI,null);
+                }else{
+                    return new QueryResponseResult(CommonCode.FAIL,null);
+                }
+
+            }else if(ipcoiList.size() == 0 && ipcaList.size() == 1){
+                //3.3无主分，无副分，仅有一个人有附加信息:给附加信息的分类员对应的裁决组长
+                String workerName = fenleiBaohuResultExtList.get(0).getWorker();
+                String Adjudicator = fenleiBaohuUserinfoMapper.selectAdjudicatorByWorkerName(workerName);
+                fenleiBaohuAdjudication.setProcessingPerson(Adjudicator);
+                int insert = fenleiBaohuAdjudicationMapper.insert(fenleiBaohuAdjudication);
+                if( insert == 1){
+                    return new QueryResponseResult(CaseFinishResponseEnum.NO_IPCMI_NO_IPCOI_ONE_IPCA,null);
+                }else{
+                    return new QueryResponseResult(CommonCode.FAIL,null);
+                }
+            }else if(ipcoiList.size() == 0 && ipcaList.size() > 1){
+                //3.4无主分，无副分，有多个人有附加信息:给附加信息的随机分类员的裁决组长
+                //获取到随机下标
+                int xiabiao = getArrayXiaoBiao(fenleiBaohuResultExtList,"ipcai");
+                String worker = fenleiBaohuResultExtList.get(xiabiao).getWorker();
+                String adjudicator = fenleiBaohuUserinfoMapper.selectAdjudicatorByWorkerName(worker);
+                fenleiBaohuAdjudication.setProcessingPerson(adjudicator);
+                int insert = fenleiBaohuAdjudicationMapper.insert(fenleiBaohuAdjudication);
+                if( insert == 1){
+                    return new QueryResponseResult(CaseFinishResponseEnum.NO_IPCMI_NO_IPCOI_MORE_IPCA,null);
+                }else{
+                    return new QueryResponseResult(CommonCode.FAIL,null);
+                }
+            }else {
+                //3.5 无主分无副分无附加信息（当前情况不应该出现，逻辑出现bug）
+                log.error("出现逻辑问题：案件id:" + id + ",当前案件无法判断出触发裁决的原因。");
+                return new QueryResponseResult(CommonCode.FAIL,null);
+            }
+        } else if("FM".equals(type) ){
+            //拼接CCI,需要去重
+            String cci = "";
+            //先去重
+            if (cciList.size() > 1){
+                List<String> list_cci = new ArrayList<>();
+                StringBuffer sb_cci = new StringBuffer();
+                for (int i=0;i<cciList.size();i++){
+                    if(!list_cci.contains(cciList.get(i))){
+                        list_cci.add(cciList.get(i));
+                        sb_cci.append(cciList.get(i) + ",");
+                    }
+                }
+                cci = sb_cci.toString().substring(0,sb_cci.toString().length()-1);
+            }else if (cciList.size() == 1) {
+                cci = cciList.get(0);
+            }
+            if("FM".equals(type) && "".equals(cci)) {
+                //若是发明案件，判断CPC是否为空，为空进裁决
+                fenleiBaohuAdjudication.setProcessingreasons("发明案件的的CPC分类号为空");
+                String worker = fenleiBaohuResultExtList.get(0).getWorker();
+                String adjudicator = fenleiBaohuUserinfoMapper.selectAdjudicatorByWorkerName(worker);
+                fenleiBaohuAdjudication.setProcessingPerson(adjudicator);
+                int insert = fenleiBaohuAdjudicationMapper.insert(fenleiBaohuAdjudication);
+                if( insert == 1){
+                    return new QueryResponseResult(CaseFinishResponseEnum.NO_IPCMI_NO_IPCOI_MORE_IPCA,null);
+                }else{
+                    return new QueryResponseResult(CommonCode.FAIL,null);
+                }
+            }else{
+                log.error("出现逻辑问题：案件id:" + id + ",当前案件无法判断出触发裁决的原因。");
+                return new QueryResponseResult(CommonCode.FAIL,null);
+            }
+        } else {
+            log.error("出现逻辑问题：案件id:" + id + ",当前案件无法判断出触发裁决的原因。");
+            return new QueryResponseResult(CommonCode.FAIL,null);
+        }
+    }
+
+    /**
+     * 获取符合要求的下标
+     * @param fenleiBaohuResultExtList  需要获取下标的数组
+     * @param type 类型 ipcmi，ipcoi，ipca
+     * @return
+     */
+    private int getArrayXiaoBiao(List<FenleiBaohuResultExt> fenleiBaohuResultExtList, String type) {
+        int random = 0 ;
+        int size = 0;
+        if("ipcmi".equalsIgnoreCase(type)){
+            for(FenleiBaohuResultExt fenleiBaohuResultExt : fenleiBaohuResultExtList){
+                String ipcmi = fenleiBaohuResultExt.getIPCMI();
+                if("" != ipcmi && null != ipcmi){
+                    size ++;
+                }
+            }
+            random = (int) (Math.random() * size);
+        }else if("ipcoi".equalsIgnoreCase(type)) {
+            for(FenleiBaohuResultExt fenleiBaohuResultExt : fenleiBaohuResultExtList){
+                String ipcoi = fenleiBaohuResultExt.getIPCOI();
+                if("" != ipcoi && null != ipcoi){
+                    size ++;
+                }
+            }
+            random = (int) (Math.random() * size);
+        }
+        else if("ipca".equalsIgnoreCase(type)) {
+
+            for(FenleiBaohuResultExt fenleiBaohuResultExt : fenleiBaohuResultExtList){
+                String ipca = fenleiBaohuResultExt.getIpca();
+                if("" != ipca && null != ipca){
+                    size ++;
+                }
+            }
+            random = (int) (Math.random() * size);
+        }
+        return random;
     }
 
     /*private ArrayList getAllClassification(String[] classifications ){

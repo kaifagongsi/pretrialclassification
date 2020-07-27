@@ -113,5 +113,9 @@ public class FenleiBaohuUserinfo  implements Serializable {
      */
     @TableField("IS_ONLINE")
     private String isOnline;
-
+    /**
+     * 每个人对应的组长
+     */
+    @TableField("ADJUDICATOR")
+    private String Adjudicator;
 }

@@ -87,7 +87,7 @@ public class CaseArbiterController {
         return caseArbiterService.arbiterChuAn(id);
     }
 
-    @ApiOperation("案件出发裁决，向裁决表中添加数据")
+    @ApiOperation("案件触发裁决，向裁决表中添加数据")
     @PostMapping("/insertIntoAdjudication/{id}")
     public QueryResponseResult insertIntoAdjudication(@PathVariable("id") String id, CaseFinishResponseEnum caseFinishResponseEnum){
         return caseArbiterService.insertIntoAdjudication(id,caseFinishResponseEnum);

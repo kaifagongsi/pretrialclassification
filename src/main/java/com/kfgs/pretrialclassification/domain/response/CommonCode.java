@@ -3,7 +3,7 @@ package com.kfgs.pretrialclassification.domain.response;
 import lombok.ToString;
 
 /**
- * <H3>shanxi</H3>
+ * <H3>保护中心</H3>
  * <p></p>
  *
  * @author : 你的名字

@@ -134,6 +134,23 @@
     <select id="getCCA" resultType="java.lang.String">
         select r.cca from fenlei_baohu_result r where r.id=#{id} and r.cca is not null
     </select>
+    <select id="selectSimpleClassCodeAndClassificationById"
+            resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt">
+
+        select r.id              as id,
+               r.worker          as worker,
+               r.ipcmi           as ipcmi,
+               r.ipcoi           as ipcoi,
+               r.ipca            as ipca,
+               r.cci             as cci,
+               r.cca             as cca,
+               r.csets           as csets,
+               m.simpleclasscode as simpleclasscode
+         from FENLEI_BAOHU_result r, FENLEI_BAOHU_main m
+         where r.id = m.id
+            and r.id = #{id}
+         order by ipcmi,ipcoi,ipca,cci,cca,csets
+    </select>
 
     <update id="updateCaseRule">
         update fenlei_baohu_result r set r.state=#{state} where r.id=#{id}
