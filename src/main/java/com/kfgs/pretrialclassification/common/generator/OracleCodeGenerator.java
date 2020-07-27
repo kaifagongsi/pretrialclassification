@@ -88,7 +88,7 @@ public class OracleCodeGenerator {
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);
         strategy.setEntityLombokModel(true);
         strategy.setRestControllerStyle(true);
-        strategy.setInclude(scanner("fenlei_baohu_userinfo"));
+        strategy.setInclude(scanner("表名"));
         //strategy.setSuperEntityColumns("id");
         strategy.setControllerMappingHyphenStyle(true);
         //strategy.setTablePrefix(packageConfig.getModuleName() + "_");
