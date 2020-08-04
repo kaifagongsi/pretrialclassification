@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kfgs.pretrialclassification.dao.FenleiBaohuUpdateipcMapper">
+    <update id="updateByIdAndWorker">
+        update FENLEI_BAOHU_UPDATEIPC set state = #{state} where id = #{id} and worker = #{worker}
+    </update>
 
+    <select id="selectFenleiBaohuUpdateIpcPage"
+            resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUpdateipcExt">
+    select u.id as id,
+           u.worker as worker,
+           u.uploadtime as uploadtime,
+           u.ipcmi as ipcmi,
+           u.ipcoi as ipcoi,
+           u.ipca as ipca,
+           u.cci as cci,
+           u.cca as cca,
+           u.csets as csets,
+           r.ipcmi as oldIpcmi,
+           r.ipcoi as oldIpcoi,
+           r.ipca as oldIpca,
+           r.cci as oldCci,
+           r.cca as oldCca,
+           r.csets as oldCsets
+      from FENLEI_BAOHU_UPDATEIPC u, fenlei_baohu_result r
+     where r.id = u.id
+        and
+            u.state = #{state}
+    </select>
 </mapper>

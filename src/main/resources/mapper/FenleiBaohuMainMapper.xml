@@ -159,5 +159,16 @@
     <update id="updateCaseRule">
         update fenlei_baohu_main m set m.state=#{state} where m.id=#{id}
     </update>
+    <update id="updateByIdAndWithOutNotExport">
+         update
+            fenlei_baohu_main m
+         set
+            m.ipci = #{ipci},
+            m.cci = #{cci},
+            m.cca = #{cca},
+            m.csets = #{csets}
+         where
+            m.id=#{id} and m.is_export = '0'
+    </update>
 
 </mapper>
