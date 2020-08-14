@@ -40,7 +40,7 @@ public interface FenleiBaohuMainMapper extends BaseMapper<FenleiBaohuMain> {
 
     String getType(@Param("id") String id);
 
-    int updateCaseRule(@Param("id") String id,@Param("state") String state);
+    int updateMainRule(@Param("id") String id,@Param("chuantime") String chuantime,@Param("state") String state);
 
     int updateIpciCciCcaCsetsById(@Param("finishTime")String finishTime ,@Param("ipci") String ipci, @Param("cci")String cci, @Param("cca")String cca, @Param("csets") String csets, @Param("id") String id);
 

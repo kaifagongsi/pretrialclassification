@@ -156,8 +156,8 @@
         select m.type from fenlei_baohu_main m where m.id=#{id}
     </select>
 
-    <update id="updateCaseRule">
-        update fenlei_baohu_main m set m.state=#{state} where m.id=#{id}
+    <update id="updateMainRule">
+        update fenlei_baohu_main m set m.state=#{state},m.chuantime=#{chuantime} where m.id=#{id}
     </update>
     <update id="updateByIdAndWithOutNotExport">
          update

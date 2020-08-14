@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.kfgs.pretrialclassification.caseClassification.service.CaseClassificationService;
 import com.kfgs.pretrialclassification.common.controller.BaseController;
 import com.kfgs.pretrialclassification.common.utils.DateUtil;
+import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
@@ -18,6 +19,7 @@ import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -190,7 +192,25 @@ public class caseClassificationController extends BaseController {
         return resultMap;
     }
 
-    @ApiOperation("result表，根据案件id和人员id出案")
+    @ApiOperation("result表,保存案件分类信息")
+    @PostMapping("/updateClassificationInfo")
+    public QueryResponseResult updateClassificationInfo(@RequestBody FenleiBaohuResult fenleiBaohuResult){
+        //String id = fenleiBaohuResult.getId();
+        return caseClassificationService.saveClassificationInfo(fenleiBaohuResult);
+    }
+
+    @ApiOperation("个人出案")
+    @GetMapping("/caseFinish")
+    public QueryResponseResult caseFinishTest(String ids,String user){
+        return  caseClassificationService.caseFinish(ids,user);
+    }
+
+    @ApiOperation("分类号更正")
+    @PostMapping("/caseCorrect")
+    public QueryResponseResult caseCorrect(@RequestBody FenleiBaohuResult fenleiBaohuResult){
+        return caseClassificationService.caseCorrect(fenleiBaohuResult);
+    }
+   /* @ApiOperation("result表，根据案件id和人员id出案")
     @GetMapping("/caseFinish")
     public QueryResponseResult caseFinish(String ids, String user){
 
@@ -209,8 +229,8 @@ public class caseClassificationController extends BaseController {
                 isLast = true;
                 //最后一个出案,判断是否进裁决,不用裁决则出案完成更改main表案件状态，否则进入裁决
                 //校验：无主分、多个主分、超过两人给出组合码且总数大于99组,FM案件CPC为空
-                /*String test="";
-                test = caseClassificationService.caseRule(id);*/
+                *//*String test="";
+                test = caseClassificationService.caseRule(id);*//*
                 QueryResponseResult result = caseClassificationService.caseRule(id);
                 QueryResult queryResult = new QueryResult();
                 int test = result.getCode();
@@ -249,6 +269,6 @@ public class caseClassificationController extends BaseController {
             }
         }
         return null;
-    }
+    }*/
 
 }

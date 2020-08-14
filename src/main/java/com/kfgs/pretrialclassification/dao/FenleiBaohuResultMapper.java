@@ -49,7 +49,9 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
 
     List<String> getCCA(@Param("id") String id);
 
-    int updateCaseRule(@Param("id") String id,@Param("state") String state);
+    int updateResultRule(@Param("id") String id,@Param("chuantime") String chuantime,@Param("state") String state);
 
     List<FenleiBaohuResultExt> selectSimpleClassCodeAndClassificationById(@Param("id") String id);
+
+    int saveClassificationInfo(@Param("ext") FenleiBaohuResult ext,@Param("worker") String worker);
 }
