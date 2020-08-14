@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
@@ -425,10 +426,12 @@ public class CaseArbiterService   {
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
     }
     // 出案
+    @Transactional
     public QueryResponseResult arbiterChuAn(String id) {
-        //1.修改案件状态
+        //1.修改案件状态以及出案时间
+        String finishTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
         // 没卡人员不知道是否存在bug
-        int i = fenleiBaohuAdjudicationMapper.updateCaseState("8",id);
+        int i = fenleiBaohuAdjudicationMapper.updateCaseStateAndFinishTime("8",finishTime,id);
         //2.将分类号插入main表中
         FenleiBaohuAdjudication adjudication = fenleiBaohuAdjudicationMapper.selectById(id);
         //2.1 拼装分类号 主分，副分*附加信息
@@ -440,7 +443,7 @@ public class CaseArbiterService   {
         if(adjudication.getIpca() != null){
             ipci = ipci + "*" + adjudication.getIpca();
         }
-        int main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id);
+        int main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(finishTime,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id);
         if(main_j == 1 && i == 1){
             return new QueryResponseResult(CommonCode.SUCCESS,null);
         }else{

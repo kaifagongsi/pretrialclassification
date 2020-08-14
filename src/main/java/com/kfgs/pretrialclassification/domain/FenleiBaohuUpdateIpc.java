@@ -21,6 +21,7 @@ public class FenleiBaohuUpdateipc implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     /**
      * 保护中心编号
      */
@@ -42,8 +43,8 @@ public class FenleiBaohuUpdateipc implements Serializable {
     /**
      * 案件来源，谁分给我的
      */
-        @TableField("FENPEIREN")
-    private String fenpeiren;
+        @TableField("AGENT")
+    private String agent;
 
     /**
      * 分给我的具体时间
