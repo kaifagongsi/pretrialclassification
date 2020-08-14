@@ -17,7 +17,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("FENLEI_BAOHU_UPDATEIPC")
-public class FenleiBaohuUpdateipc implements Serializable {
+public class FenleiBaohuUpdateIpc implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

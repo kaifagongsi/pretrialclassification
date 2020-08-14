@@ -1,12 +1,12 @@
 package com.kfgs.pretrialclassification.domain.ext;
 
-import com.kfgs.pretrialclassification.domain.FenleiBaohuUpdateipc;
+import com.kfgs.pretrialclassification.domain.FenleiBaohuUpdateIpc;
 import lombok.Data;
 import lombok.ToString;
 
 @Data
 @ToString
-public class FenleiBaohuUpdateipcExt  extends FenleiBaohuUpdateipc {
+public class FenleiBaohuUpdateipcExt  extends FenleiBaohuUpdateIpc {
     private  String oldIpcmi;//旧ipcmi
     private  String oldIpcoi;//旧ipcoi
     private  String oldIpca;//旧ipca

@@ -10,7 +10,7 @@ import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuUpdateipcMapper;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
-import com.kfgs.pretrialclassification.domain.FenleiBaohuUpdateipc;
+import com.kfgs.pretrialclassification.domain.FenleiBaohuUpdateIpc;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUpdateipcExt;
 import com.kfgs.pretrialclassification.domain.response.CommonCode;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
@@ -26,7 +26,7 @@ import java.util.List;
  * @author mango
  */
 @Service
-public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateipcMapper, FenleiBaohuUpdateipc>  {
+public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateipcMapper, FenleiBaohuUpdateIpc>  {
 
     @Autowired
     FenleiBaohuUpdateipcMapper fenleiBaohuUpdateipcMapper;
@@ -38,7 +38,7 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
     FenleiBaohuMainMapper fenleiBaohuMainMapper;
 
     public QueryResponseResult selectInitList(int pageNum,int size,String state){
-        Page<FenleiBaohuUpdateipc> page = new Page<>(pageNum,size);
+        Page<FenleiBaohuUpdateIpc> page = new Page<>(pageNum,size);
         IPage<FenleiBaohuUpdateipcExt> iPage = fenleiBaohuUpdateipcMapper.selectFenleiBaohuUpdateIpcPage(page, state);
         List<FenleiBaohuUpdateipcExt> records = iPage.getRecords();
         QueryResult queryResult = new QueryResult();
@@ -60,7 +60,7 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
     //分类号更正通过方法
     private QueryResponseResult updateIpcStateWithOne(String id){
         //获取案件分类号
-        FenleiBaohuUpdateipc fenleiBaohuUpdateipc = fenleiBaohuUpdateipcMapper.selectById(id);
+        FenleiBaohuUpdateIpc fenleiBaohuUpdateipc = fenleiBaohuUpdateipcMapper.selectById(id);
         QueryWrapper<FenleiBaohuResult> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",id);
         List<FenleiBaohuResult> fenleiBaohuResults = fenleiBaohuResultMapper.selectList(queryWrapper);
@@ -126,7 +126,7 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
 
     //分类号更正驳回功能
     private QueryResponseResult updateIpcStateWithTwo(String id){
-        FenleiBaohuUpdateipc fenleiBaohuUpdateipc = fenleiBaohuUpdateipcMapper.selectById(id);
+        FenleiBaohuUpdateIpc fenleiBaohuUpdateipc = fenleiBaohuUpdateipcMapper.selectById(id);
         int i = fenleiBaohuUpdateipcMapper.updateByIdAndWorker(id,fenleiBaohuUpdateipc.getWorker(),"2");
         if( i == 1){
             return new QueryResponseResult(CommonCode.SUCCESS,null);
