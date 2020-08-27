@@ -112,5 +112,37 @@ public class FenleiBaohuUpdateIpc implements Serializable {
         @TableField("IPCOI")
     private String ipcoi;
 
+    /**
+     * 旧ipcmi
+     */
+    @TableField("OLDIPCMI")
+    private  String oldIpcmi;
+    /**
+     * 旧ipcoi
+     */
+    @TableField("OLDIPCOI")
+    private  String oldIpcoi;
+
+    /**
+     * 旧ipca
+     */
+    @TableField("OLDIPCA")
+    private  String oldIpca;
+
+    /**
+     * 旧cci
+     */
+    @TableField("OLDCCI")
+    private  String oldCci;
+    /**
+     * 旧cca
+     */
+    @TableField("OLDCCA")
+    private  String oldCca;
+    /**
+     * 旧csets
+     */
+    @TableField("OLDCSETS")
+    private  String oldCsets;
 
 }

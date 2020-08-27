@@ -17,6 +17,7 @@ import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 import com.kfgs.pretrialclassification.domain.response.QueryResult;
 import com.kfgs.pretrialclassification.domain.response.UpdateIpcResponseEnum;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.xpath.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,8 +40,8 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
 
     public QueryResponseResult selectInitList(int pageNum,int size,String state){
         Page<FenleiBaohuUpdateIpc> page = new Page<>(pageNum,size);
-        IPage<FenleiBaohuUpdateipcExt> iPage = fenleiBaohuUpdateipcMapper.selectFenleiBaohuUpdateIpcPage(page, state);
-        List<FenleiBaohuUpdateipcExt> records = iPage.getRecords();
+        IPage<FenleiBaohuUpdateIpc> iPage = fenleiBaohuUpdateipcMapper.selectFenleiBaohuUpdateIpcPage(page, state);
+        List<FenleiBaohuUpdateIpc> records = iPage.getRecords();
         QueryResult queryResult = new QueryResult();
         queryResult.setList(records);
         queryResult.setTotal(iPage.getTotal());
@@ -49,14 +50,37 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
 
 
     public QueryResponseResult updateIpcState(String id, String state) {
-        if("1".equalsIgnoreCase(state)){
-            return  updateIpcStateWithOne(id);
-        }else if("2".equalsIgnoreCase(state)){
-            return updateIpcStateWithTwo(id);
+        QueryWrapper<FenleiBaohuResult> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",id);
+        List<FenleiBaohuResult> fenleiBaohuResultsCount = fenleiBaohuResultMapper.selectList(queryWrapper);
+        queryWrapper.eq("state","2");
+        List<FenleiBaohuResult> fenleiBaohuResultsStateTwoCount = fenleiBaohuResultMapper.selectList(queryWrapper);
+        if(fenleiBaohuResultsCount.size() == fenleiBaohuResultsStateTwoCount.size()){//表述均已出案
+            return AllProChuanCaoZuo(id,state);
+        }else{ // 表示有一人未出案
+            return OneOrMoreNotChuAn(id,state);
+        }
+
+    }
+
+    private QueryResponseResult OneOrMoreNotChuAn(String id, String state) {
+        return null;
+    }
+    /**
+     *管理员点击后，该案件所有案件均正常出案
+     */
+    private QueryResponseResult AllProChuanCaoZuo(String id, String state) {
+
+        if("1".equals(state)){//管理员同意出案
+            return null;
+        }else if("2".equals(state)){//管理员不同意出案
+            return null;
         }else {
             return new QueryResponseResult(CommonCode.INVALID_PARAM,null);
         }
     }
+
+    //一下方法放弃使用-------------------------------------------------------------------------------------------------------------
     //分类号更正通过方法
     private QueryResponseResult updateIpcStateWithOne(String id){
         //获取案件分类号

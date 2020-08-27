@@ -6,8 +6,8 @@
     </update>
 
     <select id="selectFenleiBaohuUpdateIpcPage"
-            resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUpdateipcExt">
-    select u.id as id,
+            resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuUpdateIpc">
+        select u.id as id,
            u.worker as worker,
            u.uploadtime as uploadtime,
            u.ipcmi as ipcmi,
@@ -16,15 +16,14 @@
            u.cci as cci,
            u.cca as cca,
            u.csets as csets,
-           r.ipcmi as oldIpcmi,
-           r.ipcoi as oldIpcoi,
-           r.ipca as oldIpca,
-           r.cci as oldCci,
-           r.cca as oldCca,
-           r.csets as oldCsets
-      from FENLEI_BAOHU_UPDATEIPC u, fenlei_baohu_result r
-     where r.id = u.id
-        and
-            u.state = #{state}
+           u.oldipcmi as oldIpcmi,
+           u.oldipcoi as oldIpcoi,
+           u.oldipca as oldIpca,
+           u.oldcci as oldCci,
+           u.oldcca as oldCca,
+           u.oldcsets as oldCsets
+      from FENLEI_BAOHU_UPDATEIPC u
+      where
+          u.state = #{state}
     </select>
 </mapper>

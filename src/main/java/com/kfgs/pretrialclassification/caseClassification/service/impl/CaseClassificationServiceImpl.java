@@ -3,6 +3,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.caseClassification.service.CaseClassificationService;
+import com.kfgs.pretrialclassification.common.utils.AdjudicationBusinessUtils;
 import com.kfgs.pretrialclassification.common.utils.DateUtil;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuLogMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuMainMapper;
@@ -227,97 +228,23 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         String type = fenleiBaohuMainMapper.getType(id);
 
         //拼接组合码,不用去重
-        String csets = "";
-        if (csetsList != null){
-            if (csetsList.size()>=2){
-                for(int i=0;i<csetsList.size()-1;i++){
-                    csets += csetsList.get(i);
-                    csets += ";";
-                }
-                csets += csetsList.get(csetsList.size()-1);
-            } else if(csetsList.size() == 1){
-                csets += csetsList.get(0);
-            }
-        }
+        String csets = AdjudicationBusinessUtils.margeCsets(csetsList);
+
         //拼接CCI,需要去重
-        String cci = "";
-        //先去重
-        if (cciList.size() > 1){
-            List<String> list_cci = new ArrayList<>();
-            StringBuffer sb_cci = new StringBuffer();
-            for (int i=0;i<cciList.size();i++){
-                if(!list_cci.contains(cciList.get(i))){
-                    list_cci.add(cciList.get(i));
-                    sb_cci.append(cciList.get(i) + ",");
-                }
-            }
-            cci = sb_cci.toString().substring(0,sb_cci.toString().length()-1);
-        }else if (cciList.size() == 1) {
-            cci = cciList.get(0);
-        }
+        String cci = AdjudicationBusinessUtils.margeCci(cciList);
 
         //拼接CCA，需要去重
-        String cca = "";
-        //去重
-        if (ccaList.size() >1){
-            List<String> list_cca = new ArrayList<>();
-            StringBuffer sb_cca = new StringBuffer();
-            for (int i=0;i<ccaList.size();i++){
-                if (!list_cca.contains(ccaList.get(i))){
-                    list_cca.add(ccaList.get(i));
-                    sb_cca.append(ccaList.get(i)+",");
-                }
-            }
-            cca = sb_cca.toString().substring(0,sb_cca.toString().length()-1);
-        }else if (ccaList.size() == 1){
-            cca = ccaList.get(0);
+        String cca = AdjudicationBusinessUtils.margeCca(ccaList);
+        QueryResponseResult responseResult = AdjudicationBusinessUtils.JudgeWhetherToEnterTheRuling(id,ipcmiList, ipcoiList,ipcaList, csetsList, csets, cci, type);
+        if(!"20000".equals(responseResult.getCode())){
+            return  responseResult;
         }
-
         //拼接ipci:ipcmi+ipcoi+ipca
-        String ipci = "";
-
-        //判断是否无主分
-        if (ipcmiList == null || ipcmiList.size() == 0){
-            //return "无主分，进入裁决";
-            return new QueryResponseResult(CaseFinishResponseEnum.NO_IPCMI,null);
-        }
-        if (ipcmiList.size() > 1) {
-            //是否多个主分
-            //return "多个主分，进入裁决";
-            return new QueryResponseResult(CaseFinishResponseEnum.ONE_MORE_IPCMI,null);
-        }
-        if (csets != ""){
-            //校验组合码
-            String csetsNum[] = csets.split(";");
-            if (csetsList.size() >= 2 && csetsNum.length > 99){
-                //return "超过两人给出组合码且组合码总数多于99组，进入裁决";
-                return new QueryResponseResult(CaseFinishResponseEnum.MAX_NUM_CSETS,null);
-            }
-        }
-        if("FM".equals(type) && "".equals(cci)) {
-            //若是发明案件，判断CPC是否为空，为空进裁决
-            return new QueryResponseResult(CaseFinishResponseEnum.FM_NO_CCI,null);
-        }
+        //String ipci = "";
         //不用进裁决则保存合并后的分类号
         //合并ipci
         //拼接主分类号
-        String ipcmi = ipcmiList.get(0);
-        ipci += ipcmi;
-        //拼接副分类号
-        String ipcoi = "";
-        if (ipcoiList != null && ipcoiList.size()!=0){
-            ipci += ";";
-            for (int i=0;i<ipcoiList.size();i++){
-                ipcoi = ipcoiList.get(i);
-                ipci += ipcoi;
-                ipci += ",";
-            }
-            ipci = ipci.substring(0,ipci.length()-1);
-        }
-        if (!"".equals(csets)){
-            ipci += "*";
-            ipci += csets;
-        }
+        String ipci= AdjudicationBusinessUtils.mergeIPCI(ipcmiList,ipcoiList,ipcoiList);
         //分类号存入main表
         /*QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("id",id);*/
@@ -344,6 +271,9 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         res += fenleiBaohuMainMapper.updateCaseRule(id, ruleState);
         return res;
     }
+
+
+
 
 
 }

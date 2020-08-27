@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface FenleiBaohuUpdateipcMapper extends BaseMapper<FenleiBaohuUpdateIpc> {
 
-    IPage<FenleiBaohuUpdateipcExt> selectFenleiBaohuUpdateIpcPage(Page<FenleiBaohuUpdateIpc> page, @Param("state") String state);
+    IPage<FenleiBaohuUpdateIpc> selectFenleiBaohuUpdateIpcPage(Page<FenleiBaohuUpdateIpc> page, @Param("state") String state);
 
 
     int updateByIdAndWorker(@Param("id") String id, @Param("worker") String worker, @Param("state") String state);
