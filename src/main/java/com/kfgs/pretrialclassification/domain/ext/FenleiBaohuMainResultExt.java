@@ -21,6 +21,43 @@ public class FenleiBaohuMainResultExt extends FenleiBaohuMain {
         this.assworker = assworker;
     }
 
+    public String getIpca() {
+        return ipca;
+    }
+
+    public void setIpca(String ipca) {
+        this.ipca = ipca;
+    }
+
+    public String getIpcoi() {
+        return ipcoi;
+    }
+
+    public void setIpcoi(String ipcoi) {
+        this.ipcoi = ipcoi;
+    }
+
+    public String getIpcmi() {
+        return ipcmi;
+    }
+
+    public void setIpcmi(String ipcmi) {
+        this.ipcmi = ipcmi;
+    }
+
+    /*
+        IPCA
+         */
+    private String ipca;
+    /*
+    IPCOI
+     */
+    private String ipcoi;
+    /*
+    /*
+    IPCMI
+     */
+    private String ipcmi;
     /*
         主分类员
          */

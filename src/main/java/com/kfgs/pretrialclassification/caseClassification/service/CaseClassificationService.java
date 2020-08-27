@@ -40,9 +40,18 @@ public interface CaseClassificationService {
 
     //判断案件是否需要进裁决,返回理由或分类号
     QueryResponseResult caseRule(String id);
+    //QueryResponseResult caseRule(FenleiBaohuResult fenleiBaohuResult);
 
+    //保存分类号信息
+    QueryResponseResult saveClassificationInfo(FenleiBaohuResult fenleiBaohuResult);
 
     //更改案件状态为裁决
-    int  updateCaseRule(String id,String ruleState);
+    //int  updateCaseRule(String id,String ruleState);
+
+    //个人出案
+    QueryResponseResult caseFinish(String id,String user);
+
+    //提交更正
+    QueryResponseResult caseCorrect(FenleiBaohuResult fenleiBaohuResult);
 
 }

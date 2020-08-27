@@ -25,91 +25,91 @@ public class FenleiBaohuUpdateIpc implements Serializable {
     /**
      * 保护中心编号
      */
-        @TableField("ID")
+    @TableField("ID")
     private String id;
 
     /**
      * 分类员
      */
-        @TableField("WORKER")
+    @TableField("WORKER")
     private String worker;
 
     /**
      * 主分，副分
      */
-        @TableField("CLASSTYPE")
+    @TableField("CLASSTYPE")
     private String classtype;
 
     /**
      * 案件来源，谁分给我的
      */
-        @TableField("AGENT")
+    @TableField("AGENT")
     private String agent;
 
     /**
      * 分给我的具体时间
      */
-        @TableField("FENPEITIME")
+    @TableField("FENPEITIME")
     private String fenpeitime;
 
     /**
      * 提出更正分类号申请的具体时间
      */
-        @TableField("UPLOADTIME")
+    @TableField("UPLOADTIME")
     private String uploadtime;
 
     /**
      * 0-未审批;1-审批通过;2-审批未通过
      */
-        @TableField("STATE")
+    @TableField("STATE")
     private String state;
 
     /**
      * 完成更正分类号申请的时间
      */
-        @TableField("CHUANTIME")
+    @TableField("CHUANTIME")
     private String chuantime;
 
     /**
      * CCI
      */
-        @TableField("CCI")
+    @TableField("CCI")
     private String cci;
 
     /**
      * CCA
      */
-        @TableField("CCA")
+    @TableField("CCA")
     private String cca;
 
     /**
      * CSETS
      */
-        @TableField("CSETS")
+    @TableField("CSETS")
     private String csets;
 
     /**
      * IPCI
      */
-        @TableField("IPCI")
+    @TableField("IPCI")
     private String ipci;
 
     /**
      * IPCA附加信息
      */
-        @TableField("IPCA")
+    @TableField("IPCA")
     private String ipca;
 
     /**
      * 主分类号IPCMI主要发明信息
      */
-        @TableField("IPCMI")
+    @TableField("IPCMI")
     private String ipcmi;
 
     /**
      * 副分类号IPCOI其他发明信息
      */
-        @TableField("IPCOI")
+    @TableField("IPCOI")
     private String ipcoi;
 
     /**

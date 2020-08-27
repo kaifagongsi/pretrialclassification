@@ -72,7 +72,7 @@
 
 
     <select id="selectCaseByState" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt">
-        select r.id,r.worker,r.classtype,r.fenpeiren,r.state,r.cci,r.cca,r.csets,r.ipci,r.ipca,
+        select r.id,r.worker,r.classtype as maintype,r.fenpeiren,r.state,r.cci,r.cca,r.csets,r.ipci,r.ipca,r.ipcmi,r.ipcoi,
         m.mingcheng,m.type,m.sqr,m.simpleclasscode,m.pdf_path,
         (to_date(r.fenpeitime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as jinantime,
         (to_date(r.chuantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as chuantime
@@ -152,8 +152,39 @@
          order by ipcmi,ipcoi,ipca,cci,cca,csets
     </select>
 
-    <update id="updateCaseRule">
-        update fenlei_baohu_result r set r.state=#{state} where r.id=#{id}
+    <update id="updateResultRule">
+        update fenlei_baohu_result r set r.state=#{state},r.chuantime=#{chuantime} where r.id=#{id}
+    </update>
+
+    <update id="saveClassificationInfo" parameterType="com.kfgs.pretrialclassification.domain.FenleiBaohuResult">
+        update fenlei_baohu_result
+        <set>
+            <if test="ext.ipca != null">
+                ipca = #{ext.ipca},
+            </if>
+            <if test="ext.IPCMI != null">
+                IPCMI = #{ext.IPCMI},
+            </if>
+            <if test="ext.IPCOI != null">
+                IPCOI = #{ext.IPCOI},
+            </if>
+            <if test="ext.cci != null">
+                CCI = #{ext.cci},
+            </if>
+            <if test="ext.cca != null">
+                CCA = #{ext.cca},
+            </if>
+            <if test="ext.csets != null">
+                CSETS = #{ext.csets},
+            </if>
+            <if test="ext.state != null">
+                state = #{ext.state},
+            </if>
+        </set>
+        where
+          id = #{ext.id}
+        and
+          worker = #{worker}
     </update>
 
 </mapper>
