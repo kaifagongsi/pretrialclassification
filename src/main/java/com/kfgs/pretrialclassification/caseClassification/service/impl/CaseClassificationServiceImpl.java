@@ -244,6 +244,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         String cca = AdjudicationBusinessUtils.margeCca(ccaList);
         QueryResponseResult responseResult = AdjudicationBusinessUtils.JudgeWhetherToEnterTheRuling(id,ipcmiList, ipcoiList,ipcaList, csetsList, csets, cci, type);
         if(!"20000".equals(responseResult.getCode())){
+            //
             return  responseResult;
         }
         //拼接ipci:ipcmi+ipcoi+ipca
@@ -343,7 +344,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                     /**
                      * 进入裁决，更改案件为裁决状态
                      */
-                    int rule = updateCaseRule(id);
+                    int rule = updateCaseRule(id,queryResponseResult);
                     if (rule == 1) {
                         return queryResponseResult;
                     }
@@ -443,13 +444,13 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
      * @return
      */
     @Transactional
-    public int updateCaseRule(String id){
+    public int updateCaseRule(String id,QueryResponseResult responseResult){
         int res = 0;
         String chuantime = DateUtil.formatFullTime(LocalDateTime.now());
         //result表
         res = fenleiBaohuResultMapper.updateResultRule(id,chuantime,"7");
         res = fenleiBaohuMainMapper.updateMainRule(id,chuantime,"7");
-        QueryResponseResult queryResponseResult = caseArbiterService.insertIntoAdjudication(id,null);
+        QueryResponseResult queryResponseResult = caseArbiterService.insertIntoAdjudication(id,responseResult);
         return res;
     }
 

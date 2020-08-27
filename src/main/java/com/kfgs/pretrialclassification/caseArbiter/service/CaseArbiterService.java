@@ -453,12 +453,12 @@ public class CaseArbiterService   {
         }
     }
 
-    public QueryResponseResult insertIntoAdjudication(String id, CaseFinishResponseEnum caseFinishResponseEnum){
+    public QueryResponseResult insertIntoAdjudication(String id, QueryResponseResult responseResult){
 
         //获取相应参数根据id获取实体 此sql有排序
         //List<FenleiBaohuResultExt> fenleiBaohuResultExtList =  fenleiBaohuResultMapper.selectSimpleClassCodeAndClassificationById(id);
         //获取主分类号ipcmi
-        List<String> ipcmiList = new ArrayList<>();
+        /*List<String> ipcmiList = new ArrayList<>();
         ipcmiList = fenleiBaohuResultMapper.getIPCMI(id);
         //获取副分类号ipcoi
         List<String> ipcoiList = new ArrayList<>();
@@ -477,13 +477,15 @@ public class CaseArbiterService   {
         String cci = AdjudicationBusinessUtils.margeCci(cciList);
         //拼接组合码,不用去重
         String csets = AdjudicationBusinessUtils.margeCsets(csetsList);
-        QueryResponseResult responseResult = AdjudicationBusinessUtils.JudgeWhetherToEnterTheRuling(id,ipcmiList, ipcoiList,ipcaList, csetsList, csets, cci, type);
+        QueryResponseResult responseResult = AdjudicationBusinessUtils.JudgeWhetherToEnterTheRuling(id,ipcmiList, ipcoiList,ipcaList, csetsList, csets, cci, type);*/
         FenleiBaohuAdjudication item = (FenleiBaohuAdjudication)responseResult.getQueryResult().getMap().get("item");
+        item.setProcessingreasons(responseResult.getMessage());
         if(responseResult.getCode() == 20000){
             log.error("出现逻辑问题：案件id:" + id + ",当前案件无法判断出触发裁决的原因。");
             return new QueryResponseResult(CommonCode.FAIL,null);
         }else if(responseResult.getCode() == 24004){
             //1. 无分类号
+            //item.setProcessingreasons(responseResult.getMessage());
             int insert = fenleiBaohuAdjudicationMapper.insert(item);
             if( insert == 1){
                 return new QueryResponseResult(CaseFinishResponseEnum.NO_CLASSIFICATION,null);

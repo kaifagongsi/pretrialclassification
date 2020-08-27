@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
+@Component
 public class AdjudicationBusinessUtils {
 
     @Autowired
@@ -71,7 +72,7 @@ public class AdjudicationBusinessUtils {
         HashMap hashMap = new HashMap(8);
         //0.6初始化组合吗
         String[] csetsNum = {};
-        if(csets != ""){
+        if(!"".equalsIgnoreCase(csets)){
             csetsNum = csets.split(";");
         }
         //1.无分类号
