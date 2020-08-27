@@ -2,6 +2,7 @@ package com.kfgs.pretrialclassification.caseClassification.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.kfgs.pretrialclassification.caseArbiter.service.CaseArbiterService;
 import com.kfgs.pretrialclassification.caseClassification.service.CaseClassificationService;
 import com.kfgs.pretrialclassification.common.utils.AdjudicationBusinessUtils;
 import com.kfgs.pretrialclassification.common.utils.DateUtil;
@@ -11,6 +12,7 @@ import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUpdateIpc;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
+import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUpdateipcExt;
 import com.kfgs.pretrialclassification.domain.response.CaseFinishResponseEnum;
 import com.kfgs.pretrialclassification.domain.response.CommonCode;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
@@ -20,13 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
+@Slf4j
 public class CaseClassificationServiceImpl implements CaseClassificationService {
 
     @Autowired
@@ -37,6 +38,12 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
 
     @Autowired
     FenleiBaohuLogMapper fenleiBaohuLogMapper;
+
+    @Autowired
+    CaseArbiterService caseArbiterService;
+
+    @Autowired
+    FenleiBaohuUpdateipcMapper fenleiBaohuUpdateipcMapper;
 
     @Override
     @Transactional
@@ -488,5 +495,16 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         return  res;
     }
 
+    //时间戳转字符串
+    public static String timeStampToDate(Long timestamp,String format){
+        if (timestamp == null || timestamp.equals("null")){
+            return "";
+        }
+        if (format == null || format.isEmpty()){
+            format = "yyyyMMddHHmmss";
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        return sdf.format(new Date(timestamp));
+    }
 
 }
