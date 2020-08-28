@@ -16,6 +16,7 @@ import java.util.Map;
 /**
  * @author mango
  */
+@Repository
 public interface FenleiBaohuMainMapper extends BaseMapper<FenleiBaohuMain> {
 
     IPage<FenleiBaohuMain> findAll();
@@ -45,4 +46,6 @@ public interface FenleiBaohuMainMapper extends BaseMapper<FenleiBaohuMain> {
     int updateIpciCciCcaCsetsById(@Param("finishTime")String finishTime ,@Param("ipci") String ipci, @Param("cci")String cci, @Param("cca")String cca, @Param("csets") String csets, @Param("id") String id);
 
     int updateByIdAndWithOutNotExport(@Param("id") String id, @Param("ipci")String ipci,@Param("cci") String cci, @Param("cca")String cca, @Param("csets")String csets);
+
+    int updateStateById(@Param("id") String id, @Param("state") String state);
 }

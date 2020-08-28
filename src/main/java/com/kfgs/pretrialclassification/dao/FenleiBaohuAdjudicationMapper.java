@@ -7,9 +7,10 @@ import com.kfgs.pretrialclassification.domain.FenleiBaohuAdjudication;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuAdjudicationExt;
 import com.kfgs.pretrialclassification.domain.request.ArbiterParam;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-
+@Repository
 public interface FenleiBaohuAdjudicationMapper extends BaseMapper<FenleiBaohuAdjudication> {
     IPage<FenleiBaohuAdjudicationExt> getArbiterInitList(Page<?> page, @Param("username") String username);
 

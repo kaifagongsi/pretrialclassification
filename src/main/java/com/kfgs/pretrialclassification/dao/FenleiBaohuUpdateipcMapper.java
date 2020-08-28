@@ -6,11 +6,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUpdateIpc;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUpdateipcExt;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author mango
  */
+@Repository
 public interface FenleiBaohuUpdateipcMapper extends BaseMapper<FenleiBaohuUpdateIpc> {
 
     IPage<FenleiBaohuUpdateIpc> selectFenleiBaohuUpdateIpcPage(Page<FenleiBaohuUpdateIpc> page, @Param("state") String state);

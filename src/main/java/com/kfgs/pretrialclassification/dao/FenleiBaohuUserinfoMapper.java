@@ -7,6 +7,7 @@ import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.request.ArbiterParam;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 /**
  * @author mango
  */
+@Repository
 public interface FenleiBaohuUserinfoMapper extends BaseMapper<FenleiBaohuUserinfo> {
     List<FenleiBaohuUserinfo> findAreaName();
 

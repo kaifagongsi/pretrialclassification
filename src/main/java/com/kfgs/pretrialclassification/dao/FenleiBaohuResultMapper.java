@@ -8,6 +8,7 @@ import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.security.core.parameters.P;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import java.util.Map;
  *
  * @author:
  */
+@Repository
 public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
 
     List<FenleiBaohuResultExt> AfterDeploymentSendEmail(String[] ids);
@@ -54,4 +56,9 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
     List<FenleiBaohuResultExt> selectSimpleClassCodeAndClassificationById(@Param("id") String id);
 
     int saveClassificationInfo(@Param("ext") FenleiBaohuResult ext,@Param("worker") String worker);
+
+    int updateStateByIdAndWorker(@Param("id") String id, @Param("worker")String worker, @Param("state")String state);
+
+
+
 }
