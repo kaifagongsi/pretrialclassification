@@ -170,5 +170,12 @@
          where
             m.id=#{id} and m.is_export = '0'
     </update>
+    <update id="updateStateById">
+        update fenlei_baohu_main
+        set
+            state = #{state}
+        where
+            id = #{id}
+    </update>
 
 </mapper>

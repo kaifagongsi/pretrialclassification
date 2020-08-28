@@ -54,4 +54,8 @@ public interface CaseClassificationService {
     //提交更正
     QueryResponseResult caseCorrect(FenleiBaohuResult fenleiBaohuResult);
 
+
+    //最后一个人出案
+    public QueryResponseResult lastFinish( String id,QueryResponseResult queryResponseResult );
+
 }

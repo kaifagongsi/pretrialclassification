@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.kfgs.pretrialclassification.caseClassification.service.CaseClassificationService;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuMainMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuUpdateipcMapper;
@@ -12,6 +13,7 @@ import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUpdateIpc;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUpdateipcExt;
+import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.response.CommonCode;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 import com.kfgs.pretrialclassification.domain.response.QueryResult;
@@ -19,7 +21,9 @@ import com.kfgs.pretrialclassification.domain.response.UpdateIpcResponseEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xpath.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,16 +31,22 @@ import java.util.List;
  * @author mango
  */
 @Service
+@Transactional
 public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateipcMapper, FenleiBaohuUpdateIpc>  {
 
     @Autowired
-    FenleiBaohuUpdateipcMapper fenleiBaohuUpdateipcMapper;
+    private FenleiBaohuUpdateipcMapper fenleiBaohuUpdateipcMapper;
 
     @Autowired
-    FenleiBaohuResultMapper fenleiBaohuResultMapper;
+    private FenleiBaohuResultMapper fenleiBaohuResultMapper;
 
     @Autowired
-    FenleiBaohuMainMapper fenleiBaohuMainMapper;
+    private FenleiBaohuMainMapper fenleiBaohuMainMapper;
+
+
+
+    @Autowired
+    CaseClassificationService caseClassificationService;
 
     public QueryResponseResult selectInitList(int pageNum,int size,String state){
         Page<FenleiBaohuUpdateIpc> page = new Page<>(pageNum,size);
@@ -49,32 +59,92 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
     }
 
 
+    /**
+     * 管理员处理分类号更正，的同意或者驳回操作
+     * @param id 案件id
+     * @param state 案件状态
+     * @return
+     */
+    @Transactional
     public QueryResponseResult updateIpcState(String id, String state) {
         QueryWrapper<FenleiBaohuResult> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",id);
         List<FenleiBaohuResult> fenleiBaohuResultsCount = fenleiBaohuResultMapper.selectList(queryWrapper);
         queryWrapper.eq("state","2");
         List<FenleiBaohuResult> fenleiBaohuResultsStateTwoCount = fenleiBaohuResultMapper.selectList(queryWrapper);
+        String worker = fenleiBaohuUpdateipcMapper.selectById(id).getWorker();
         if(fenleiBaohuResultsCount.size() == fenleiBaohuResultsStateTwoCount.size()){//表述均已出案
             return AllProChuanCaoZuo(id,state);
         }else{ // 表示有一人未出案
-            return OneOrMoreNotChuAn(id,state);
+            return OneOrMoreNotChuAn(id,worker,state);
         }
 
     }
 
-    private QueryResponseResult OneOrMoreNotChuAn(String id, String state) {
-        return null;
+    /**
+     * 管理在确定前，仍然有大于一个人没有出案
+     * @param id 案件id
+     * @param worker  案件提交人
+     * @param state 状态
+     * @return
+     */
+    private QueryResponseResult OneOrMoreNotChuAn(String id, String worker,String state) {
+        if("1".equals(state)){//管理员同意出案
+            QueryWrapper<FenleiBaohuUpdateIpc> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("id",id).eq("worker",worker);
+            FenleiBaohuUpdateIpc updateIpc = fenleiBaohuUpdateipcMapper.selectOne(queryWrapper);
+            FenleiBaohuResult fenleiBaohuResult = new FenleiBaohuResult();
+            fenleiBaohuResult.setId(id);
+            fenleiBaohuResult.setState("2");
+            fenleiBaohuResult.setIPCMI(updateIpc.getIpcmi());
+            fenleiBaohuResult.setIPCOI(updateIpc.getIpcoi());
+            fenleiBaohuResult.setIpca(updateIpc.getIpca());
+            fenleiBaohuResult.setCca(updateIpc.getCca());
+            fenleiBaohuResult.setCci(updateIpc.getCci());
+            fenleiBaohuResult.setCsets(updateIpc.getCsets());
+            // 将新的分类号更新到result表中 并更新状态
+            int i = fenleiBaohuResultMapper.saveClassificationInfo(fenleiBaohuResult,worker);
+            // 更新main表状态
+            int j = fenleiBaohuMainMapper.updateStateById(id,"1");
+            if( i == j){
+                return new QueryResponseResult(CommonCode.SUCCESS,null);
+            }else{
+                return new QueryResponseResult(CommonCode.FAIL,null);
+            }
+        }else if("2".equals(state)){//管理员不同意出案
+            int i = fenleiBaohuResultMapper.updateStateByIdAndWorker(id,worker,"2");
+            int j = fenleiBaohuMainMapper.updateStateById(id,"1");
+            if( i == j){
+                return new QueryResponseResult(CommonCode.SUCCESS,null);
+            }else{
+                return new QueryResponseResult(CommonCode.FAIL,null);
+            }
+        }else {
+            return new QueryResponseResult(CommonCode.INVALID_PARAM,null);
+        }
     }
     /**
-     *管理员点击后，该案件所有案件均正常出案
+     * 管理员点击后，该案件所有案件均正常出案
      */
     private QueryResponseResult AllProChuanCaoZuo(String id, String state) {
-
         if("1".equals(state)){//管理员同意出案
-            return null;
+            QueryResponseResult queryResponseResult = caseClassificationService.lastFinish(id, null);
+            return queryResponseResult;
         }else if("2".equals(state)){//管理员不同意出案
-            return null;
+            //仅修改main/result表的状态
+            FenleiBaohuMain main = new FenleiBaohuMain();
+            main.setId(id);
+            main.setState("2");
+            int j = fenleiBaohuMainMapper.updateById(main);
+            FenleiBaohuResult result = new FenleiBaohuResult();
+            result.setId(id);
+            result.setState("2");
+            fenleiBaohuResultMapper.updateById(result);
+            if( j == 1){
+                return new QueryResponseResult(CommonCode.SUCCESS,null);
+            }else{
+                return new QueryResponseResult(CommonCode.FAIL,null);
+            }
         }else {
             return new QueryResponseResult(CommonCode.INVALID_PARAM,null);
         }

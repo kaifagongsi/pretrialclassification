@@ -316,53 +316,62 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         QueryResponseResult queryResponseResult = new QueryResponseResult();
         List<String> unFinish = new ArrayList<>();
         //待出案的案件id
-        /*String[] list = ids.split(",");
-        String id = "";
-        List<String> unFinish = new ArrayList<>();
-        for(int i=0;i<list.length;i++){
-            id = list[i];*/
-            QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("id",id);
-            queryWrapper.eq("worker",user);
-            FenleiBaohuResult fenleiBaohuResult = fenleiBaohuResultMapper.selectOne(queryWrapper);
-            /*1.判断是否最后一个出案
-                查询除自己以外其他未出案
-            */
-            boolean isLast = false;
-            unFinish = fenleiBaohuResultMapper.getCaseUnFinish(id);
-            if (unFinish.size() == 1){
-                //最后一个未出案
-                /**
-                 * 最后一个出案,判断是否进裁决,不用裁决则出案完成更改main表案件状态，否则进入裁决
-                 * 校验：无主分、多个主分、超过两人给出组合码且总数大于99组,FM案件CPC为空
-                 */
-                isLast = true;
-                queryResponseResult = caseRule(id);
-                int code = queryResponseResult.getCode();
-                String message = queryResponseResult.getMessage();
-                if (code != 20000){
-                    /**
-                     * 进入裁决，更改案件为裁决状态
-                     */
-                    int rule = updateCaseRule(id,queryResponseResult);
-                    if (rule == 1) {
-                        return queryResponseResult;
-                    }
-                }else {
-                    return queryResponseResult;
-                }
-
-            }else if (unFinish.size() > 1){
-                /**
-                 * 不是最后一个出案,可直接出案,不改变main表状态
-                 */
-                int res = finishMyResult(id,user);
-                if (res == 1){
-                    return new QueryResponseResult(CommonCode.SUCCESS,null);
-                }
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("id",id);
+        queryWrapper.eq("worker",user);
+        FenleiBaohuResult fenleiBaohuResult = fenleiBaohuResultMapper.selectOne(queryWrapper);
+        /*1.判断是否最后一个出案
+            查询除自己以外其他未出案
+        */
+        boolean isLast = false;
+        unFinish = fenleiBaohuResultMapper.getCaseUnFinish(id);
+        if (unFinish.size() == 1){
+            //最后一个未出案
+            return lastFinish(id,queryResponseResult);
+        }else if (unFinish.size() > 1){
+            /**
+             * 不是最后一个出案,可直接出案,不改变main表状态
+             */
+            int res = finishMyResult(id,user);
+            if (res == 1){
+                return new QueryResponseResult(CommonCode.SUCCESS,null);
             }
-        //}
+        }
         return null;
+    }
+
+    /**
+     * 最后一个出案,判断是否进裁决,不用裁决则出案完成更改main表案件状态，否则进入裁决
+     * 校验：无主分、多个主分、超过两人给出组合码且总数大于99组,FM案件CPC为空
+     *  该方法有多出应用，修改时要注意
+     * @param id 案件id
+     * @param queryResponseResult 响应结果
+     * @return
+     */
+    @Override
+    @Transactional
+    public QueryResponseResult lastFinish( String id,QueryResponseResult queryResponseResult ){
+        if(queryResponseResult == null){
+            queryResponseResult = new QueryResponseResult();
+        }
+        queryResponseResult = caseRule(id);
+        int code = queryResponseResult.getCode();
+        String message = queryResponseResult.getMessage();
+        if (code != 20000){
+            /**
+             * 进入裁决，更改案件为裁决状态
+             */
+            int rule = updateCaseRule(id,queryResponseResult);
+            if (rule == 1) {
+                return queryResponseResult;
+            }else{
+                // 数据处理失败   要准备回滚数据 ---
+                int c = 1 / 0;
+                return new QueryResponseResult(CommonCode.FAIL,null);
+            }
+        }else {
+            return queryResponseResult;
+        }
     }
 
     @Override
