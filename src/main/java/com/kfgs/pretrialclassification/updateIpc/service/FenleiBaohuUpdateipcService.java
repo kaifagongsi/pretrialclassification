@@ -72,13 +72,15 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
         List<FenleiBaohuResult> fenleiBaohuResultsCount = fenleiBaohuResultMapper.selectList(queryWrapper);
         queryWrapper.eq("state","2");
         List<FenleiBaohuResult> fenleiBaohuResultsStateTwoCount = fenleiBaohuResultMapper.selectList(queryWrapper);
-        String worker = fenleiBaohuUpdateipcMapper.selectById(id).getWorker();
+        //一个案件如果多次提出更正就会有bug
+        QueryWrapper<FenleiBaohuUpdateIpc> queryWrapperUpdateIpc = new QueryWrapper<>();
+        queryWrapperUpdateIpc.eq("id",id).eq("state","0");
+        String worker = fenleiBaohuUpdateipcMapper.selectOne(queryWrapperUpdateIpc).getWorker();
         if(fenleiBaohuResultsCount.size() == fenleiBaohuResultsStateTwoCount.size()){//表述均已出案
             return AllProChuanCaoZuo(id,state);
         }else{ // 表示有一人未出案
             return OneOrMoreNotChuAn(id,worker,state);
         }
-
     }
 
     /**
@@ -89,10 +91,10 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
      * @return
      */
     private QueryResponseResult OneOrMoreNotChuAn(String id, String worker,String state) {
+        QueryWrapper<FenleiBaohuUpdateIpc> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",id).eq("worker",worker).eq("state","0");
+        FenleiBaohuUpdateIpc updateIpc = fenleiBaohuUpdateipcMapper.selectOne(queryWrapper);
         if("1".equals(state)){//管理员同意出案
-            QueryWrapper<FenleiBaohuUpdateIpc> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("id",id).eq("worker",worker);
-            FenleiBaohuUpdateIpc updateIpc = fenleiBaohuUpdateipcMapper.selectOne(queryWrapper);
             FenleiBaohuResult fenleiBaohuResult = new FenleiBaohuResult();
             fenleiBaohuResult.setId(id);
             fenleiBaohuResult.setState("2");
@@ -106,12 +108,19 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
             int i = fenleiBaohuResultMapper.saveClassificationInfo(fenleiBaohuResult,worker);
             // 更新main表状态
             int j = fenleiBaohuMainMapper.updateStateById(id,"1");
+            //更新裁决表的状态
+            updateIpc.setState("1");
+            // queryWrapper 实体对象封装操作类（可以为 null,里面的 entity 用于生成 where 语句）
+            int updateById = fenleiBaohuUpdateipcMapper.update(updateIpc,queryWrapper);
             if( i == j){
                 return new QueryResponseResult(CommonCode.SUCCESS,null);
             }else{
                 return new QueryResponseResult(CommonCode.FAIL,null);
             }
         }else if("2".equals(state)){//管理员不同意出案
+            // 偷懒不写sql文件了
+            updateIpc.setState("2");
+            int updateById = fenleiBaohuUpdateipcMapper.update(updateIpc,queryWrapper);
             int i = fenleiBaohuResultMapper.updateStateByIdAndWorker(id,worker,"2");
             int j = fenleiBaohuMainMapper.updateStateById(id,"1");
             if( i == j){
