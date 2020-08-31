@@ -244,31 +244,32 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         String cca = AdjudicationBusinessUtils.margeCca(ccaList);
         QueryResponseResult responseResult = AdjudicationBusinessUtils.JudgeWhetherToEnterTheRuling(id,ipcmiList, ipcoiList,ipcaList, csetsList, csets, cci, type);
         if(!"20000".equals(responseResult.getCode())){
-            //
+            // 表示进裁决
             return  responseResult;
+        }else{ // 表示不进裁决正常出案
+            //拼接ipci:ipcmi+ipcoi+ipca
+            //String ipci = "";
+            //不用进裁决则保存合并后的分类号
+            //合并ipci
+            //拼接主分类号
+            String ipci= AdjudicationBusinessUtils.mergeIPCI(ipcmiList,ipcoiList,ipcoiList);
+            //分类号存入main表
+            /*QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("id",id);*/
+            FenleiBaohuMain fenleiBaohuMain = new FenleiBaohuMain();
+            fenleiBaohuMain.setId(id);
+            fenleiBaohuMain.setCci(cci);
+            fenleiBaohuMain.setCca(cca);
+            fenleiBaohuMain.setCsets(csets);
+            fenleiBaohuMain.setIpci(ipci);
+            fenleiBaohuMain.setState("2");
+            //fenleiBaohuMainMapper.update(fenleiBaohuMain,queryWrapper);
+            Map map = new HashMap();
+            map.put("mainUpdateInfo",fenleiBaohuMain);
+            QueryResult queryResult = new QueryResult();
+            queryResult.setMap(map);
+            return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
         }
-        //拼接ipci:ipcmi+ipcoi+ipca
-        //String ipci = "";
-        //不用进裁决则保存合并后的分类号
-        //合并ipci
-        //拼接主分类号
-        String ipci= AdjudicationBusinessUtils.mergeIPCI(ipcmiList,ipcoiList,ipcoiList);
-        //分类号存入main表
-        /*QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("id",id);*/
-        FenleiBaohuMain fenleiBaohuMain = new FenleiBaohuMain();
-        fenleiBaohuMain.setId(id);
-        fenleiBaohuMain.setCci(cci);
-        fenleiBaohuMain.setCca(cca);
-        fenleiBaohuMain.setCsets(csets);
-        fenleiBaohuMain.setIpci(ipci);
-        fenleiBaohuMain.setState("2");
-        //fenleiBaohuMainMapper.update(fenleiBaohuMain,queryWrapper);
-        Map map = new HashMap();
-        map.put("mainUpdateInfo",fenleiBaohuMain);
-        QueryResult queryResult = new QueryResult();
-        queryResult.setMap(map);
-        return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
     }
 
     /***
@@ -382,6 +383,11 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         String id = fenleiBaohuResult.getId();
         String user = fenleiBaohuResult.getWorker();
         //查询案件是否已导出，已导出的案件不可再提出更正
+        // 预测有bug 案件多个人做   已修改
+        QueryWrapper<FenleiBaohuResult> queryWrapperResult =new QueryWrapper();
+        queryWrapperResult.eq("id",id).eq("worker",user);
+       // FenleiBaohuResult result = fenleiBaohuResultMapper.selectById(id);
+        FenleiBaohuResult result = fenleiBaohuResultMapper.selectOne(queryWrapperResult);
         FenleiBaohuMain fenleiBaohuMain = fenleiBaohuMainMapper.selectById(id);
         String export = fenleiBaohuMain.getIsExport();
         if ("1".equals(export)){
@@ -401,6 +407,14 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             String cci = fenleiBaohuResult.getCci();
             String cca = fenleiBaohuResult.getCca();
             String csets = fenleiBaohuResult.getCsets();
+            // 李晓亮修改获取旧的分类号的值
+            String oldIpcmi = result.getIPCMI();
+            String oldIpcoi = result.getIPCOI();
+            String oldIpca = result.getIpca();
+            String oldCci = result.getCci();
+            String oldCca = result.getCca();
+            String oldCsets = result.getCsets();
+
             FenleiBaohuUpdateIpc fenleiBaohuUpdateipc = new FenleiBaohuUpdateIpc();
             if (ipcmi != null){
                 fenleiBaohuUpdateipc.setIpcmi(ipcmi);
@@ -420,6 +434,24 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             if (csets != null){
                 fenleiBaohuUpdateipc.setCsets(csets);
             }
+            if (oldIpcmi != null){
+                fenleiBaohuUpdateipc.setOldIpcmi(oldIpcmi);
+            }
+            if (oldIpcoi != null){
+                fenleiBaohuUpdateipc.setOldIpcoi(oldIpcoi);
+            }
+            if (oldIpca != null){
+                fenleiBaohuUpdateipc.setOldIpca(oldIpca);
+            }
+            if (oldCci != null){
+                fenleiBaohuUpdateipc.setOldCci(oldCci);
+            }
+            if (oldCca != null){
+                fenleiBaohuUpdateipc.setOldCca(oldCca);
+            }
+            if (oldCsets != null){
+                fenleiBaohuUpdateipc.setOldCsets(oldCsets);
+            }
             //设置id
             fenleiBaohuUpdateipc.setId(id);
             fenleiBaohuUpdateipc.setWorker(user);
@@ -429,11 +461,13 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             fenleiBaohuUpdateipc.setState("0");
             res = fenleiBaohuUpdateipcMapper.insert(fenleiBaohuUpdateipc);
             //更改result表状态
-            fenleiBaohuResult.setState("9");
+            // 发现bug  在点击更正以后，result表中的内容直接被修改了 应该只该表state 当前案件的当前人员的state
+            res = fenleiBaohuResultMapper.updateStateByIdAndWorker(id,user,"9");
+           /* fenleiBaohuResult.setState("9");
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("id",id);
             queryWrapper.eq("worker",user);
-            res = fenleiBaohuResultMapper.update(fenleiBaohuResult,queryWrapper);
+            res = fenleiBaohuResultMapper.update(fenleiBaohuResult,queryWrapper);*/
             //更改main表状态
             fenleiBaohuMain.setState("9");
             res = fenleiBaohuMainMapper.updateById(fenleiBaohuMain);
