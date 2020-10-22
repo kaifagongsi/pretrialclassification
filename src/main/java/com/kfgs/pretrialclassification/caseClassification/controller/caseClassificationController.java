@@ -56,14 +56,15 @@ public class caseClassificationController extends BaseController {
             if (state == "0" || state.equals("0")) {
                 classtype = "主";
             }
-            //已分待出
+            //转案待审,作为副分，状态为0
             if (state == "1" || state.equals("1")) {
-                classtype = "主";
-            }
-            //转案待审,作为副分，状态不为2
-            if (state == "2" || state.equals("2")) {
-                state = "";
+                state = "0";
                 classtype = "副";
+            }
+            //已分待出
+            if (state == "2" || state.equals("2")) {
+                state = "1";
+                classtype = "";
             }
             //已出案,状态为2
             //只在出案案件中按时间查询

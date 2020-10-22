@@ -12,7 +12,6 @@ import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUpdateIpc;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
-import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUpdateipcExt;
 import com.kfgs.pretrialclassification.domain.response.CaseFinishResponseEnum;
 import com.kfgs.pretrialclassification.domain.response.CommonCode;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
@@ -26,8 +25,8 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 
-@Service
 @Slf4j
+@Service
 public class CaseClassificationServiceImpl implements CaseClassificationService {
 
     @Autowired
@@ -210,7 +209,6 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     */
     public QueryResponseResult caseRule(String id) {
 
-        QueryResponseResult queryResponseResult = new QueryResponseResult();
         //获取result表中案件分类号情况
         //获取主分类号ipcmi
         List<String> ipcmiList = new ArrayList<>();
@@ -316,11 +314,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     public QueryResponseResult caseFinish(String id, String user) {
         QueryResponseResult queryResponseResult = new QueryResponseResult();
         List<String> unFinish = new ArrayList<>();
-        //待出案的案件id
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("id",id);
-        queryWrapper.eq("worker",user);
-        FenleiBaohuResult fenleiBaohuResult = fenleiBaohuResultMapper.selectOne(queryWrapper);
+        //待出案的案件
         /*1.判断是否最后一个出案
             查询除自己以外其他未出案
         */
@@ -328,7 +322,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         unFinish = fenleiBaohuResultMapper.getCaseUnFinish(id);
         if (unFinish.size() == 1){
             //最后一个未出案
-            return lastFinish(id,queryResponseResult);
+            return lastFinish(id,user,queryResponseResult);
         }else if (unFinish.size() > 1){
             /**
              * 不是最后一个出案,可直接出案,不改变main表状态
@@ -342,7 +336,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     }
 
     /**
-     * 最后一个出案,判断是否进裁决,不用裁决则出案完成更改main表案件状态，否则进入裁决
+     * 最后一个出案,判断是否进裁决,不用裁决则出案完成更改result表和main表案件状态，否则进入裁决
      * 校验：无主分、多个主分、超过两人给出组合码且总数大于99组,FM案件CPC为空
      *  该方法有多出应用，修改时要注意
      * @param id 案件id
@@ -351,10 +345,19 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
      */
     @Override
     @Transactional
-    public QueryResponseResult lastFinish( String id,QueryResponseResult queryResponseResult ){
+    public QueryResponseResult lastFinish( String id,String user,QueryResponseResult queryResponseResult ){
         if(queryResponseResult == null){
             queryResponseResult = new QueryResponseResult();
         }
+        String chuantime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        QueryWrapper queryWrapper = new QueryWrapper();
+        QueryWrapper queryWrapper1 = new QueryWrapper();
+        queryWrapper.eq("id",id);
+        queryWrapper1.eq("id",id);
+        queryWrapper.eq("worker",user);
+        FenleiBaohuResult fenleiBaohuResult = fenleiBaohuResultMapper.selectOne(queryWrapper);
+        FenleiBaohuMain fenleiBaohuMain = fenleiBaohuMainMapper.selectOne(queryWrapper1);
+        //判断是否进入裁决
         queryResponseResult = caseRule(id);
         int code = queryResponseResult.getCode();
         String message = queryResponseResult.getMessage();
@@ -371,6 +374,21 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                 return new QueryResponseResult(CommonCode.FAIL,null);
             }
         }else {
+            //不用裁决
+            //更改result表和main表状态
+            fenleiBaohuResult.setChuantime(Long.parseLong(chuantime));
+            fenleiBaohuResult.setState("2");
+            int result = fenleiBaohuResultMapper.update(fenleiBaohuResult,queryWrapper);
+            if (result == 1){
+                fenleiBaohuMain.setChuantime(Long.parseLong(chuantime));
+                fenleiBaohuMain.setState("2");
+                int main = fenleiBaohuMainMapper.update(fenleiBaohuMain,queryWrapper1);
+                if (main == 1){
+                    return new QueryResponseResult(CommonCode.SUCCESS,null);
+                }else {
+                    return new QueryResponseResult(CommonCode.FAIL,null);
+                }
+            }
             return queryResponseResult;
         }
     }

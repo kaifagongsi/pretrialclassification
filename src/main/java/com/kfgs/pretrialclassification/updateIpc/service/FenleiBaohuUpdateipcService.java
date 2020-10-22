@@ -77,7 +77,7 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
         queryWrapperUpdateIpc.eq("id",id).eq("state","0");
         String worker = fenleiBaohuUpdateipcMapper.selectOne(queryWrapperUpdateIpc).getWorker();
         if(fenleiBaohuResultsCount.size() == fenleiBaohuResultsStateTwoCount.size()){//表述均已出案
-            return AllProChuanCaoZuo(id,state);
+            return AllProChuanCaoZuo(id,worker,state);
         }else{ // 表示有一人未出案
             return OneOrMoreNotChuAn(id,worker,state);
         }
@@ -135,9 +135,9 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
     /**
      * 管理员点击后，该案件所有案件均正常出案
      */
-    private QueryResponseResult AllProChuanCaoZuo(String id, String state) {
+    private QueryResponseResult AllProChuanCaoZuo(String id, String worker,String state) {
         if("1".equals(state)){//管理员同意出案
-            QueryResponseResult queryResponseResult = caseClassificationService.lastFinish(id, null);
+            QueryResponseResult queryResponseResult = caseClassificationService.lastFinish(id, worker,null);
             return queryResponseResult;
         }else if("2".equals(state)){//管理员不同意出案
             //仅修改main/result表的状态
