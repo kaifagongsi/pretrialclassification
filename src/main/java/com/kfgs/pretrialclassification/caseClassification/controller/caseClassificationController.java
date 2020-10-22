@@ -135,7 +135,8 @@ public class caseClassificationController extends BaseController {
             return resultMap;
         }
         else {
-            return null;
+            resultMap.put("case",null);
+            return resultMap;
         }
     }
 
