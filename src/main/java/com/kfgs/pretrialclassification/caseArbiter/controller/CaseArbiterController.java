@@ -92,4 +92,10 @@ public class CaseArbiterController {
     public QueryResponseResult insertIntoAdjudication(@PathVariable("id") String id, QueryResponseResult responseResult){
         return caseArbiterService.insertIntoAdjudication(id,responseResult);
     }
+
+    @ApiOperation("裁决组长出案之前进行，该案件的校验")
+    @GetMapping("/beforeTheCaseOfTheChiefJudge/{id}")
+    public  boolean beforeTheCaseOfTheChiefJudge(@PathVariable("id") String id){
+        return caseArbiterService.beforeTheCaseOfTheChiefJudge(id);
+    }
 }

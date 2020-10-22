@@ -426,7 +426,7 @@ public class CaseArbiterService   {
         queryResult.setList(arbiterParamList);
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
     }
-    // 出案
+    // 裁决组长出案
     @Transactional
     public QueryResponseResult arbiterChuAn(String id) {
         //1.修改案件状态以及出案时间
@@ -720,6 +720,21 @@ public class CaseArbiterService   {
             random = (int) (Math.random() * size);
         }
         return random;
+    }
+
+    //裁决组长出案之前进行，该案件的校验
+    public boolean beforeTheCaseOfTheChiefJudge(String id) {
+        QueryResponseResult classInfoByID = this.findClassInfoByID(id);
+        Object ipcmi = classInfoByID.getQueryResult().getMap().get("ipcmi");
+        if( null == ipcmi   ){
+            return false;
+        }else {
+            if( 0 == ipcmi.toString().length()){
+                return  false;
+            }else{
+                return true;
+            }
+        }
     }
 
     /*private ArrayList getAllClassification(String[] classifications ){
