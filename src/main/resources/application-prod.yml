@@ -49,7 +49,7 @@ spring:
     host:  10.51.44.109
     protocol: smtp
     username: lixiaoliang@cnipa.gov.cn
-    password: sipo@426
+    password: Sipo@426
     default-encoding: utf-8
     smtp:
       auth: true

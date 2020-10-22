@@ -11,7 +11,7 @@ spring:
     active: @activatedProperties@
   datasource:
     druid:
-      url: jdbc:oracle:thin:@172.17.1.56:1521:orcl
+      url: jdbc:oracle:thin:@172.17.1.60:1521:orcl
       #url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
       username: zljg
       password: zljg123456
@@ -36,7 +36,7 @@ spring:
   session:
     store-type: redis # 选择使用redis 作为session存储
   redis:
-    host: 172.17.1.56
+    host: 172.17.1.60
     port: 6379
     password:
     jedis:
@@ -50,7 +50,7 @@ spring:
     host:  10.51.44.109
     protocol: smtp
     username: lixiaoliang@cnipa.gov.cn
-    password: sipo@426
+    password: Sipo@426
     default-encoding: utf-8
     smtp:
       auth: true
