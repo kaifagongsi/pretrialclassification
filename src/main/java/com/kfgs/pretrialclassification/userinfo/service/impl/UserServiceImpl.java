@@ -123,6 +123,11 @@ public class UserServiceImpl implements UserService {
         }else if(fenleiBaohuUserinfo.getDep1().equals("JG")){
             fenleiBaohuUserinfo.setDep1("数据加工部");
         }
+        if("user".equals(fenleiBaohuUserinfo.getType())){
+            fenleiBaohuUserinfo.setType("1");
+        }else if("admin".equals(fenleiBaohuUserinfo.getType())){
+            fenleiBaohuUserinfo.setType("3");
+        }
         fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@cnipa.gov.cn");
         fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
         int insert = userinfoMapper.insertEntity(fenleiBaohuUserinfo);
