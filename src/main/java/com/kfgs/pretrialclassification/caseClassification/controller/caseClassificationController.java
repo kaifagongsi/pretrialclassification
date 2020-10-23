@@ -179,7 +179,7 @@ public class caseClassificationController extends BaseController {
             fenleiBaohuResult.setFenpeitime(DateUtil.formatFullTime(LocalDateTime.now()));
             fenleiBaohuResult.setFenpeiren(worker);
             fenleiBaohuResult.setMESSAGE(message);
-            fenleiBaohuResult.setState("1");
+            fenleiBaohuResult.setState("0");
             fenleiBaohuResult.setClasstype("副");
             transList.add(fenleiBaohuResult);
         }
