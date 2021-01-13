@@ -15,7 +15,8 @@ public enum CommonCode implements ResultCode {
     SUCCESS(true,20000,"操作成功"),
     FAIL(false,11111,"操作失败"),
     SERVER_ERROR(false,10002,"权限不足，无法操作"),
-    INVALID_PARAM(false,10003,"非法参数");
+    INVALID_PARAM(false,10003,"非法参数"),
+    REPEAT_SUBMIT(false,10004,"重复提交，操作失败");
 
 
     //操作是否成功
