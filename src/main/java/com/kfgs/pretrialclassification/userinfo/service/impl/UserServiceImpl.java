@@ -62,11 +62,15 @@ public class UserServiceImpl implements UserService {
         // 从SecurityContextHolder中获取到，当前登录的用户信息。
         FenleiBaohuUserinfoExt userDetails = null;
         try{
-            userDetails = (FenleiBaohuUserinfoExt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if(null == principal){ //未登录
+                log.error("当前用户未登录");
+                return null;
+            }
+            userDetails = (FenleiBaohuUserinfoExt) principal;
         }catch (Exception e){
             e.printStackTrace();
         }
-
         // 根据用户Id，获取用户详细信息。    //   getUserinfoByLoginName
         //getUserinfoByLoginNameWithRole  改表以后携带权限查询
         //getUserinfoByLoginName         改表之前不带权限查询

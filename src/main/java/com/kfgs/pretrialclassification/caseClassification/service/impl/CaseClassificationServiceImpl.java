@@ -396,7 +396,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     @Override
     @Transactional
     public QueryResponseResult caseCorrect(FenleiBaohuResult fenleiBaohuResult) {
-
+        log.info("进入分类号更正");
         int res = 0;
         String id = fenleiBaohuResult.getId();
         String user = fenleiBaohuResult.getWorker();
@@ -412,6 +412,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             //已导出案件不可再提出更改
             return new QueryResponseResult(CaseFinishResponseEnum.EXPORT_FINISH,null);
         } else if ("0".equals(export)){
+            log.info("fenleiBaohuResult："+fenleiBaohuResult.toString());
             String classtype = fenleiBaohuResult.getClasstype();
             String fenpeiren = fenleiBaohuResult.getFenpeiren();
             String fenpeitime = fenleiBaohuResult.getFenpeitime();
@@ -477,6 +478,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             String updateDate = DateUtil.formatFullTime(LocalDateTime.now());
             fenleiBaohuUpdateipc.setUploadtime(updateDate);
             fenleiBaohuUpdateipc.setState("0");
+            log.info("开始包存");
             res = fenleiBaohuUpdateipcMapper.insert(fenleiBaohuUpdateipc);
             //更改result表状态
             // 发现bug  在点击更正以后，result表中的内容直接被修改了 应该只该表state 当前案件的当前人员的state
@@ -495,8 +497,9 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                 log.error("分类员"+user+"提出案件"+id+"更正失败，无法判断原因。");
                 return new QueryResponseResult(CommonCode.FAIL,null);
             }
+        }else {
+            return new QueryResponseResult(CommonCode.FAIL,null);
         }
-        return null;
     }
 
     /**
