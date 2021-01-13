@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.kfgs.pretrialclassification.caseClassification.service.CaseClassificationService;
 import com.kfgs.pretrialclassification.common.controller.BaseController;
+import com.kfgs.pretrialclassification.common.repeatsubmit.NoRepeatSubmit;
 import com.kfgs.pretrialclassification.common.utils.DateUtil;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
@@ -158,8 +159,9 @@ public class caseClassificationController extends BaseController {
 
     @ApiOperation("result表，转案")
     @PostMapping("/caseTransfer")
-    public Map caseTransfer(String list){
-        Map resultMap = new HashMap();
+    @NoRepeatSubmit
+    public QueryResponseResult caseTransfer(String list){
+        //Map resultMap = new HashMap();
         //转案
         //解析转案人员列表及留言
         JSONArray jsonArray = JSONArray.parseArray(list);
@@ -185,13 +187,15 @@ public class caseClassificationController extends BaseController {
         }
         boolean retrn = caseClassificationService.caseTrans(transList);
         if (retrn){
-            resultMap.put("code",20000);
-            resultMap.put("message","转案成功");
+            return new QueryResponseResult(CommonCode.SUCCESS,null);
+            /*resultMap.put("code",20000);
+            resultMap.put("message","转案成功");*/
         }else {
-            resultMap.put("code",20000);
-            resultMap.put("message","转案失败");
+            return new QueryResponseResult(CommonCode.FAIL,null);
+            /*resultMap.put("code",20000);
+            resultMap.put("message","转案失败");*/
         }
-        return resultMap;
+        //return resultMap;
     }
 
     @ApiOperation("result表,保存案件分类信息")
