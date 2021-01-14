@@ -76,6 +76,7 @@ public class caseClassificationController extends BaseController {
             //分类号更正待审
             if (state == "4" || state.equals("4")) {
                 state = "9";
+                classtype = "";
             }
             //分类号裁决待审
             if (state == "5" || state.equals("5")) {
