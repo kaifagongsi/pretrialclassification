@@ -33,7 +33,8 @@ public class CustomUserDetailsService  implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        List<FenleiBaohuUserinfoExt> userinfoByLoginName = fenleiBaohuUserinfoMapper.getUserinfoByLoginName(s);
+
+        List<FenleiBaohuUserinfoExt> userinfoByLoginName = fenleiBaohuUserinfoMapper.getUserinfoByLoginNameWithRole(s);
         if(Objects.isNull(userinfoByLoginName)){
             try {
                 throw  new PretrialClassificationException("用户不存在");
