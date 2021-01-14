@@ -104,8 +104,8 @@ public class LoginController {
         VerifyCodeUtils.ImageVerifyCode image = VerifyCodeUtils.getImage();
         // 获取 图片 验证码中的文本
         String codeText = image.getCodeText();
-        // 将验证码的 codeKey 和 codeText , 保存在 redis 中，有效时间为 60 分钟
-        redisTemplate.opsForValue().set(codeKey, codeText, 60, TimeUnit.MINUTES);
+        // 将验证码的 codeKey 和 codeText , 保存在 redis 中，有效时间为 60 秒
+        redisTemplate.opsForValue().set(codeKey, codeText, 60, TimeUnit.SECONDS);
         ImageIO.write(image.getImage(), "JPEG", response.getOutputStream());
     }
 
