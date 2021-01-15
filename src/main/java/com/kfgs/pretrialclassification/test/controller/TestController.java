@@ -1,7 +1,10 @@
 package com.kfgs.pretrialclassification.test.controller;
 
+import com.kfgs.pretrialclassification.common.repeatsubmit.NoRepeatSubmit;
 import com.kfgs.pretrialclassification.dao.TestOracleDao;
 import com.kfgs.pretrialclassification.domain.User;
+import com.kfgs.pretrialclassification.domain.response.CommonCode;
+import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 import com.kfgs.pretrialclassification.test.service.TestService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -58,6 +61,13 @@ public class TestController {
         testService.textRedis();
     }
 
+
+    @ApiOperation("用户提交转案接口，当提交的id为空的时候，转案，当提交的id存在的时候，不操作")
+    @RequestMapping("/submit")
+    @NoRepeatSubmit
+    public QueryResponseResult sub(){
+        return new QueryResponseResult(CommonCode.SUCCESS,null);
+    }
 
     /*@GetMapping("testCorseGet")
     public Map testCorseGet(@RequestParam("username") String username, @RequestParam("password")String password, HttpServletRequest req){
