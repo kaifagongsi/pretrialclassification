@@ -58,7 +58,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         if (completeToken != null && completeToken.startsWith(this.jwtTokenUtils.getTokenHead())) {
             // 截取token中"Bearer "后面的值，
             final String tokenValue = jwtTokenUtils.interceptCompleteToken(completeToken);
-            // 根据 token值，获取 用户的 username
+            // 根据 token值，获取 用户的 username 并判断token 是否过期
             String username = jwtTokenUtils.getUsernameFromToken(tokenValue);
             log.info("JwtAuthenticationTokenFilter[doFilterInternal] 开始检查用户是否合法 {} ", username);
             // 验证用户账号是否合法

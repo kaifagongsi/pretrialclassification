@@ -53,8 +53,13 @@ public class UserServiceImpl implements UserService {
     public FenleiBaohuUserinfoExt validateUsername(String username) {
         BoundHashOperations<String, String, Object> stringStringObjectBoundHashOperations = tokenStorage();
         Object o = stringStringObjectBoundHashOperations.get(username);
-        System.out.println(o.toString());
-        return (FenleiBaohuUserinfoExt) tokenStorage().get(username);
+        if(  null == o){
+            return null;
+        }else{
+            System.out.println(o.toString());
+            return (FenleiBaohuUserinfoExt) tokenStorage().get(username);
+        }
+
     }
     @Override
     public Map findUserInfo() {
@@ -63,7 +68,8 @@ public class UserServiceImpl implements UserService {
         FenleiBaohuUserinfoExt userDetails = null;
         try{
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if(null == principal){ //未登录
+            //未登录
+            if(null == principal){
                 log.error("当前用户未登录");
                 return null;
             }
