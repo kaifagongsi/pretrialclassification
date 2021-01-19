@@ -75,19 +75,19 @@
         (select r.id,wm_concat(distinct r.classtype) as asstype,wm_concat(r.worker) as assworker,wm_concat(r.ipci) as ipci_ass from FENLEI_BAOHU_RESULT r where r.classtype='副' group by r.id)t1
         on t2.id=t1.id)t_mr on m.id=t_mr.id where 1=1
         <if test="id!=''">
-            AND m.id = #{id}
+            AND m.id like concat(concat('%',#{id}),'%')
         </if>
         <if test="name!=''">
-            AND m.mingcheng = #{name}
+            AND m.mingcheng like concat(concat('%',#{mingcheng}),'%')
         </if>
         <if test="sqr!=''">
-            AND m.sqr = #{sqr}
+            AND m.sqr like concat(concat('%',#{sqr}),'%')
         </if>
         <if test="sqh!=''">
-            AND m.sqh = #{sqh}
+            AND m.sqh like concat(concat('%',#{sqh}),'%')
         </if>
         <if test="worker!=''">
-            AND t_mr.mainworker like concat('%',#{worker}) or t_mr.assworker like concat(concat('%',#{worker}),'%')
+            AND t_mr.mainworker like concat(concat('%',#{worker}),'%') or t_mr.assworker like concat(concat('%',#{worker}),'%')
         </if>
         <if test="state!=''">
             AND m.state = #{state}
