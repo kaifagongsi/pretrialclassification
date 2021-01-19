@@ -353,8 +353,9 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         QueryWrapper queryWrapper = new QueryWrapper();
         QueryWrapper queryWrapper1 = new QueryWrapper();
         queryWrapper.eq("id",id);
-        queryWrapper1.eq("id",id);
         queryWrapper.eq("worker",user);
+        queryWrapper1.eq("id",id);
+
         FenleiBaohuResult fenleiBaohuResult = fenleiBaohuResultMapper.selectOne(queryWrapper);
         FenleiBaohuMain fenleiBaohuMain = fenleiBaohuMainMapper.selectOne(queryWrapper1);
         //判断是否进入裁决
@@ -512,7 +513,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         int res = 0;
         String chuantime = DateUtil.formatFullTime(LocalDateTime.now());
         //result表
-        res = fenleiBaohuResultMapper.updateResultRule(id,chuantime,"7");
+        res = fenleiBaohuResultMapper.updateResultRule(id,"7");
         res = fenleiBaohuMainMapper.updateMainRule(id,chuantime,"7");
         QueryResponseResult queryResponseResult = caseArbiterService.insertIntoAdjudication(id,responseResult);
         return res;
