@@ -19,6 +19,10 @@ public enum CommonResponseEnum implements CommonExceptionAssert {
      */
     SUCCESS(0, "SUCCESS"),
     /**
+     * 无法获取当前用户名，请重新登录
+     */
+    CANNOT_GET_USERINFO(8000,"无法获取当前用户名称"),
+    /**
      * 服务器繁忙，请稍后重试
      */
     SERVER_BUSY(9998, "服务器繁忙"),

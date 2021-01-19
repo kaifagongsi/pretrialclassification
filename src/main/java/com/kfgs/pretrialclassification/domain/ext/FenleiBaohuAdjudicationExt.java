@@ -17,13 +17,23 @@ import java.io.Serializable;
 @ToString
 public class FenleiBaohuAdjudicationExt extends FenleiBaohuAdjudication   {
 
-    //案件名称
+    /**
+     * 案件名称
+     */
     private String mingcheng;
-    //案件入保护中心事件
+    /**
+     * 案件入保护中心时间
+     */
     private String jinantime;
-    //sqh
+
     private String sqh;
-    //案件类型
+    /**
+     *案件类型
+     */
     private String type;
+    /**
+     * 文件路径
+     */
+    private String path;
 
 }

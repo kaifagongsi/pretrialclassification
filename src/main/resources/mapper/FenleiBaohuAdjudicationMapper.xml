@@ -14,7 +14,8 @@
           m.sqh as sqh,
           m.type as type,
           ad.state as state,
-          (to_date(m.JINANTIME,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as jinantime
+          (to_date(m.JINANTIME,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as jinantime,
+          m.pdf_path as path
         from
           FENLEI_BAOHU_ADJUDICATION ad, FENLEI_BAOHU_MAIN m
         where

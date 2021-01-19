@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.common.exception.ArbiterEnum;
+import com.kfgs.pretrialclassification.common.exception.CommonResponseEnum;
 import com.kfgs.pretrialclassification.common.utils.AdjudicationBusinessUtils;
 import com.kfgs.pretrialclassification.dao.*;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuAdjudication;
@@ -22,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.applet.AppletContext;
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -103,7 +105,9 @@ public class CaseArbiterService   {
         * FenleiBaohuUserinfoExt authentication = (FenleiBaohuUserinfoExt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         * ArbiterResponseEnum.GET_USERNAME_FAILE.assertNotNull(authentication);
         */
-        int i = fenleiBaohuAdjudicationMapper.saveAribiterClassfication(ext,"000000");
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        CommonResponseEnum.CANNOT_GET_USERINFO.assertNotNull(username);
+        int i = fenleiBaohuAdjudicationMapper.saveAribiterClassfication(ext,username);
         if(i == 1){
             return new QueryResponseResult(CommonCode.SUCCESS,null);
         }else{
