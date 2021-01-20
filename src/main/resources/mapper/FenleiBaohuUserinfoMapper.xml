@@ -36,7 +36,7 @@
     <select id="findAreaName" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo">
         select areaname,wm_concat(workername || '[' ||classlevel || ']' || '-' || decode(orgname,'FL','分类','JG','加工','')) as workername
           from fenlei_baohu_userinfo
-        where areaname is not null and classlevel is not null
+        where areaname is not null and classlevel is not null and classlevel != 'C'
         group by areaname
         order by areaname
     </select>
@@ -81,7 +81,7 @@
        where loginname = #{loginname}
     </select>
     <select id="selectListByDep1AndDep2" resultType="java.lang.String">
-        select workername from FENLEI_BAOHU_USERINFO where dep1 = #{dep1} and dep2 = #{dep2}   and IS_ONLINE = '1'
+        select workername from FENLEI_BAOHU_USERINFO where (dep1 = #{dep1} and dep2 = #{dep2}   and IS_ONLINE = '1' ) OR (dep1 = #{dep1} and dep2 = #{dep2} and classlevel ='C')
     </select>
     <select id="selectListByWorkerName"
             resultType="com.kfgs.pretrialclassification.domain.request.ArbiterParam">
