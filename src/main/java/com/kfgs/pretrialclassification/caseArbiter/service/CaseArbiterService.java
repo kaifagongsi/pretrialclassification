@@ -143,7 +143,10 @@ public class CaseArbiterService   {
         String[] strs = ipc.split("[,;，；]");
         String subClass= "";
         String dazuClass = "";
-        ArrayList<String> linkset = new ArrayList<>();
+        /**
+         * 要求去重，2021年1月20日 09:02:51 修改为使用linkedhashset
+         */
+        LinkedHashSet<String> linkset = new LinkedHashSet<>();
         for(int i = 0; i < strs.length; i++){
             String ipc_ = strs[i];
             if(!StringUtils.isNotEmpty(ipc_)){
@@ -230,7 +233,9 @@ public class CaseArbiterService   {
         }
         // 存放每个大组
         ArrayList<ArrayList<String> > list_zu = new ArrayList<ArrayList<String>>();
-        // 存放所有的分类号
+        /**
+         * 存放所有的分类号 2021年1月20日 09:12:04 lxl  csets 不用去除
+         */
         ArrayList<String> list = new ArrayList();
         //循环每组
         for(String str : strs){
@@ -316,12 +321,30 @@ public class CaseArbiterService   {
     private boolean checkClassCodeVersion(ArrayList<String> list, String codeName) {
         HashSet<String> set = new HashSet<>();
         if(codeName.equalsIgnoreCase("IPC")){
-            set = fenleiBaohuIPCMapper.getHashSetFromIPCList(list);
+            set = fenleiBaohuIPCMapper.getHashSetFromIPCList(list );
         }else if(codeName.equalsIgnoreCase("CPC")){
             set = fenleiBaohuCPCMapper.getHashSetFromCPCList(list);
         }
         //将数据库对比出来的和传入的进行对比
         ArrayList clone =(ArrayList) list.clone();
+        clone.removeAll(set);
+        if(!clone.isEmpty() && clone.size() !=0){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    private boolean checkClassCodeVersion(LinkedHashSet<String> list, String codeName) {
+        HashSet<String> set = new HashSet<>();
+        ArrayList<String> list_db = new ArrayList<String>(list);
+        if(codeName.equalsIgnoreCase("IPC")){
+            set = fenleiBaohuIPCMapper.getHashSetFromIPCList(list_db );
+        }else if(codeName.equalsIgnoreCase("CPC")){
+            set = fenleiBaohuCPCMapper.getHashSetFromCPCList(list_db);
+        }
+        //将数据库对比出来的和传入的进行对比
+        ArrayList clone =(ArrayList) list_db.clone();
         clone.removeAll(set);
         if(!clone.isEmpty() && clone.size() !=0){
             return false;
@@ -405,7 +428,9 @@ public class CaseArbiterService   {
         queryResult.setMap(resultMap);
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
     }
-    // 根据部门去查询具有裁决权限的人员
+    /**
+     *  根据部门去查询具有裁决权限的人员
+     */
     public QueryResponseResult findAribiterPersonList(ArbiterParam arbiterParam) {
         List<String> name_list =  fenleiBaohuUserinfoMapper.selectListByDep1AndDep2(arbiterParam.getDep1(),arbiterParam.getDep2());
         QueryResult queryResult = new QueryResult();
