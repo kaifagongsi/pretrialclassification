@@ -39,7 +39,7 @@ public class CaseArbiterController {
         return  caseArbiterService.getArbiterPersonInitList(pageNum,pageSize);
     }
 
-    @ApiOperation("根据传入的实体的id更新分类号")
+    @ApiOperation("根据传入的实体的id更新分类号,裁决组长保存案子")
     @PostMapping("/saveAribiterClassfication")
     public QueryResponseResult saveAribiterClassfication(@RequestBody FenleiBaohuAdjudicationExt fenleiBaohuAdjudicationExt){
         return caseArbiterService.saveAribiterClassfication(fenleiBaohuAdjudicationExt);
