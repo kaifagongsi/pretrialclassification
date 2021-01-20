@@ -36,7 +36,7 @@ spring:
   session:
     store-type: redis # 选择使用redis 作为session存储
   redis:
-    host: 172.17.1.60
+    host: 172.17.0.56
     port: 6379
     password:
     jedis:
