@@ -25,6 +25,8 @@ public interface FenleiBaohuMainMapper extends BaseMapper<FenleiBaohuMain> {
 
     IPage<FenleiBaohuMain> selectCaseIn(Page<FenleiBaohuMain> page, @Param("begintime") String begintime, @Param("endtime") String endtime);
 
+    IPage<FenleiBaohuMain> countCaseOutWithOrg(Page<FenleiBaohuMain> page, @Param("begintime") String begintime, @Param("endtime") String endtime);
+
     //IPage<FenleiBaohuMainResultExt> selectByCondition(IPage<FenleiBaohuMainResultExt> page, @Param("ew") Wrapper<FenleiBaohuMainResultExt> queryWrapper);
 
     IPage<FenleiBaohuMainResultExt> selectByCondition(IPage<FenleiBaohuMainResultExt> page, @Param("id") String id,@Param("name") String name,@Param("sqr") String sqr,@Param("sqh") String sqh,@Param("worker") String worker,@Param("state") String state,@Param("begintime") String begintime,@Param("endtime") String endtime);

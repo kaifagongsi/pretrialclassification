@@ -16,4 +16,6 @@ public interface CaseStatisticService {
     //出案量统计
     IPage countCaseOut(String pageNo, String limit,String beginTime, String endTime, String type,  String dept, String userName);
 
+    // 出案量统计，按照各个保护中心
+    IPage countCaseOutWithOrg(String pageNo, String limit,String beginTime,String endTime);
 }

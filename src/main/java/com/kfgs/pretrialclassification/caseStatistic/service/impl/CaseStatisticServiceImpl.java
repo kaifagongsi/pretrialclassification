@@ -58,4 +58,10 @@ public class CaseStatisticServiceImpl implements CaseStatisticService {
         return fenleiBaohuResultMapper.selectCaseOut(page,begintime,endtime,type,dept,userName);
     }
 
+
+    @Override
+    public IPage countCaseOutWithOrg(String pageNo, String limit, String beginTime, String endTime) {
+        Page<FenleiBaohuMain> page = new Page<FenleiBaohuMain>(Long.parseLong(pageNo),Long.parseLong(limit));
+        return fenleiBaohuMainMapper.countCaseOutWithOrg(page,beginTime,endTime);
+    }
 }

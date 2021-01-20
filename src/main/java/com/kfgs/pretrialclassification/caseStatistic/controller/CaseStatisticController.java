@@ -104,4 +104,34 @@ public class  CaseStatisticController extends BaseController {
         return resultMap;
     }
 
+    @ApiOperation("出案量统计按照地方的保护中心")
+    @GetMapping("/caseOutWithOrg")
+    public Map caseOutWithOrg(String page,String limit,String beginTime,String endTime){
+        Map resultMap = new HashMap();
+        if(beginTime == null){
+            beginTime = "";
+        }
+        if (endTime == null){
+            endTime = "";
+        }
+        if(beginTime == "" && endTime != ""){
+            beginTime = "19000000000000";
+            endTime = endTime.replace("-","")+"235959";
+        }else if(beginTime != "" && endTime == ""){
+            beginTime = beginTime.replace("-","")+"000000";
+            endTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString();
+            endTime = endTime.replace("-","")+"235959";
+        }else if(beginTime != "" && endTime != ""){
+            beginTime = beginTime.replace("-","")+"000000";
+            endTime = endTime.replace("-","")+"235959";
+        }else{
+            beginTime="";
+            endTime="";
+        }
+        Map<String, Object> dataTable = getDataTable(caseStatisticService.countCaseIn(page,limit,beginTime,endTime));
+        resultMap.put("code",20000);
+        resultMap.put("data",dataTable);
+        return resultMap;
+    }
+
 }

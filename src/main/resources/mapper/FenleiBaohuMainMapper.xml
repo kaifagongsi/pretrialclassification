@@ -62,6 +62,8 @@
       group by oraginization
     </select>
 
+
+
     <select id="selectByCondition" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt">
         select m.id,m.mingcheng,m.type,m.sqr,m.sqh,m.pdf_path,m.state,m.simpleclasscode,m.message,m.oraginization,
         (to_date(jinantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as jinantime,
@@ -154,6 +156,18 @@
     </select>
     <select id="getType" resultType="java.lang.String">
         select m.type from fenlei_baohu_main m where m.id=#{id}
+    </select>
+    <select id="countCaseOutWithOrg" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
+      select oraginization,
+             count(1) as totalCount,
+             sum(decode(type, 'FM', 1, 'XX', 0)) as fmCount,
+             sum(decode(type, 'FM', 0, 'XX', 1)) as xxCount
+        from FENLEI_BAOHU_MAIN
+       where state = '2'
+        <if test="begintime!=''and endtime!=''">
+            and  chuantime between #{begintime} and #{endtime}
+        </if>
+       group by oraginization
     </select>
 
     <update id="updateMainRule">
