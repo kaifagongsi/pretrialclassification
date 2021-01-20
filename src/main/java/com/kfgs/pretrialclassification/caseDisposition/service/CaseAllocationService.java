@@ -12,7 +12,7 @@ public interface CaseAllocationService {
     List findAreaName();
 
     //根据 fenlei_baohu_main 表 查询 state = 1的数据
-    IPage findMainByState(String pageNo, String limit);
+    IPage findMainByState(String pageNo, String limit,String dep1,String dep2);
 
     // 据id查找这个案子是谁在做
     String findWorkerById(String id);

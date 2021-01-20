@@ -40,9 +40,18 @@
                  where u.workername = r.worker) as areaname,
                m.type
           from fenlei_baohu_main m,
-               (select * from fenlei_baohu_result where classtype = '主') r
+               (select id,worker from fenlei_baohu_result where classtype = '主') r,
+               (select workername from fenlei_baohu_userinfo where is_online = '1'
+                <if test="dep1 !=null">
+                 and dep1 = #{dep1}
+                </if>
+                <if test="dep2 !=null">
+                    and dep2 = #{dep2}
+                </if>
+                ) u
          where m.state = #{state}
            and r.id = m.id
+           and r.worker = u.workername
 
     </select>
 

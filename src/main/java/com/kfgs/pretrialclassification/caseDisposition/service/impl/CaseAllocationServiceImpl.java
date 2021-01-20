@@ -114,9 +114,9 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
     }
 
     @Override
-    public IPage findMainByState(String pageNo, String limit) {
+    public IPage findMainByState(String pageNo, String limit,String dep1,String dep2) {
         Page<FenleiBaohuMain> page = new Page<FenleiBaohuMain>(Long.parseLong(pageNo),Long.parseLong(limit));
-        return fenleiBaohuMainMapper.findMainByState(page,"1");
+        return fenleiBaohuMainMapper.findMainByState(page,"1",dep1,dep2);
     }
 
     @Override

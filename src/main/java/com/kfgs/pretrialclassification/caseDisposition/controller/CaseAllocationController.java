@@ -59,9 +59,9 @@ public class CaseAllocationController extends BaseController {
 
     @ApiOperation("查询main表状态为1的")
     @GetMapping("/findMainByState")
-    public Map findMainByState(String page,String limit){
+    public Map findMainByState(String page,String limit,String dep1,String dep2){
         Map resultMap = new HashMap();
-        Map<String, Object> dataTable = getDataTable(caseAllocationService.findMainByState(page,limit));
+        Map<String, Object> dataTable = getDataTable(caseAllocationService.findMainByState(page,limit,dep1,dep2));
         resultMap.put("code",20000);
         resultMap.put("data",dataTable);
         return resultMap;
