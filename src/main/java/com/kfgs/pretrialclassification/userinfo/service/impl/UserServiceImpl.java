@@ -69,28 +69,31 @@ public class UserServiceImpl implements UserService {
         try{
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             //未登录
-            if(null == principal){
+            if("anonymousUser".equalsIgnoreCase(principal.toString())){ //anonymousUser
                 log.error("当前用户未登录");
                 return null;
             }
             userDetails = (FenleiBaohuUserinfoExt) principal;
+            // 根据用户Id，获取用户详细信息。    //   getUserinfoByLoginName
+            //getUserinfoByLoginNameWithRole  改表以后携带权限查询
+            //getUserinfoByLoginName         改表之前不带权限查询
+            FenleiBaohuUserinfoExt fenleiBaohuUserinfoExt = userinfoMapper.getUserinfoByLoginNameWithRole(userDetails.getLoginname()).get(0);
+            //设置权限
+            Map data = new HashMap<>();
+            // 此处是权限
+            data.put("roles",fenleiBaohuUserinfoExt.getAuthorities());
+            //此处是用户名称，无关权限
+            data.put("introduction",(fenleiBaohuUserinfoExt.getType() == "admin") ? "用户" : "管理员");
+            data.put("name",fenleiBaohuUserinfoExt.getName());
+            result.put("code",200);
+            result.put("data",data);
+            return data;
         }catch (Exception e){
+            log.error("当前用户未登录");
             e.printStackTrace();
+            return null;
         }
-        // 根据用户Id，获取用户详细信息。    //   getUserinfoByLoginName
-        //getUserinfoByLoginNameWithRole  改表以后携带权限查询
-        //getUserinfoByLoginName         改表之前不带权限查询
-        FenleiBaohuUserinfoExt fenleiBaohuUserinfoExt = userinfoMapper.getUserinfoByLoginNameWithRole(userDetails.getLoginname()).get(0);
-        //设置权限
-        Map data = new HashMap<>();
-        // 此处是权限
-        data.put("roles",fenleiBaohuUserinfoExt.getAuthorities());
-        //此处是用户名称，无关权限
-        data.put("introduction",(fenleiBaohuUserinfoExt.getType() == "admin") ? "用户" : "管理员");
-        data.put("name",fenleiBaohuUserinfoExt.getName());
-        result.put("code",200);
-        result.put("data",data);
-        return data;
+
     }
 
 
