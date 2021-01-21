@@ -84,8 +84,8 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
         //模糊查询
         queryWrapper.eq("id",id);
         Map resultMap = new HashMap();
-        List<FenleiBaohuResult> list = fenleiBaohuResultMapper.selectList(queryWrapper);
-        //List<FenleiBaohuResult> list = fenleiBaohuResultMapper.selectListByID(id);
+        //List<FenleiBaohuResult> list = fenleiBaohuResultMapper.selectList(queryWrapper);
+        List<FenleiBaohuResult> list = fenleiBaohuResultMapper.selectListByID(id);
         return list;
     }
 
