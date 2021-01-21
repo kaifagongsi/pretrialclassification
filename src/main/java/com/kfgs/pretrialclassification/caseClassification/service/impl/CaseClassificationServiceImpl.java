@@ -357,6 +357,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         queryWrapper1.eq("id",id);
 
         FenleiBaohuResult fenleiBaohuResult = fenleiBaohuResultMapper.selectOne(queryWrapper);
+
         FenleiBaohuMain fenleiBaohuMain = fenleiBaohuMainMapper.selectOne(queryWrapper1);
         //判断是否进入裁决
         queryResponseResult = caseRule(id);
@@ -366,14 +367,23 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             /**
              * 进入裁决，更改案件为裁决状态
              */
-            int rule = updateCaseRule(id,queryResponseResult);
-            if (rule == 1) {
-                return queryResponseResult;
-            }else{
-                // 数据处理失败   要准备回滚数据 ---
-                int c = 1 / 0;
+            // 01.21更改 最后一个出案进裁决先写入出案时间
+            fenleiBaohuResult.setChuantime(Long.parseLong(chuantime));
+            int result = fenleiBaohuResultMapper.update(fenleiBaohuResult,queryWrapper);
+
+            if (result == 1){
+                int rule = updateCaseRule(id,queryResponseResult);
+                if (rule == 1) {
+                    return queryResponseResult;
+                }else{
+                    // 数据处理失败   要准备回滚数据 ---
+                    int c = 1 / 0;
+                    return new QueryResponseResult(CommonCode.FAIL,null);
+                }
+            } else {
                 return new QueryResponseResult(CommonCode.FAIL,null);
             }
+
         }else {
             //不用裁决
             //更改result表和main表状态
