@@ -21,10 +21,13 @@
            u.oldipca as oldIpca,
            u.oldcci as oldCci,
            u.oldcca as oldCca,
-           u.oldcsets as oldCsets
-      from FENLEI_BAOHU_UPDATEIPC u
+           u.oldcsets as oldCsets,
+           m.pdf_path as pdfPath
+      from FENLEI_BAOHU_UPDATEIPC u , fenlei_baohu_main m
       where
           u.state = #{state}
+        and
+          m.id = u.id
       order by uploadtime
     </select>
 </mapper>

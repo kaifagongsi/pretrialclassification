@@ -145,4 +145,9 @@ public class FenleiBaohuUpdateIpc implements Serializable {
     @TableField("OLDCSETS")
     private  String oldCsets;
 
+    /**
+     * pdf路径
+     */
+    private String pdfPath;
+
 }
