@@ -89,7 +89,7 @@
             AND m.id like concat(concat('%',#{id}),'%')
         </if>
         <if test="name!=''">
-            AND m.mingcheng like concat(concat('%',#{mingcheng}),'%')
+            AND m.mingcheng like concat(concat('%',#{name}),'%')
         </if>
         <if test="sqr!=''">
             AND m.sqr like concat(concat('%',#{sqr}),'%')
