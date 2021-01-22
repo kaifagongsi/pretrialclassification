@@ -395,7 +395,6 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             Map map = mainResult.getMap();
             fenleiBaohuResult.setChuantime(Long.parseLong(chuantime));
             fenleiBaohuResult.setState("2");
-            fenleiBaohuResult.setIpci(map.get("ipci").toString());
             int result = fenleiBaohuResultMapper.update(fenleiBaohuResult,queryWrapper);
             if (result == 1){
                 //fenleiBaohuMain.setId(map.get("id").toString());
