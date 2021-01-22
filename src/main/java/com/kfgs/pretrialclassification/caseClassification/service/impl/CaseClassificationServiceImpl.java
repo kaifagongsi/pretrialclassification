@@ -553,6 +553,8 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         String ipcmi = fenleiBaohuResult.getIPCMI();
         String ipcoi = fenleiBaohuResult.getIPCOI();
         String ipca = fenleiBaohuResult.getIpca();
+        /*
+         2021年1月22日 17:23:36 李晓亮  修改在result 表中不在合并 ipci
         String ipci = "";
         if (ipcmi != "" && ipcmi != null){
             ipci += ipcmi;
@@ -571,7 +573,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         }
         if (ipci != "" && ipci != null){
             fenleiBaohuResult.setIpci(ipci);
-        }
+        }*/
         if (Integer.parseInt(state) == 1){
             state = "2";
             fenleiBaohuResult.setState(state);
