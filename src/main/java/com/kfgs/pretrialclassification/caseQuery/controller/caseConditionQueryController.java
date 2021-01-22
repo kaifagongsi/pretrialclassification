@@ -31,7 +31,7 @@ public class caseConditionQueryController extends BaseController{
 
     @ApiOperation("main表，查询所有案件")
     @GetMapping("/findAllCase")
-    public Map findAllCase(String page,String limit,String id,String name,String sqr,String sqh,String worker,String state,String beginTime,String endTime) throws PretrialClassificationException {
+    public Map findAllCase(String page,String limit,String id,String mingcheng,String sqr,String sqh,String worker,String state,String beginTime,String endTime) throws PretrialClassificationException {
         //获取查询条件
         Map resultMap = new HashMap();
         if(state == null || state == "all" || state.equals("all") || state==""){
@@ -40,8 +40,8 @@ public class caseConditionQueryController extends BaseController{
         if (id == null){
             id = "";
         }
-        if(name == null){
-            name = "";
+        if(mingcheng == null){
+            mingcheng = "";
         }
         if(sqr == null){
             sqr = "";
@@ -72,7 +72,7 @@ public class caseConditionQueryController extends BaseController{
             beginTime="";
             endTime="";
         }
-        Map<String, Object> dataTable = getDataTable(caseConditionQueryService.findAll(page,limit,id,name,sqr,sqh,worker,state,beginTime,endTime));
+        Map<String, Object> dataTable = getDataTable(caseConditionQueryService.findAll(page,limit,id,mingcheng,sqr,sqh,worker,state,beginTime,endTime));
         resultMap.put("code",20000);
         resultMap.put("data",dataTable);
         return resultMap;
