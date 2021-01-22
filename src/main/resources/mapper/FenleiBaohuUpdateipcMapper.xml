@@ -6,7 +6,7 @@
     </update>
 
     <select id="selectFenleiBaohuUpdateIpcPage"
-            resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuUpdateIpc">
+            resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUpdateipcExt">
         select u.id as id,
            u.worker as worker,
            u.uploadtime as uploadtime,

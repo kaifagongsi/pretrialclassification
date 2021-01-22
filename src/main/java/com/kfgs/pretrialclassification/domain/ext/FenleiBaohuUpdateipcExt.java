@@ -8,4 +8,8 @@ import lombok.ToString;
 @ToString
 public class FenleiBaohuUpdateipcExt  extends FenleiBaohuUpdateIpc {
 
+    /**
+     * pdf路径
+     */
+    private String pdfPath;
 }
