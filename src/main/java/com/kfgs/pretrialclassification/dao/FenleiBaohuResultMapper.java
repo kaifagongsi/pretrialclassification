@@ -62,5 +62,5 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
     int updateStateByIdAndWorker(@Param("id") String id, @Param("worker")String worker, @Param("state")String state);
 
 
-
+    int updateStateById(@Param("id")String id,@Param("state")String state);
 }

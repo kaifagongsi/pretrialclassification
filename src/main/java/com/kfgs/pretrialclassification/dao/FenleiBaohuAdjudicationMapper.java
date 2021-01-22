@@ -20,7 +20,7 @@ public interface FenleiBaohuAdjudicationMapper extends BaseMapper<FenleiBaohuAdj
 
     String selectAdjudicatorWorker(String id);
 
-    int updateCaseStateAndFinishTime(@Param("state") String state,@Param("finishTime")String finishTime, @Param("id") String id);
+    int updateCaseStateAndFinishTime(@Param("state") String state,@Param("finishTime")String finishTime, @Param("id") String id, @Param("loginame")String loginname);
 
     IPage<FenleiBaohuAdjudicationExt> getArbiterPersonInitList(Page<FenleiBaohuAdjudicationExt> page, @Param("username")String loginname);
 

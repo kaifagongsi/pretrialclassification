@@ -18,7 +18,13 @@
                 cca = #{cca},
             </if>
             <if test="csets != null">
-                csets = #{csets}
+                csets = #{csets},
+            </if>
+            <if test="finishTime != null">
+                CHUANTIME = #{finishTime},
+            </if>
+            <if test="state != null">
+                STATE = #{state}
             </if>
         </set>
         where

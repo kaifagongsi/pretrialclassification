@@ -461,24 +461,39 @@ public class CaseArbiterService   {
         //1.修改案件状态以及出案时间
         String finishTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
         // 没卡人员不知道是否存在bug
-        int i = fenleiBaohuAdjudicationMapper.updateCaseStateAndFinishTime("8",finishTime,id);
-        //2.将分类号插入main表中
-        FenleiBaohuAdjudication adjudication = fenleiBaohuAdjudicationMapper.selectById(id);
-        //2.1 拼装分类号 主分，副分*附加信息
-        //主分必定不为空
-        String ipci =  adjudication.getIpcmi();
-        if(adjudication.getIpcoi() != null){
-            ipci = ipci + ","+adjudication.getIpcoi();
-        }
-        if(adjudication.getIpca() != null){
-            ipci = ipci + "*" + adjudication.getIpca();
-        }
-        int main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(finishTime,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id);
-        if(main_j == 1 && i == 1){
-            return new QueryResponseResult(CommonCode.SUCCESS,null);
-        }else{
-            int c = 1/0;
-            return new QueryResponseResult(CommonCode.FAIL,null);
+        // 获取当前登录人员
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //未登录
+        if("anonymousUser".equalsIgnoreCase(principal.toString())){ //anonymousUser
+            log.error("当前用户未登录");
+            return null;
+        }else {
+            FenleiBaohuUserinfoExt userDetails = (FenleiBaohuUserinfoExt) principal;
+            int i = fenleiBaohuAdjudicationMapper.updateCaseStateAndFinishTime("8",finishTime,id,userDetails.getLoginname());
+            //2.将分类号插入main表中
+            FenleiBaohuAdjudication adjudication = fenleiBaohuAdjudicationMapper.selectById(id);
+            //2.1 拼装分类号 主分，副分*附加信息
+            //主分必定不为空
+            String ipci =  adjudication.getIpcmi();
+            if(adjudication.getIpcoi() != null){
+                ipci = ipci + ","+adjudication.getIpcoi();
+            }
+            if(adjudication.getIpca() != null){
+                ipci = ipci + "*" + adjudication.getIpca();
+            }
+            //3. 更新main表状态 以及分类号
+            int main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(finishTime,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id,"2");
+            //4. 更新result表中的状态
+            QueryWrapper<FenleiBaohuResult> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("id",id);
+            List<FenleiBaohuResult> fenleiBaohuResults = fenleiBaohuResultMapper.selectList(queryWrapper);
+            int update_int = fenleiBaohuResultMapper.updateStateById(id,"2");
+            if(main_j == 1 && i == 1 && (update_int == fenleiBaohuResults.size())){
+                return new QueryResponseResult(CommonCode.SUCCESS,null);
+            }else{
+                int c = 1/0;
+                return new QueryResponseResult(CommonCode.FAIL,null);
+            }
         }
     }
 

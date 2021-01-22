@@ -101,7 +101,7 @@
         </if>
     </update>
     <update id="updateCaseStateAndFinishTime">
-        update FENLEI_BAOHU_ADJUDICATION set state = #{state}, FINISHTIME = #{finishTime} where id = #{id}
+        update FENLEI_BAOHU_ADJUDICATION set state = #{state}, FINISHTIME = #{finishTime} where id = #{id} and PROCESSINGPERSON = #{loginame}
     </update>
     <!--<update id="updateAdjudicatorById">
         update FENLEI_BAOHU_ADJUDICATION

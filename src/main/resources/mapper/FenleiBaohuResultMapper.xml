@@ -203,6 +203,15 @@
         </set>
         where id = #{id} and worker = #{worker}
     </update>
+    <update id="updateStateById">
+        update fenlei_baohu_result
+        <set>
+            <if test="state != null">
+                state = #{state}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
 
 
 </mapper>
