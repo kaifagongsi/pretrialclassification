@@ -97,6 +97,16 @@ public class caseConditionQueryController extends BaseController{
         return resultMap;
     }
 
+    @ApiOperation("更正列表,根据预审编号查询案件分类信息")
+    @GetMapping("/findUpdateInfoByID")
+    public Map findUpdateInfoByID(String id, String worker) throws PretrialClassificationException{
+        Map resultMap = new HashMap();
+        List list = caseConditionQueryService.findUpdateInfoByID(id,worker);
+        resultMap.put("code",20000);
+        resultMap.put("data",list);
+        return resultMap;
+    }
+
     @ApiOperation("main表，根据申请号查询案件")
     @GetMapping("/findBySQH")
     public Map findBySQH(String page,String limit,String sqh) throws PretrialClassificationException{

@@ -19,6 +19,9 @@ public interface CaseConditionQueryService {
     //根据预审编号查询案件
     List findClassInfoByID(String id);
 
+    //根据预审编号和分类员查询提交更正案件
+    List findUpdateInfoByID(String id,String worker);
+
     //根据申请号查询案件
     IPage findBySQH(String pageNo,String limit,String sqh);
 

@@ -6,9 +6,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.caseQuery.service.CaseConditionQueryService;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuMainMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
+import com.kfgs.pretrialclassification.dao.FenleiBaohuUpdateipcMapper;
+import com.kfgs.pretrialclassification.dao.FenleiBaohuUserinfoMapper;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
+import com.kfgs.pretrialclassification.domain.FenleiBaohuUpdateIpc;
+import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
@@ -26,6 +31,12 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
 
     @Autowired
     FenleiBaohuResultMapper fenleiBaohuResultMapper;
+
+    @Autowired
+    FenleiBaohuUpdateipcMapper fenleiBaohuUpdateipcMapper;
+
+    @Autowired
+    FenleiBaohuUserinfoMapper fenleiBaohuUserinfoMapper;
 
     @Override
     @Transactional
@@ -86,6 +97,17 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
         Map resultMap = new HashMap();
         //List<FenleiBaohuResult> list = fenleiBaohuResultMapper.selectList(queryWrapper);
         List<FenleiBaohuResult> list = fenleiBaohuResultMapper.selectListByID(id);
+        return list;
+    }
+
+    @Override
+    public List findUpdateInfoByID(String id, String worker) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        //精确查询
+        queryWrapper.eq("id",id);
+        String name = fenleiBaohuUserinfoMapper.selectUpdateWorkerName(worker);
+        queryWrapper.eq("worker",name);
+        List<FenleiBaohuUpdateIpc> list = fenleiBaohuUpdateipcMapper.selectList(queryWrapper);
         return list;
     }
 

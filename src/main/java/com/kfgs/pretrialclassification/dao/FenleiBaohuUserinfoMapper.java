@@ -35,4 +35,6 @@ public interface FenleiBaohuUserinfoMapper extends BaseMapper<FenleiBaohuUserinf
     List<ArbiterParam> selectListByWorkerName(List list);
 
     String selectAdjudicatorByWorkerName(String workerName);
+
+    String selectUpdateWorkerName(@Param("worker") String worker);
 }

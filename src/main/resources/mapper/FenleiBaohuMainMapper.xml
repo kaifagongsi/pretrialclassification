@@ -80,10 +80,10 @@
 
 
     <select id="selectByCondition" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt">
-        select m.id,m.mingcheng,m.type,m.sqr,m.sqh,m.pdf_path,m.state,m.simpleclasscode,m.message,m.oraginization,
+        select m.id,m.mingcheng,m.type,m.sqr,m.sqh,m.pdf_path,m.state,m.simpleclasscode,m.message,m.oraginization,m.cci,m.cca,m.csets,m.ipci,
         (to_date(jinantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as jinantime,
         (to_date(chuantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as chuantime,
-        t_mr.maintype,t_mr.mainworker,t_mr.asstype,t_mr.assworker,trim(',' from t_mr.ipci) as ipci
+        t_mr.maintype,t_mr.mainworker,t_mr.asstype,t_mr.assworker
         from FENLEI_BAOHU_MAIN m
         left join
         (select t2.id,t2.maintype,t2.mainworker,t2.ipci_main,t1.ipci_ass,t1.asstype,t1.assworker,t2.ipci_main||','||t1.ipci_ass as ipci from

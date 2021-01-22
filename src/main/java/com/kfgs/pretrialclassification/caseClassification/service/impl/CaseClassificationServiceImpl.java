@@ -241,7 +241,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         //拼接CCA，需要去重
         String cca = AdjudicationBusinessUtils.margeCca(ccaList);
         QueryResponseResult responseResult = AdjudicationBusinessUtils.JudgeWhetherToEnterTheRuling(id,ipcmiList, ipcoiList,ipcaList, csetsList, csets, cci, type);
-        if(!"20000".equals(responseResult.getCode())){
+        if(!"20000".equals(responseResult.getCode()) && responseResult.getCode() != 20000){
             // 表示进裁决
             return  responseResult;
         }else{ // 表示不进裁决正常出案
@@ -253,17 +253,21 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             String ipci= AdjudicationBusinessUtils.mergeIPCI(ipcmiList,ipcoiList,ipcoiList);
             //分类号存入main表
             /*QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("id",id);*/
-            FenleiBaohuMain fenleiBaohuMain = new FenleiBaohuMain();
+            queryWrapper.eq("id",id);
+            */
+            /*FenleiBaohuMain fenleiBaohuMain = new FenleiBaohuMain();
             fenleiBaohuMain.setId(id);
             fenleiBaohuMain.setCci(cci);
             fenleiBaohuMain.setCca(cca);
             fenleiBaohuMain.setCsets(csets);
             fenleiBaohuMain.setIpci(ipci);
-            fenleiBaohuMain.setState("2");
+            fenleiBaohuMain.setState("2");*/
             //fenleiBaohuMainMapper.update(fenleiBaohuMain,queryWrapper);
             Map map = new HashMap();
-            map.put("mainUpdateInfo",fenleiBaohuMain);
+            map.put("cci",cci);
+            map.put("cca",cca);
+            map.put("csets",csets);
+            map.put("ipci",ipci);
             QueryResult queryResult = new QueryResult();
             queryResult.setMap(map);
             return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
@@ -387,10 +391,18 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         }else {
             //不用裁决
             //更改result表和main表状态
+            QueryResult mainResult = queryResponseResult.getQueryResult();
+            Map map = mainResult.getMap();
             fenleiBaohuResult.setChuantime(Long.parseLong(chuantime));
             fenleiBaohuResult.setState("2");
+            fenleiBaohuResult.setIpci(map.get("ipci").toString());
             int result = fenleiBaohuResultMapper.update(fenleiBaohuResult,queryWrapper);
             if (result == 1){
+                //fenleiBaohuMain.setId(map.get("id").toString());
+                fenleiBaohuMain.setIpci(map.get("ipci").toString());
+                fenleiBaohuMain.setCci(map.get("cci").toString());
+                fenleiBaohuMain.setCca(map.get("cca").toString());
+                fenleiBaohuMain.setCsets(map.get("csets").toString());
                 fenleiBaohuMain.setChuantime(Long.parseLong(chuantime));
                 fenleiBaohuMain.setState("2");
                 int main = fenleiBaohuMainMapper.update(fenleiBaohuMain,queryWrapper1);

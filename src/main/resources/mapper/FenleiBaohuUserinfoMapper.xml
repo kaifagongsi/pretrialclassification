@@ -95,5 +95,8 @@
         select ADJUDICATOR from fenlei_baohu_userinfo where  workername = #{workerName}
     </select>
 
+    <select id="selectUpdateWorkerName" resultType="java.lang.String">
+        select workername from fenlei_baohu_userinfo where  workername like concat('%',#{worker})
+    </select>
 
 </mapper>
