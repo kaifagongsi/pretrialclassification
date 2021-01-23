@@ -97,6 +97,9 @@
         <if test="name!=''">
             AND m.mingcheng like concat(concat('%',#{name}),'%')
         </if>
+        <if test="oraginization!=''">
+            AND m.oraginization like concat(concat('%',#{oraginization}),'%')
+        </if>
         <if test="sqr!=''">
             AND m.sqr like concat(concat('%',#{sqr}),'%')
         </if>

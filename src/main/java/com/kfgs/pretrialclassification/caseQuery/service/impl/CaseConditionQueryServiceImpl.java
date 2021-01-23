@@ -41,11 +41,11 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
     @Override
     @Transactional
     //查询所有案件
-    public IPage findAll(String pageNo, String limit,String id,String name,String sqr,String sqh,String worker,String state,String begintime,String endtime) {
+    public IPage findAll(String pageNo, String limit,String id,String name,String oraginization,String sqr,String sqh,String worker,String state,String begintime,String endtime) {
         Map resultMap = new HashMap();
         Page<FenleiBaohuMainResultExt> page = new Page<>(Long.parseLong(pageNo),Long.parseLong(limit));
         //IPage<FenleiBaohuMain> iPage = fenleiBaohuMainMapper.selectPage(page, null);
-        IPage<FenleiBaohuMainResultExt> iPage = fenleiBaohuMainMapper.selectByCondition(page,id,name,sqr,sqh,worker,state,begintime,endtime);
+        IPage<FenleiBaohuMainResultExt> iPage = fenleiBaohuMainMapper.selectByCondition(page,id,name,oraginization,sqr,sqh,worker,state,begintime,endtime);
         return iPage;
     }
 
