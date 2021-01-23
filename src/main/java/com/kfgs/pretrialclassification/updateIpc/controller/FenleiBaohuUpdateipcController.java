@@ -25,6 +25,13 @@ public class FenleiBaohuUpdateipcController {
     public QueryResponseResult selectInitList(@PathVariable("pageNum") int pageNum, @PathVariable("size")int size,@PathVariable("state") String state){
         return fenleiBaohuUpdateipcService.selectInitList(pageNum, size, state);
     }
+
+    @ApiOperation("获取待处理列表")
+    @GetMapping("/selectInitList/{state}")
+    public QueryResponseResult selectInitList(@PathVariable("state") String state){
+        return fenleiBaohuUpdateipcService.selectInitList(state);
+    }
+
     @ApiOperation("更新案件状态")
     @GetMapping("/updateIpcState/{id}/{state}")
     public QueryResponseResult updateIpcState(@PathVariable("id") String id, @PathVariable("state") String state){

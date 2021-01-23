@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author mango
  */
@@ -18,6 +20,7 @@ public interface FenleiBaohuUpdateipcMapper extends BaseMapper<FenleiBaohuUpdate
 
     IPage<FenleiBaohuUpdateIpc> selectFenleiBaohuUpdateIpcPage(Page<FenleiBaohuUpdateIpc> page, @Param("state") String state);
 
+    List<FenleiBaohuUpdateIpc> selectFenleiBaohuUpdateIpcPage(@Param("state") String state);
 
     int updateByIdAndWorker(@Param("id") String id, @Param("worker") String worker, @Param("state") String state);
 

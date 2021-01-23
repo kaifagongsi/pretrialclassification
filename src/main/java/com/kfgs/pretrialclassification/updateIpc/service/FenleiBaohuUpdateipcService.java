@@ -64,6 +64,14 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
     }
 
+    public QueryResponseResult selectInitList(String state){
+        List<FenleiBaohuUpdateIpc> list = fenleiBaohuUpdateipcMapper.selectFenleiBaohuUpdateIpcPage(state);
+        QueryResult queryResult = new QueryResult();
+        queryResult.setList(list);
+        queryResult.setTotal(list.size());
+        return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
+    }
+
 
     /**
      * 管理员处理分类号更正，的同意或者驳回操作
