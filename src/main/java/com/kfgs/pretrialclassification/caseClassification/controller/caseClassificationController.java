@@ -45,6 +45,9 @@ public class caseClassificationController extends BaseController {
         Map resultMap = new HashMap();
         //获取当前登录用户信息
         Map usermap = userService.findUserInfo();
+        if(null == usermap){
+            return null;
+        }
         String user = usermap.get("name").toString();
         String role = usermap.get("introduction").toString();
 
