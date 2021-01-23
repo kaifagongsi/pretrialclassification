@@ -116,7 +116,9 @@
     </select>
 
     <select id="getCaseUnFinish" resultType="java.lang.String">
-        select r.worker from fenlei_baohu_result r where r.state &lt; 2 and r.id=#{id}
+        select r.worker from fenlei_baohu_result r where
+        r.state in ('0','1','7','9')
+        and r.id=#{id}
     </select>
 
     <select id="getIPCMI" resultType="java.lang.String">
