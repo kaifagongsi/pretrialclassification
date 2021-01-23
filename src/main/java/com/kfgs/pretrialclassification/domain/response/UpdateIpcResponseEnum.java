@@ -18,7 +18,8 @@ import lombok.ToString;
 public enum UpdateIpcResponseEnum implements ResultCode{
 
     CANNOT_PASS_AMEND_MAIN(false,25001,"已导出的案件无法进行分类号更正"),
-    CANNOT_PASS_AMEND_UPDATEIPC(false,25002,"分类号更正状态修改失败");
+    CANNOT_PASS_AMEND_UPDATEIPC(false,25002,"分类号更正状态修改失败"),
+    DATA_ERROE(false,25003,"数据异常，发现一个人提交两次同一个案的更正，并且第一个是未处理的状态");
 
 
     private UpdateIpcResponseEnum(Boolean success, int code, String message){

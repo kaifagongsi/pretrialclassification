@@ -458,10 +458,10 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
 
             FenleiBaohuUpdateIpc fenleiBaohuUpdateipc = new FenleiBaohuUpdateIpc();
             if (ipcmi != null){
-                fenleiBaohuUpdateipc.setIpcmi(ipcmi);
+                fenleiBaohuUpdateipc.setIPCMI(ipcmi);
             }
             if (ipcoi != null){
-                fenleiBaohuUpdateipc.setIpcoi(ipcoi);
+                fenleiBaohuUpdateipc.setIPCOI(ipcoi);
             }
             if (ipca != null){
                 fenleiBaohuUpdateipc.setIpca(ipca);

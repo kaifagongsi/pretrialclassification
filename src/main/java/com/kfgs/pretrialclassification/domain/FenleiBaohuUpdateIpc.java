@@ -104,13 +104,13 @@ public class FenleiBaohuUpdateIpc implements Serializable {
      * 主分类号IPCMI主要发明信息
      */
     @TableField("IPCMI")
-    private String ipcmi;
+    private String IPCMI;
 
     /**
      * 副分类号IPCOI其他发明信息
      */
     @TableField("IPCOI")
-    private String ipcoi;
+    private String IPCOI;
 
     /**
      * 旧ipcmi

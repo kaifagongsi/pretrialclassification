@@ -18,18 +18,24 @@ import com.kfgs.pretrialclassification.domain.response.CommonCode;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 import com.kfgs.pretrialclassification.domain.response.QueryResult;
 import com.kfgs.pretrialclassification.domain.response.UpdateIpcResponseEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xpath.operations.Bool;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * @author mango
  */
+@Slf4j
 @Service
 @Transactional
 public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateipcMapper, FenleiBaohuUpdateIpc>  {
@@ -69,14 +75,15 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
     public QueryResponseResult updateIpcState(String id, String state) {
         QueryWrapper<FenleiBaohuResult> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",id);
-        List<FenleiBaohuResult> fenleiBaohuResultsCount = fenleiBaohuResultMapper.selectList(queryWrapper);
-        queryWrapper.eq("state","2");
+        //<FenleiBaohuResult> fenleiBaohuResultsCount = fenleiBaohuResultMapper.selectList(queryWrapper);
+        //queryWrapper.eq("state","2");
+        queryWrapper.in("state",new ArrayList<>(Arrays.asList("0","1","7")));
         List<FenleiBaohuResult> fenleiBaohuResultsStateTwoCount = fenleiBaohuResultMapper.selectList(queryWrapper);
         //一个案件如果多次提出更正就会有bug
         QueryWrapper<FenleiBaohuUpdateIpc> queryWrapperUpdateIpc = new QueryWrapper<>();
         queryWrapperUpdateIpc.eq("id",id).eq("state","0");
         String worker = fenleiBaohuUpdateipcMapper.selectOne(queryWrapperUpdateIpc).getWorker();
-        if(fenleiBaohuResultsCount.size() == fenleiBaohuResultsStateTwoCount.size()){//表述均已出案
+        if(fenleiBaohuResultsStateTwoCount.size() == 0){//表述均已出案
             return AllProChuanCaoZuo(id,worker,state);
         }else{ // 表示有一人未出案
             return OneOrMoreNotChuAn(id,worker,state);
@@ -98,8 +105,8 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
             FenleiBaohuResult fenleiBaohuResult = new FenleiBaohuResult();
             fenleiBaohuResult.setId(id);
             fenleiBaohuResult.setState("2");
-            fenleiBaohuResult.setIPCMI(updateIpc.getIpcmi());
-            fenleiBaohuResult.setIPCOI(updateIpc.getIpcoi());
+            fenleiBaohuResult.setIPCMI(updateIpc.getIPCMI());
+            fenleiBaohuResult.setIPCOI(updateIpc.getIPCOI());
             fenleiBaohuResult.setIpca(updateIpc.getIpca());
             fenleiBaohuResult.setCca(updateIpc.getCca());
             fenleiBaohuResult.setCci(updateIpc.getCci());
@@ -137,8 +144,49 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
      */
     private QueryResponseResult AllProChuanCaoZuo(String id, String worker,String state) {
         if("1".equals(state)){//管理员同意出案
-            QueryResponseResult queryResponseResult = caseClassificationService.lastFinish(id, worker,null);
-            return queryResponseResult;
+            // 0.更新result表中的分类号
+            // 0.1查询新的分类号
+            QueryWrapper queryWrapperUpdate = new QueryWrapper<>();
+            queryWrapperUpdate.eq("id",id);
+            queryWrapperUpdate.eq("worker",worker);
+            queryWrapperUpdate.eq("state","0");
+            try {
+                FenleiBaohuUpdateIpc fenleiBaohuUpdateIpc = fenleiBaohuUpdateipcMapper.selectOne(queryWrapperUpdate);
+                FenleiBaohuResult result = new FenleiBaohuResult();
+                /*result.setId(id);
+                result.setIPCMI(fenleiBaohuUpdateIpc.getIpcmi());
+                result.setIPCOI(fenleiBaohuUpdateIpc.getIpcoi());
+                result.setIpca(fenleiBaohuUpdateIpc.getIpca());
+                result.set*/
+                BeanUtils.copyProperties(fenleiBaohuUpdateIpc,result);
+                QueryWrapper queryWrapper  = new QueryWrapper<>();
+                queryWrapper.eq("id",id);
+                queryWrapper.eq("worker",worker);
+                queryWrapper.eq("state","9");
+                // 0.2 更新result表的分类号信息和案子状态
+                int update = fenleiBaohuResultMapper.update(result,queryWrapper);
+                if(update == 1){
+                    QueryResponseResult queryResponseResult = caseClassificationService.lastFinish(id, worker,null);
+                    if(20000 == queryResponseResult.getCode()  ){
+                        fenleiBaohuUpdateIpc.setState("1");
+                        int i = fenleiBaohuUpdateipcMapper.update(fenleiBaohuUpdateIpc,queryWrapperUpdate);
+                        if(i == 1){
+                            return queryResponseResult;
+                        }else{
+                            return new QueryResponseResult(CommonCode.FAIL,null);
+                        }
+                    }else {
+                        return queryResponseResult;
+                    }
+
+                }else{
+                    return new QueryResponseResult(UpdateIpcResponseEnum.CANNOT_PASS_AMEND_UPDATEIPC,null);
+                }
+            }catch (Exception e){
+                log.error("在 FENLEI_BAOHU_UPDATEIPC 表中数据异常：同一个人提交分类号更正时，该案子第一个第一次提交更正未处理。重复提交");
+                e.printStackTrace();
+                return new QueryResponseResult(UpdateIpcResponseEnum.DATA_ERROE,null);
+            }
         }else if("2".equals(state)){//管理员不同意出案
             //仅修改main/result表的状态
             FenleiBaohuMain main = new FenleiBaohuMain();
