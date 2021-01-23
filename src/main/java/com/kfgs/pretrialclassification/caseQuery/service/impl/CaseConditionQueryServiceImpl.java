@@ -107,6 +107,7 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
         queryWrapper.eq("id",id);
         String name = fenleiBaohuUserinfoMapper.selectUpdateWorkerName(worker);
         queryWrapper.eq("worker",name);
+        queryWrapper.eq("state",0);
         List<FenleiBaohuUpdateIpc> list = fenleiBaohuUpdateipcMapper.selectList(queryWrapper);
         return list;
     }
