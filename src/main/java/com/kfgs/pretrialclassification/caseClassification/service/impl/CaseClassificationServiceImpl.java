@@ -250,7 +250,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             //不用进裁决则保存合并后的分类号
             //合并ipci
             //拼接主分类号
-            String ipci= AdjudicationBusinessUtils.mergeIPCI(ipcmiList,ipcoiList,ipcoiList);
+            String ipci= AdjudicationBusinessUtils.mergeIPCI(ipcmiList,ipcoiList,ipcaList);
             //分类号存入main表
             /*QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("id",id);
