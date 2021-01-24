@@ -98,8 +98,12 @@ public class CaseArbiterService   {
      * @param ext 实体
      * @return
      */
+    @Transactional
     public QueryResponseResult saveAribiterClassfication(FenleiBaohuAdjudicationExt ext){
-        FenleiBaohuAdjudication selectById = fenleiBaohuAdjudicationMapper.selectById(ext.getId());
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("id",ext.getId());
+        queryWrapper.eq("state","7");
+        FenleiBaohuAdjudication selectById = fenleiBaohuAdjudicationMapper.selectOne(queryWrapper);
         ArbiterEnum.GET_Arbiter_CASE_FAILE.assertNotNull(selectById);
        /**
         * FenleiBaohuUserinfoExt authentication = (FenleiBaohuUserinfoExt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -107,10 +111,11 @@ public class CaseArbiterService   {
         */
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         CommonResponseEnum.CANNOT_GET_USERINFO.assertNotNull(username);
-        int i = fenleiBaohuAdjudicationMapper.saveAribiterClassfication(ext,username);
+        int i = fenleiBaohuAdjudicationMapper.saveAribiterClassfication(ext,username,"7");
         if(i == 1){
             return new QueryResponseResult(CommonCode.SUCCESS,null);
         }else{
+            int  A  =1 / 0;
             return new QueryResponseResult(CommonCode.FAIL,null);
         }
 
@@ -413,11 +418,12 @@ public class CaseArbiterService   {
         QueryWrapper queryWrapper = new QueryWrapper();
         //模糊查询
         queryWrapper.eq("id",id);
+        queryWrapper.eq("state","7");
         Map resultMap = new HashMap();
         List<FenleiBaohuResult> list = fenleiBaohuResultMapper.selectList(queryWrapper);
         resultMap.put("data",list);
         //查找裁决员给出的分类号
-        FenleiBaohuAdjudication adjudication = fenleiBaohuAdjudicationMapper.selectById(id);
+        FenleiBaohuAdjudication adjudication = fenleiBaohuAdjudicationMapper.selectOne(queryWrapper);
         resultMap.put("ipcmi",adjudication.getIpcmi());
         resultMap.put("ipcoi",adjudication.getIpcoi());
         resultMap.put("ipca",adjudication.getIpca());
@@ -469,9 +475,16 @@ public class CaseArbiterService   {
             return null;
         }else {
             FenleiBaohuUserinfoExt userDetails = (FenleiBaohuUserinfoExt) principal;
+
+            QueryWrapper queryWrapperAD = new QueryWrapper();
+            queryWrapperAD.eq("id",id);
+            queryWrapperAD.eq("state","7");
+            queryWrapperAD.eq("PROCESSINGPERSON",userDetails.getLoginname());
+            FenleiBaohuAdjudication adjudication = fenleiBaohuAdjudicationMapper.selectOne(queryWrapperAD);
+
+            // 1.更新了裁决表
             int i = fenleiBaohuAdjudicationMapper.updateCaseStateAndFinishTime("8",finishTime,id,userDetails.getLoginname());
-            //2.将分类号插入main表中
-            FenleiBaohuAdjudication adjudication = fenleiBaohuAdjudicationMapper.selectById(id);
+            //2 将分类号插入main表中
             //2.1 拼装分类号 主分，副分*附加信息
             //主分必定不为空
             String ipci =  adjudication.getIpcmi();
@@ -483,11 +496,21 @@ public class CaseArbiterService   {
             }
             //3. 更新main表状态 以及分类号
             int main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(finishTime,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id,"2");
-            //4. 更新result表中的状态
+            //4. 更新result表中的状态 以及 6个分类号
             QueryWrapper<FenleiBaohuResult> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("id",id);
             List<FenleiBaohuResult> fenleiBaohuResults = fenleiBaohuResultMapper.selectList(queryWrapper);
-            int update_int = fenleiBaohuResultMapper.updateStateById(id,"2");
+            queryWrapper.eq("state","7");
+            FenleiBaohuResult result = new FenleiBaohuResult();
+            result.setIPCMI(adjudication.getIpcmi());
+            result.setIPCOI(adjudication.getIpcoi());
+            result.setIpca(adjudication.getIpca());
+            result.setCca(adjudication.getCca());
+            result.setCci(adjudication.getCci());
+            result.setCsets(adjudication.getCsets());
+            result.setState("2");
+            //int update_int = fenleiBaohuResultMapper.updateStateById(id,"2");
+            int update_int = fenleiBaohuResultMapper.update(result,queryWrapper);
             if(main_j == 1 && i == 1 && (update_int == fenleiBaohuResults.size())){
                 return new QueryResponseResult(CommonCode.SUCCESS,null);
             }else{
