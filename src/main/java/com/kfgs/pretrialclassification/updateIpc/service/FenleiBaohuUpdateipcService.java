@@ -80,7 +80,7 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
      * @return
      */
     @Transactional
-    public QueryResponseResult updateIpcState(String id, String state) {
+    public QueryResponseResult updateIpcState(String id, String state,String worker) {
         QueryWrapper<FenleiBaohuResult> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",id);
         //<FenleiBaohuResult> fenleiBaohuResultsCount = fenleiBaohuResultMapper.selectList(queryWrapper);
@@ -88,9 +88,9 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
         queryWrapper.in("state",new ArrayList<>(Arrays.asList("0","1","7")));
         List<FenleiBaohuResult> fenleiBaohuResultsStateTwoCount = fenleiBaohuResultMapper.selectList(queryWrapper);
         //一个案件如果多次提出更正就会有bug
-        QueryWrapper<FenleiBaohuUpdateIpc> queryWrapperUpdateIpc = new QueryWrapper<>();
-        queryWrapperUpdateIpc.eq("id",id).eq("state","0");
-        String worker = fenleiBaohuUpdateipcMapper.selectOne(queryWrapperUpdateIpc).getWorker();
+       /* QueryWrapper<FenleiBaohuUpdateIpc> queryWrapperUpdateIpc = new QueryWrapper<>();
+        queryWrapperUpdateIpc.eq("id",id).eq("state","0").eq("worker",worker);*/
+       // String worker = fenleiBaohuUpdateipcMapper.selectOne(queryWrapperUpdateIpc).getWorker();
         if(fenleiBaohuResultsStateTwoCount.size() == 0){//表述均已出案
             return AllProChuanCaoZuo(id,worker,state);
         }else{ // 表示有一人未出案
@@ -167,6 +167,7 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
                 result.setIpca(fenleiBaohuUpdateIpc.getIpca());
                 result.set*/
                 BeanUtils.copyProperties(fenleiBaohuUpdateIpc,result);
+                result.setState("2");
                 QueryWrapper queryWrapper  = new QueryWrapper<>();
                 queryWrapper.eq("id",id);
                 queryWrapper.eq("worker",worker);
@@ -174,19 +175,12 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
                 // 0.2 更新result表的分类号信息和案子状态
                 int update = fenleiBaohuResultMapper.update(result,queryWrapper);
                 if(update == 1){
-                    QueryResponseResult queryResponseResult = caseClassificationService.lastFinish(id, worker,null);
-                    if(20000 == queryResponseResult.getCode()  ){
-                        fenleiBaohuUpdateIpc.setState("1");
-                        int i = fenleiBaohuUpdateipcMapper.update(fenleiBaohuUpdateIpc,queryWrapperUpdate);
-                        if(i == 1){
-                            return queryResponseResult;
-                        }else{
-                            return new QueryResponseResult(CommonCode.FAIL,null);
-                        }
-                    }else {
-                        return queryResponseResult;
-                    }
-
+                    /**
+                     * 不考虑是否出发裁决，直接通过
+                     */
+                    fenleiBaohuUpdateIpc.setState("1");
+                    fenleiBaohuUpdateipcMapper.update(fenleiBaohuUpdateIpc,queryWrapperUpdate);
+                    return caseClassificationService.lastFinish(id, worker,null);
                 }else{
                     return new QueryResponseResult(UpdateIpcResponseEnum.CANNOT_PASS_AMEND_UPDATEIPC,null);
                 }

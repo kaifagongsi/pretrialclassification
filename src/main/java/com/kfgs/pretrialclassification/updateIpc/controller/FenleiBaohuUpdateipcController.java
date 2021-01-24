@@ -33,8 +33,8 @@ public class FenleiBaohuUpdateipcController {
     }
 
     @ApiOperation("更新案件状态")
-    @GetMapping("/updateIpcState/{id}/{state}")
-    public QueryResponseResult updateIpcState(@PathVariable("id") String id, @PathVariable("state") String state){
-        return fenleiBaohuUpdateipcService.updateIpcState(id, state);
+    @GetMapping("/updateIpcState/{id}/{state}/{worker}")
+    public QueryResponseResult updateIpcState(@PathVariable("id") String id, @PathVariable("state") String state, @PathVariable("worker")String worker){
+        return fenleiBaohuUpdateipcService.updateIpcState(id, state,worker);
     }
 }
