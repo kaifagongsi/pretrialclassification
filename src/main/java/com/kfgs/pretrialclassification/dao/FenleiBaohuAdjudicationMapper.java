@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public interface FenleiBaohuAdjudicationMapper extends BaseMapper<FenleiBaohuAdjudication> {
     IPage<FenleiBaohuAdjudicationExt> getArbiterInitList(Page<?> page, @Param("username") String username);
 
-    int saveAribiterClassfication(@Param("ext") FenleiBaohuAdjudicationExt ext,@Param("username") String username);
+    int saveAribiterClassfication(@Param("ext") FenleiBaohuAdjudicationExt ext,@Param("username") String username,@Param("state")String state);
 
     int updateAdjudicatorById(@Param("list") ArrayList<ArbiterParam> list, @Param("id") String id);
 
