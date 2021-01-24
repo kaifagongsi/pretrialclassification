@@ -61,7 +61,7 @@ public class AdjudicationBusinessUtils {
         //0.1设置id
         fenleiBaohuAdjudication.setId(id);
         //0.2设置时间
-        fenleiBaohuAdjudication.setRukuTime(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+        fenleiBaohuAdjudication.setRukuTime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
         //0.3设置类型
         fenleiBaohuAdjudication.setState("7");
         //0.4
