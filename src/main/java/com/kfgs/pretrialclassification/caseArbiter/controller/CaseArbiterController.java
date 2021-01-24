@@ -58,9 +58,9 @@ public class CaseArbiterController {
     }
 
     @ApiOperation("根据预审编号查询案件分类信息,并返回裁决员给出的分类号")
-    @GetMapping("/findClassInfoByID/{sid}")
-    public QueryResponseResult findClassInfoByID(@PathVariable("sid") String id ){
-        return caseArbiterService.findClassInfoByID(id);
+    @GetMapping("/findClassInfoByID/{sid}/{state}/{processingPerson}")
+    public QueryResponseResult findClassInfoByID(@PathVariable("sid") String id,@PathVariable("state") String state,@PathVariable("processingPerson") String processingPerson ){
+        return caseArbiterService.findClassInfoByID(id,state,processingPerson);
     }
 
     @ApiOperation("添加裁决人员时的动态列表")
@@ -94,8 +94,8 @@ public class CaseArbiterController {
     }
 
     @ApiOperation("裁决组长出案之前进行，该案件的校验")
-    @GetMapping("/beforeTheCaseOfTheChiefJudge/{id}")
-    public  boolean beforeTheCaseOfTheChiefJudge(@PathVariable("id") String id){
-        return caseArbiterService.beforeTheCaseOfTheChiefJudge(id);
+    @GetMapping("/beforeTheCaseOfTheChiefJudge/{id}/{processingPerson}")
+    public  boolean beforeTheCaseOfTheChiefJudge(@PathVariable("id") String id,@PathVariable("processingPerson") String processingPerson){
+        return caseArbiterService.beforeTheCaseOfTheChiefJudge(id,processingPerson);
     }
 }

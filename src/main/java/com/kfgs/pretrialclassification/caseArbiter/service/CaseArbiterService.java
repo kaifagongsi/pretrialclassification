@@ -413,17 +413,22 @@ public class CaseArbiterService   {
         }
     }
     //根据id查询裁决员给出的分类号
-    public QueryResponseResult findClassInfoByID(String id) {
+    public QueryResponseResult findClassInfoByID(String id,String state,String processingPerson) {
         //查找list
         QueryWrapper queryWrapper = new QueryWrapper();
         //模糊查询
         queryWrapper.eq("id",id);
-        queryWrapper.eq("state","7");
+
         Map resultMap = new HashMap();
         List<FenleiBaohuResult> list = fenleiBaohuResultMapper.selectList(queryWrapper);
         resultMap.put("data",list);
         //查找裁决员给出的分类号
-        FenleiBaohuAdjudication adjudication = fenleiBaohuAdjudicationMapper.selectOne(queryWrapper);
+        queryWrapper.eq("state",state);
+        processingPerson = processingPerson.split("-")[0];
+        queryWrapper.eq("PROCESSINGPERSON",processingPerson);
+        FenleiBaohuAdjudication adjudication = null;
+        List<FenleiBaohuAdjudication> adjudicationList = fenleiBaohuAdjudicationMapper.selectList(queryWrapper);
+        adjudication = adjudicationList.stream().max(Comparator.comparing(FenleiBaohuAdjudication :: getRukuTime)).get();
         resultMap.put("ipcmi",adjudication.getIpcmi());
         resultMap.put("ipcoi",adjudication.getIpcoi());
         resultMap.put("ipca",adjudication.getIpca());
@@ -790,8 +795,8 @@ public class CaseArbiterService   {
     }
 
     //裁决组长出案之前进行，该案件的校验
-    public boolean beforeTheCaseOfTheChiefJudge(String id) {
-        QueryResponseResult classInfoByID = this.findClassInfoByID(id);
+    public boolean beforeTheCaseOfTheChiefJudge(String id,String processingPerson) {
+        QueryResponseResult classInfoByID = this.findClassInfoByID(id,"7",processingPerson);
         Object ipcmi = classInfoByID.getQueryResult().getMap().get("ipcmi");
         if( null == ipcmi   ){
             return false;
