@@ -480,7 +480,6 @@ public class CaseArbiterService   {
             return null;
         }else {
             FenleiBaohuUserinfoExt userDetails = (FenleiBaohuUserinfoExt) principal;
-
             QueryWrapper queryWrapperAD = new QueryWrapper();
             queryWrapperAD.eq("id",id);
             queryWrapperAD.eq("state","7");
