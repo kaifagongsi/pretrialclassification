@@ -226,8 +226,8 @@ public class AdjudicationBusinessUtils {
         //拼接副分类号
         String ipcoi = "";
         if (ipcoiList != null && ipcoiList.size()!=0){
-            //ipci += ";";
-            ipci.append(";");
+            //ipci += ";"; 修改ipcmi 和ipcoi 以逗号区分
+            ipci.append(",");
             for (int i=0;i<ipcoiList.size();i++){
                 /*ipcoi = ipcoiList.get(i);
                 ipci += ipcoi;
