@@ -199,6 +199,11 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
             result.setId(id);
             result.setState("2");
             fenleiBaohuResultMapper.updateById(result);
+            //修改 updateIpc 表状态
+            FenleiBaohuUpdateIpc updateIpc = new FenleiBaohuUpdateIpc();
+            updateIpc.setId(id);
+            updateIpc.setState("2");
+            fenleiBaohuUpdateipcMapper.updateById(updateIpc);
             if( j == 1){
                 return new QueryResponseResult(CommonCode.SUCCESS,null);
             }else{
