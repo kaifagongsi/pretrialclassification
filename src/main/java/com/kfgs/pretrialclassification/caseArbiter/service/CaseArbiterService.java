@@ -145,7 +145,7 @@ public class CaseArbiterService   {
             codeType = "CPC";
         }
         ipc = ipc.toUpperCase();
-        String[] strs = ipc.split("[,;，；]");
+        String[] strs = ipc.split("[,，;；、]");
         if("ipcmi".equals(codeName)){
             if(strs.length > 1){
                 return new QueryResponseResult(ArbiterResponseEnum.IPMI_ONLY_ONE,null);
