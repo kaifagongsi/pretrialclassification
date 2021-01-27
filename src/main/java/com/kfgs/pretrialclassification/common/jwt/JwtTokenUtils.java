@@ -148,7 +148,7 @@ public class JwtTokenUtils implements Serializable {
     /**
      * 刷新令牌
      *
-     * @param 截取完整的token，根据前缀 "Bearer "开头
+     * @param completeToken 截取完整的token，根据前缀 "Bearer "开头
      * @return 新令牌
      */
     public String interceptCompleteToken(String completeToken) {
@@ -167,7 +167,11 @@ public class JwtTokenUtils implements Serializable {
     public boolean validateToken(String token, UserDetails userDetails) {
         FenleiBaohuUserinfo user = (FenleiBaohuUserinfo) userDetails;
         String username = getUsernameFromToken(token);
-        return (username.equals(user.getLoginname()) && !isTokenExpired(token));
+        if( null == username ){
+            return false;
+        }else{
+            return (username.equals(user.getLoginname()) && !isTokenExpired(token));
+        }
     }
 
 }
