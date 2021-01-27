@@ -130,16 +130,16 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
 
     @Override
     @Transactional
-    public FenleiBaohuMain searchByCondition(String id, String sqh, String mingcheng) {
+    public FenleiBaohuMain searchByCondition(String id, String sqr, String mingcheng) {
         FenleiBaohuMain fenleiBaohuMain = new FenleiBaohuMain();
-        fenleiBaohuMain = fenleiBaohuMainMapper.searchByCondition(id, sqh, mingcheng);
+        fenleiBaohuMain = fenleiBaohuMainMapper.searchByCondition(id, sqr, mingcheng);
         return fenleiBaohuMain;
     }
 
     @Override
     @Transactional
     //查找主副分详细信息
-    public List<FenleiBaohuResult> getSingleResult(String id, String sqh, String mingcheng) {
+    public List<FenleiBaohuResult> getSingleResult(String id, String sqr, String mingcheng) {
         QueryWrapper queryWrapper = new QueryWrapper();
         //查询
         /*if (id == null || id == ""){
