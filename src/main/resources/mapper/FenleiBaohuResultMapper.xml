@@ -126,23 +126,23 @@
     </select>
 
     <select id="getIPCOI" resultType="java.lang.String">
-        select r.ipcoi from fenlei_baohu_result r where r.id=#{id} and r.ipcoi is not null
+        select r.ipcoi from fenlei_baohu_result r where r.id=#{id} and r.ipcoi is not null order by  r.ipcmi,r.worker
     </select>
 
     <select id="getIPCA" resultType="java.lang.String">
-        select r.ipca from fenlei_baohu_result r where r.id=#{id} and r.ipca is not null
+        select r.ipca from fenlei_baohu_result r where r.id=#{id} and r.ipca is not null order by  r.ipcmi,r.worker
     </select>
 
     <select id="getCSETS" resultType="java.lang.String">
-        select r.csets from fenlei_baohu_result r where r.id=#{id} and r.csets is not null
+        select r.csets from fenlei_baohu_result r where r.id=#{id} and r.csets is not null order by r.ipcmi,r.worker
     </select>
 
     <select id="getCCI" resultType="java.lang.String">
-        select r.cci from fenlei_baohu_result r where r.id=#{id} and r.cci is not null
+        select r.cci from fenlei_baohu_result r where r.id=#{id} and r.cci is not null order by  r.ipcmi,r.worker
     </select>
 
     <select id="getCCA" resultType="java.lang.String">
-        select r.cca from fenlei_baohu_result r where r.id=#{id} and r.cca is not null
+        select r.cca from fenlei_baohu_result r where r.id=#{id} and r.cca is not null order by  r.ipcmi,r.worker
     </select>
     <select id="selectSimpleClassCodeAndClassificationById"
             resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt">

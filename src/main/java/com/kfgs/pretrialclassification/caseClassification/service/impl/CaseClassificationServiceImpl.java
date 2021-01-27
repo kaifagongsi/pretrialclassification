@@ -210,7 +210,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     public QueryResponseResult caseRule(String id) {
 
         //获取result表中案件分类号情况
-        //获取主分类号ipcmi
+        //获取主分类号ipcmi 并按照ipcmi 和worker排序
         List<String> ipcmiList = new ArrayList<>();
         ipcmiList = fenleiBaohuResultMapper.getIPCMI(id);
         //获取副分类号ipcoi
