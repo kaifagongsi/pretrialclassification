@@ -129,14 +129,14 @@
     </select>
 
     <select id="searchByCondition" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
-        select m.id,m.mingcheng,m.type,m.sqr,m.sqh,m.pdf_path,m.state,m.simpleclasscode,m.message,m.oraginization
+        select m.id,m.mingcheng,m.type,m.sqr,m.sqh,m.pdf_path,m.state,m.ipci,m.cci,m.cca,m.csets,m.simpleclasscode,m.message,m.oraginization
 
          from FENLEI_BAOHU_MAIN m where 1=1
         <if test="id!=''">
             AND m.id = #{id}
         </if>
-        <if test="sqh!=''">
-            AND m.sqh = #{sqh}
+        <if test="sqr!=''">
+            AND m.sqr = #{sqr}
         </if>
         <if test="mingcheng!=''">
             AND m.mingcheng = #{mingcheng}

@@ -27,7 +27,7 @@ public interface CaseClassificationService {
     FenleiBaohuMain searchByCondition(String id, String sqh, String mingcheng);
 
     //获取案件主副分详情
-    List<FenleiBaohuResult> getSingleResult(String id, String sqh, String mingcheng);
+    List<FenleiBaohuResult> getSingleResult(String id, String sqr, String mingcheng);
 
     //查询转案人员列表
     List<String> getTransWorkerList(String id);

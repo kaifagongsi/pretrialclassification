@@ -116,25 +116,25 @@ public class caseClassificationController extends BaseController {
 
     @ApiOperation("分类员界面条件查询，三个查询参数")
     @GetMapping("/searchByCondition")
-    public Map searchByCondition(String id,String sqh,String mingcheng){
+    public Map searchByCondition(String id,String sqr,String mingcheng){
         if (id == null){
             id = "";
         }
-        if (sqh == null){
-            sqh = "";
+        if (sqr == null){
+            sqr = "";
         }
         if (mingcheng == null){
             mingcheng = "";
         }
         Map resultMap = new HashMap();
         FenleiBaohuMain fenleiBaohuMain = new FenleiBaohuMain();
-        fenleiBaohuMain = caseClassificationService.searchByCondition(id, sqh, mingcheng);
+        fenleiBaohuMain = caseClassificationService.searchByCondition(id, sqr, mingcheng);
         if(fenleiBaohuMain != null){
             if (id == ""){
                 id = fenleiBaohuMain.getId();
             }
             List<FenleiBaohuResult> list = new ArrayList<>();
-            list = caseClassificationService.getSingleResult(id,sqh,mingcheng);
+            list = caseClassificationService.getSingleResult(id,sqr,mingcheng);
             resultMap.put("singleInfo",list);
             resultMap.put("case",fenleiBaohuMain);
             return resultMap;

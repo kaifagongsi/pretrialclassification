@@ -31,7 +31,7 @@ public interface FenleiBaohuMainMapper extends BaseMapper<FenleiBaohuMain> {
 
     IPage<FenleiBaohuMainResultExt> selectByCondition(IPage<FenleiBaohuMainResultExt> page, @Param("id") String id,@Param("name") String name,@Param("oraginization") String oraginization,@Param("sqr") String sqr,@Param("sqh") String sqh,@Param("worker") String worker,@Param("state") String state,@Param("begintime") String begintime,@Param("endtime") String endtime);
 
-    FenleiBaohuMain searchByCondition(@Param("id") String id,@Param("sqh") String sqh,@Param("mingcheng") String mingcheng);
+    FenleiBaohuMain searchByCondition(@Param("id") String id,@Param("sqr") String sqr,@Param("mingcheng") String mingcheng);
 
     String getCaseID(@Param("sqh") String sqh,@Param("mingcheng") String mingcheng);
 
