@@ -131,9 +131,18 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     @Override
     @Transactional
     public FenleiBaohuMain searchByCondition(String id, String sqr, String mingcheng) {
-        FenleiBaohuMain fenleiBaohuMain = new FenleiBaohuMain();
-        fenleiBaohuMain = fenleiBaohuMainMapper.searchByCondition(id, sqr, mingcheng);
-        return fenleiBaohuMain;
+        try{
+            FenleiBaohuMain fenleiBaohuMain = new FenleiBaohuMain();
+            fenleiBaohuMain = fenleiBaohuMainMapper.searchByCondition(id, sqr, mingcheng);
+            return fenleiBaohuMain;
+        }catch (Exception e){
+            if( "nested exception is org.apache.ibatis.exceptions.TooManyResultsException: Expected one result (or null) to be returned by selectOne(), but found: 2".equals(e.getMessage())){
+                log.error("查询异常。异常，参数为：ID="+id+",sqr="+sqr+",mingcheng="+mingcheng);
+            }
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     @Override
