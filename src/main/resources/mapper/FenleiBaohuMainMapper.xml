@@ -109,7 +109,10 @@
         <if test="worker!=''">
             AND t_mr.mainworker like concat(concat('%',#{worker}),'%') or t_mr.assworker like concat(concat('%',#{worker}),'%')
         </if>
-        <if test="state!=''">
+        <if test='state!="" and state=="1"' >
+            AND m.state = '1' or m.state = '7'
+        </if>
+        <if test='state!="" and state!="1"' >
             AND m.state = #{state}
         </if>
         <if test="begintime!=''and endtime!=''">

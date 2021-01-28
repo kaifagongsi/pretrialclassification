@@ -173,7 +173,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         List<String> list = new ArrayList<>();
         if(id == null || "".equals(id)){
             return null;
-        }else {
+        } else {
             list = fenleiBaohuResultMapper.getTransWorkerList(id);
             return list;
         }
@@ -443,14 +443,18 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             //已导出案件不可再提出更改
             return new QueryResponseResult(CaseFinishResponseEnum.EXPORT_FINISH,null);
         } else if ("0".equals(export)){
+
+            // 李思瑶修改 fenleiBaohuResult为提交的修改，只需要拿到六个号
             log.info("fenleiBaohuResult："+fenleiBaohuResult.toString());
-            String classtype = fenleiBaohuResult.getClasstype();
+            /*String classtype = fenleiBaohuResult.getClasstype();
             String fenpeiren = fenleiBaohuResult.getFenpeiren();
-            String fenpeitime = fenleiBaohuResult.getFenpeitime();
+            String fenpeitime = fenleiBaohuResult.getFenpeitime();*/
+            //之前的出案时间
             Long chuantime = fenleiBaohuResult.getChuantime();
             //时间戳转字符串
             String time = timeStampToDate(chuantime,"yyyyMMddHHmmss");
             fenleiBaohuResult.setChuantime(Long.parseLong(time));
+            // 更改后的分类号
             String ipcmi = fenleiBaohuResult.getIPCMI();
             String ipcoi = fenleiBaohuResult.getIPCOI();
             String ipca = fenleiBaohuResult.getIpca();
