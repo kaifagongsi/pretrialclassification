@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,7 @@ import java.util.Map;
 @Setter
 @Component
 @ConfigurationProperties(prefix = "jwt")
+@Slf4j
 public class JwtTokenUtils implements Serializable {
 
     private static final String CLAIM_KEY_USER_ACCOUNT = "sub";
@@ -165,13 +167,22 @@ public class JwtTokenUtils implements Serializable {
      * @return 是否有效
      */
     public boolean validateToken(String token, UserDetails userDetails) {
-        FenleiBaohuUserinfo user = (FenleiBaohuUserinfo) userDetails;
-        String username = getUsernameFromToken(token);
-        if( null == username ){
+        FenleiBaohuUserinfo user = null;
+        String username = null;
+        try{
+            user = (FenleiBaohuUserinfo) userDetails;
+            username = getUsernameFromToken(token);
+            if( null == username ){
+                return false;
+            }else{
+                return (username.equals(user.getLoginname()) && !isTokenExpired(token));
+            }
+        }catch (Exception e){
+            log.error("JwtTokenUtils中validateToken发生异常，当前值：token="+token+",userDetails="+userDetails.toString()
+                    + ",user="+user+",username = " + username);
             return false;
-        }else{
-            return (username.equals(user.getLoginname()) && !isTokenExpired(token));
         }
+
     }
 
 }
