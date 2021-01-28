@@ -168,29 +168,7 @@
 
     <update id="saveClassificationInfo" parameterType="com.kfgs.pretrialclassification.domain.FenleiBaohuResult">
         update fenlei_baohu_result
-        <set>
-            <if test="ext.ipca != null">
-                ipca = #{ext.ipca},
-            </if>
-            <if test="ext.IPCMI != null">
-                IPCMI = #{ext.IPCMI},
-            </if>
-            <if test="ext.IPCOI != null">
-                IPCOI = #{ext.IPCOI},
-            </if>
-            <if test="ext.cci != null">
-                CCI = #{ext.cci},
-            </if>
-            <if test="ext.cca != null">
-                CCA = #{ext.cca},
-            </if>
-            <if test="ext.csets != null">
-                CSETS = #{ext.csets},
-            </if>
-            <if test="ext.state != null">
-                state = #{ext.state},
-            </if>
-        </set>
+         set state = #{ext.state},ipcmi = #{ext.IPCMI}, ipcoi = #{ext.IPCOI}, ipca = #{ext.ipca}, cci = #{ext.cci},cca = #{ext.cca}, csets = #{ext.csets}
         where
           id = #{ext.id}
         and
