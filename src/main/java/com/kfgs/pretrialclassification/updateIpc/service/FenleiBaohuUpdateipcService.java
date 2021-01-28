@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kfgs.pretrialclassification.caseClassification.service.CaseClassificationService;
+import com.kfgs.pretrialclassification.common.exception.UpdateIpcEnum;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuMainMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuUpdateipcMapper;
@@ -109,6 +110,7 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
         QueryWrapper<FenleiBaohuUpdateIpc> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",id).eq("worker",worker).eq("state","0");
         FenleiBaohuUpdateIpc updateIpc = fenleiBaohuUpdateipcMapper.selectOne(queryWrapper);
+        UpdateIpcEnum.CANNOT_UPDATE_NOT_GET_CASE.assertNotNull(updateIpc);
         if("1".equals(state)){//管理员同意出案
             FenleiBaohuResult fenleiBaohuResult = new FenleiBaohuResult();
             fenleiBaohuResult.setId(id);
@@ -213,7 +215,4 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
             return new QueryResponseResult(CommonCode.INVALID_PARAM,null);
         }
     }
-
-
-
 }
