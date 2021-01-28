@@ -180,6 +180,7 @@ public class JwtTokenUtils implements Serializable {
         }catch (Exception e){
             log.error("JwtTokenUtils中validateToken发生异常，当前值：token="+token+",userDetails="+userDetails.toString()
                     + ",user="+user+",username = " + username);
+            e.printStackTrace();
             return false;
         }
 
