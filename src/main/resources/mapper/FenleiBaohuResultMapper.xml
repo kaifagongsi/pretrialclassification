@@ -168,7 +168,64 @@
 
     <update id="saveClassificationInfo" parameterType="com.kfgs.pretrialclassification.domain.FenleiBaohuResult">
         update fenlei_baohu_result
-         set state = #{ext.state},ipcmi = #{ext.IPCMI}, ipcoi = #{ext.IPCOI}, ipca = #{ext.ipca}, cci = #{ext.cci},cca = #{ext.cca}, csets = #{ext.csets}
+        <set>
+            <choose>
+                <when test="ext.ipca != null">
+                    ipca = #{ext.ipca},
+                </when>
+                <otherwise>
+                    ipca = '',
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="ext.IPCMI != null">
+                    IPCMI = #{ext.IPCMI},
+                </when>
+                <otherwise>
+                    IPCMI = '',
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="ext.IPCOI">
+                    IPCOI = #{ext.IPCOI},
+                </when>
+                <otherwise>
+                    IPCOI = '',
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="ext.cci != null">
+                    CCI = #{ext.cci},
+                </when>
+                <otherwise>
+                    CCI = '',
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="ext.cca != null">
+                    CCA = #{ext.cca},
+                </when>
+                <otherwise>
+                    CCA = '',
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="ext.csets != null">
+                    CSETS = #{ext.csets},
+                </when>
+                <otherwise>
+                    CSETS = '',
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="ext.state != null">
+                    state = #{ext.state},
+                </when>
+                <otherwise>
+                    state = '',
+                </otherwise>
+            </choose>
+        </set>
         where
           id = #{ext.id}
         and
