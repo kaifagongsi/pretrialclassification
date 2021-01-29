@@ -146,6 +146,7 @@ public class CaseArbiterService   {
         }
         ipc = ipc.toUpperCase();
         String[] strs = ipc.split("[,，;；、]");
+        //先校验主分类号，有且仅有一个
         if("ipcmi".equals(codeName)){
             if(strs.length > 1){
                 return new QueryResponseResult(ArbiterResponseEnum.IPMI_ONLY_ONE,null);
@@ -374,7 +375,7 @@ public class CaseArbiterService   {
             //加入副分
             String[] ipcoi = ext.getIpcoi().split(",");
             for(String s : ipcoi){
-                list.add(s);
+                list.add(s.toUpperCase());
             }
         }
         if(ext.getIpca() != null){
