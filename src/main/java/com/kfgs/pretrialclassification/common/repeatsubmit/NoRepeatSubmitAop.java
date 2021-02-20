@@ -9,6 +9,7 @@ import io.swagger.models.auth.In;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -44,10 +45,11 @@ public class NoRepeatSubmitAop {
             if (attributes != null){
                 request = attributes.getRequest();
                 String key = sessioId + "-" + request.getServletPath();
-                if (cache.getIfPresent(key) == null){  //缓存中若存在视为重复提交
+                if (cache.getIfPresent(key) == null){  //缓存中若存在视为重复提交,第一次则写入缓存
                     Object o = proceedingJoinPoint.proceed();
                     cache.put(key,0);
-                    return new QueryResponseResult(CommonCode.SUCCESS,null);
+                    return o;
+                    //return new QueryResponseResult(CommonCode.SUCCESS,null);
                 }else {
                     log.setId(key);
                     log.setMessage("重复提交,操作失败");
