@@ -189,17 +189,18 @@ public class caseClassificationController extends BaseController {
             fenleiBaohuResult.setClasstype("副");
             transList.add(fenleiBaohuResult);
         }
-        boolean retrn = caseClassificationService.caseTrans(transList);
-        if (retrn){
+        QueryResponseResult retrn = caseClassificationService.caseTrans(transList);
+
+        /*if (retrn.isSuccess()){
             return new QueryResponseResult(CommonCode.SUCCESS,null);
-            /*resultMap.put("code",20000);
-            resultMap.put("message","转案成功");*/
+            *//*resultMap.put("code",20000);
+            resultMap.put("message","转案成功");*//*
         }else {
             return new QueryResponseResult(CommonCode.FAIL,null);
-            /*resultMap.put("code",20000);
-            resultMap.put("message","转案失败");*/
-        }
-        //return resultMap;
+            *//*resultMap.put("code",20000);
+            resultMap.put("message","转案失败");*//*
+        }*/
+        return retrn;
     }
 
     @ApiOperation("result表,保存案件分类信息")

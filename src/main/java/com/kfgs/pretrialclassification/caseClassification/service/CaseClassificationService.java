@@ -33,7 +33,7 @@ public interface CaseClassificationService {
     List<String> getTransWorkerList(String id);
 
     //转案
-    boolean caseTrans(List<FenleiBaohuResult> list);
+    QueryResponseResult caseTrans(List<FenleiBaohuResult> list);
 
     //获取案件出案状态
     List<String> getCaseUnFinish(String id);

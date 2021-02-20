@@ -19,7 +19,8 @@ public enum CaseFinishResponseEnum implements ResultCode {
     NO_IPCMI_MORE_IPCOI(false,24006,"无主分有多个个分类员给副分"),
     NO_IPCMI_NO_IPCOI_ONE_IPCA(false,24007,"无主分无副分仅有一个附加信息"),
     NO_IPCMI_NO_IPCOI_MORE_IPCA(false,24008,"无主分无副分有多个附加信息"),
-    EXPORT_FINISH(false,24009,"案件已完成导出，不可再提出更改");
+    EXPORT_FINISH(false,24009,"案件已完成导出，不可再提出更改"),
+    CASE_RULED(false,24010,"案件在裁决中，不可提出更改");
 
 
     private CaseFinishResponseEnum(Boolean success, int code, String message){

@@ -41,6 +41,8 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
 
     List<String> getCaseUnFinish(@Param("id") String id);
 
+    String getMyFinish(@Param("id") String id,@Param("worker") String worker);
+
     List<String> getIPCMI(@Param("id") String id);
 
     List<String> getIPCOI(@Param("id") String id);
@@ -60,7 +62,6 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
     int saveClassificationInfo(@Param("ext") FenleiBaohuResult ext,@Param("worker") String worker);
 
     int updateStateByIdAndWorker(@Param("id") String id, @Param("worker")String worker, @Param("state")String state);
-
 
     int updateStateById(@Param("id")String id,@Param("state")String state);
 }

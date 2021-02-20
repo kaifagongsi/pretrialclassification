@@ -19,6 +19,8 @@ public enum CommonCode implements ResultCode {
     REPEAT_SUBMIT(false,10004,"重复提交，操作失败");
 
 
+
+
     //操作是否成功
     boolean success;
     //操作代码

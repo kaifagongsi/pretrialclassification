@@ -12,10 +12,7 @@ import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUpdateIpc;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
-import com.kfgs.pretrialclassification.domain.response.CaseFinishResponseEnum;
-import com.kfgs.pretrialclassification.domain.response.CommonCode;
-import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
-import com.kfgs.pretrialclassification.domain.response.QueryResult;
+import com.kfgs.pretrialclassification.domain.response.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -182,10 +179,32 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     @Override
     @Transactional
     //转案
-    public boolean caseTrans(List<FenleiBaohuResult> list) {
+    //已出案、裁决、更正案件不可进行转案
+    public QueryResponseResult caseTrans(List<FenleiBaohuResult> list) {
         if (list.size() == 0 || list == null){
-            return false;
-        }else {
+            return new QueryResponseResult(CaseClassificationEnum.NO_TRANS_WORKER,null);
+        }
+        /**
+         * 02.20修改 转案前对案件状态进行判断
+         */
+        //案件id
+        String id = list.get(0).getId();
+        String worker = list.get(0).getFenpeiren();
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("id",id);
+        queryWrapper.eq("worker",worker);
+        FenleiBaohuResult fenleiBaohuResult = fenleiBaohuResultMapper.selectOne(queryWrapper);
+        String state = fenleiBaohuResult.getState();
+        if ("2".equals(state)){
+            return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_FINISH,null);
+        }
+        if ("7".equals(state)){
+            return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_RULED,null);
+        }
+        if ("9".equals(state)){
+            return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_UPDATE,null);
+        }
+        else {
             for (int i=0;i<list.size();i++){
                 int res = fenleiBaohuResultMapper.insert(list.get(i));
                 if (res == 1){
@@ -198,8 +217,8 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                     fenleiBaohuLogMapper.insert(log);
                 }
             }
+            return new QueryResponseResult(CommonCode.SUCCESS,null);
         }
-        return true;
     }
 
     @Override
@@ -299,9 +318,30 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         String ipcoi = fenleiBaohuResult.getIPCOI();
         String csets = fenleiBaohuResult.getCsets();
         String state = fenleiBaohuResult.getState();
+
+        /**
+         * 02.20修改 已出案案件及裁决案件不可再进行保存操作(仅state为0和1时可以进行保存操作)
+         */
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("id",id);
+        queryWrapper.eq("worker",worker);
+        FenleiBaohuResult myResult = fenleiBaohuResultMapper.selectOne(queryWrapper);
+        String myState = myResult.getState();
+        if ("7".equals(myState)){ //裁决中
+            return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_RULED,null);
+        }
+        if ("9".equals(myState)){ //更正中
+            return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_UPDATE,null);
+        }
+        if ("2".equals(myState)){ //已出案
+            return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_FINISH,null);
+        }
+        /*if (!("0".equals(myState) || "1".equals(myState))){
+            return new QueryResponseResult(CaseClassificationEnum.INVALID_RESAVE,null);
+        }*/
         //已出案案件不允许修改分类号
         if ("2".equals(state)){
-            return new QueryResponseResult(CommonCode.INVALID_PARAM,null);
+            return new QueryResponseResult(CaseClassificationEnum.INVALID_RESAVE,null);
         }else {
             FenleiBaohuResult result = new FenleiBaohuResult();
             result.setId(id);
@@ -326,10 +366,20 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     @Transactional
     public QueryResponseResult caseFinish(String id, String user) {
         QueryResponseResult queryResponseResult = new QueryResponseResult();
+        //2021.02.20修改  增加出案前案件状态验证(只有状态为1时才可进行出案)
+        String myFinish = "";
+        myFinish = fenleiBaohuResultMapper.getMyFinish(id,user);
+        if ("7".equals(myFinish)){
+            return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_RULED,null);
+        }
+        if (!myFinish.equals("1")){
+            return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_STATE,null);
+        }
         List<String> unFinish = new ArrayList<>();
         //待出案的案件
         /*1.判断是否最后一个出案
             查询除自己以外其他未出案
+            即当除自己之外其余人的案件状态为(0,1,9)时自己是最后一个未出案
         */
         boolean isLast = false;
         unFinish = fenleiBaohuResultMapper.getCaseUnFinish(id);
@@ -344,6 +394,8 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             if (res == 1){
                 return new QueryResponseResult(CommonCode.SUCCESS,null);
             }
+        } else { //02.20修改  unFinish.size==0 案件已进入裁决不可再进行出案
+            return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_RULED,null);
         }
         return null;
     }
@@ -405,6 +457,28 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             fenleiBaohuResult.setChuantime(Long.parseLong(chuantime));
             fenleiBaohuResult.setState("2");
             int result = fenleiBaohuResultMapper.update(fenleiBaohuResult,queryWrapper);
+
+            /**
+             * 02.04 lsy修改 增加main表的主副分类员
+             */
+            //获取相关案件的result信息
+            String mainClassifiers = "";
+            String viceClassifiers = "";
+            QueryWrapper mainWrapper = new QueryWrapper();
+            QueryWrapper viceWrapper = new QueryWrapper();
+            //主分类员,未进裁决的案子一定有且仅有唯一一个主分类员
+            mainWrapper.eq("id",id);
+            mainWrapper.isNotNull("ipcmi");
+            FenleiBaohuResult mainClassResult = fenleiBaohuResultMapper.selectOne(mainWrapper);
+            mainClassifiers = mainClassResult.getWorker();
+
+            //副分类员,可以有多个给了副分类号的分类员
+
+            /*List<FenleiBaohuResult> resultList = fenleiBaohuResultMapper.selectList(resultWrapper);
+            if (resultList != null) {
+
+            }*/
+
             if (result == 1){
                 //fenleiBaohuMain.setId(map.get("id").toString());
                 fenleiBaohuMain.setIpci(map.get("ipci").toString());
@@ -439,6 +513,11 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         FenleiBaohuResult result = fenleiBaohuResultMapper.selectOne(queryWrapperResult);
         FenleiBaohuMain fenleiBaohuMain = fenleiBaohuMainMapper.selectById(id);
         String export = fenleiBaohuMain.getIsExport();
+        //02.20修改  进入裁决的案子不可再提更正
+        String myState = result.getState();
+        if ("7".equals(myState)){
+            return new QueryResponseResult(CaseFinishResponseEnum.CASE_RULED,null);
+        }
         if ("1".equals(export)){
             //已导出案件不可再提出更改
             return new QueryResponseResult(CaseFinishResponseEnum.EXPORT_FINISH,null);
