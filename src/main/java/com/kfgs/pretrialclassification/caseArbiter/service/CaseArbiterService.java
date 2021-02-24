@@ -426,7 +426,8 @@ public class CaseArbiterService   {
         queryWrapper.eq("id",id);
 
         Map resultMap = new HashMap();
-        List<FenleiBaohuResult> list = fenleiBaohuResultMapper.selectList(queryWrapper);
+        //List<FenleiBaohuResult> list = fenleiBaohuResultMapper.selectList(queryWrapper);
+        List<FenleiBaohuResult> list = fenleiBaohuResultMapper.selectListByID(id);
         resultMap.put("data",list);
         //查找裁决员给出的分类号
         queryWrapper.eq("state",state);

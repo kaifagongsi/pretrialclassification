@@ -37,6 +37,7 @@ public class LogsAspect {
 
     @Pointcut("@annotation(com.kfgs.pretrialclassification.common.log.Log)")
     public void logPointCut(){
+
     }
 
     /**
