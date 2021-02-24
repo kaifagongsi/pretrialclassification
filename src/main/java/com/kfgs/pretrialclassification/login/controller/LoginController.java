@@ -1,6 +1,7 @@
 package com.kfgs.pretrialclassification.login.controller;
 
 import com.kfgs.pretrialclassification.common.jwt.JwtTokenUtils;
+import com.kfgs.pretrialclassification.common.log.Log;
 import com.kfgs.pretrialclassification.common.utils.JsonResult;
 import com.kfgs.pretrialclassification.common.utils.VerifyCodeUtils;
 import com.kfgs.pretrialclassification.common.vo.LoginUser;
@@ -43,6 +44,7 @@ public class LoginController {
 
     @ApiOperation(value = "用户登录认证", notes = "用户名，密码登录格式 {\"username\":\"admin\",\"password\":\"admin\"}")
     @PostMapping("/login")
+    @Log
     public JsonResult<TokenValue> login(@RequestBody @Validated LoginUser user, BindingResult br) {
         if (br.hasErrors()) {
             String message = br.getFieldError().getDefaultMessage();

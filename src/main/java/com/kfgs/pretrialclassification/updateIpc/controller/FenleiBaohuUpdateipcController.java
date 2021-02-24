@@ -1,6 +1,7 @@
 package com.kfgs.pretrialclassification.updateIpc.controller;
 
 
+import com.kfgs.pretrialclassification.common.log.Log;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 import com.kfgs.pretrialclassification.updateIpc.service.FenleiBaohuUpdateipcService;
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +35,7 @@ public class FenleiBaohuUpdateipcController {
 
     @ApiOperation("更新案件状态")
     @GetMapping("/updateIpcState/{id}/{state}/{worker}")
+    @Log
     public QueryResponseResult updateIpcState(@PathVariable("id") String id, @PathVariable("state") String state, @PathVariable("worker")String worker){
         return fenleiBaohuUpdateipcService.updateIpcState(id, state,worker);
     }

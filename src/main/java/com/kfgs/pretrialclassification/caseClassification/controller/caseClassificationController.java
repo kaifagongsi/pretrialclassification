@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.kfgs.pretrialclassification.caseClassification.service.CaseClassificationService;
 import com.kfgs.pretrialclassification.common.controller.BaseController;
+import com.kfgs.pretrialclassification.common.log.Log;
 import com.kfgs.pretrialclassification.common.repeatsubmit.NoRepeatSubmit;
 import com.kfgs.pretrialclassification.common.utils.DateUtil;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
@@ -164,6 +165,7 @@ public class caseClassificationController extends BaseController {
     @ApiOperation("result表，转案")
     @PostMapping("/caseTransfer")
     @NoRepeatSubmit
+    @Log
     public QueryResponseResult caseTransfer(String list){
         //Map resultMap = new HashMap();
         //转案
@@ -205,6 +207,7 @@ public class caseClassificationController extends BaseController {
 
     @ApiOperation("result表,保存案件分类信息")
     @PostMapping("/updateClassificationInfo")
+    @Log
     public QueryResponseResult updateClassificationInfo(@RequestBody FenleiBaohuResult fenleiBaohuResult){
         //String id = fenleiBaohuResult.getId();
         return caseClassificationService.saveClassificationInfo(fenleiBaohuResult);
@@ -212,12 +215,14 @@ public class caseClassificationController extends BaseController {
 
     @ApiOperation("个人出案")
     @GetMapping("/caseFinish")
+    @Log
     public QueryResponseResult caseFinishTest(String ids,String user){
         return  caseClassificationService.caseFinish(ids,user);
     }
 
     @ApiOperation("分类号更正")
     @PostMapping("/caseCorrect")
+    @Log
     public QueryResponseResult caseCorrect(@RequestBody FenleiBaohuResult fenleiBaohuResult){
         return caseClassificationService.caseCorrect(fenleiBaohuResult);
     }

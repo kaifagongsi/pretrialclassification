@@ -1,6 +1,7 @@
 package com.kfgs.pretrialclassification.caseArbiter.controller;
 
 import com.kfgs.pretrialclassification.caseArbiter.service.CaseArbiterService;
+import com.kfgs.pretrialclassification.common.log.Log;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuAdjudicationExt;
 import com.kfgs.pretrialclassification.domain.request.ArbiterParam;
 import com.kfgs.pretrialclassification.domain.response.CaseFinishResponseEnum;
@@ -41,6 +42,7 @@ public class CaseArbiterController {
 
     @ApiOperation("根据传入的实体的id更新分类号,裁决组长保存案子")
     @PostMapping("/saveAribiterClassfication")
+    @Log
     public QueryResponseResult saveAribiterClassfication(@RequestBody FenleiBaohuAdjudicationExt fenleiBaohuAdjudicationExt){
         return caseArbiterService.saveAribiterClassfication(fenleiBaohuAdjudicationExt);
     }
@@ -71,6 +73,7 @@ public class CaseArbiterController {
 
     @ApiOperation("更新案件的裁决员")
     @PostMapping("/updateAribiterPerson/{id}")
+    @Log
     public QueryResponseResult updateAribiterPerson(@RequestBody ArrayList<ArbiterParam> list,@PathVariable("id")String id){
         return caseArbiterService.updateAribiterPerson(list,id);
     }
@@ -83,6 +86,7 @@ public class CaseArbiterController {
 
     @ApiOperation("裁决组长出案操作")
     @GetMapping("/arbiterChuAn/{id}")
+    @Log
     public QueryResponseResult arbiterChuAn(@PathVariable("id") String id){
         return caseArbiterService.arbiterChuAn(id);
     }

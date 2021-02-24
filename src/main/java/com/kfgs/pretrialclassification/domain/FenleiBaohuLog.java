@@ -20,6 +20,12 @@ public class FenleiBaohuLog implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+        @TableField("METHOD")
+        private String method;
+
+        @TableField("PARAMS")
+        private String params;
+
         @TableField("ID")
     private String id;
 
