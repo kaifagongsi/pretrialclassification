@@ -440,6 +440,8 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             if (result == 1){
                 int rule = updateCaseRule(id,queryResponseResult);
                 if (rule == 1) {
+                    // 01.22 2021年2月25日 10:31:55  新增发送邮件功能
+
                     return queryResponseResult;
                 }else{
                     // 数据处理失败   要准备回滚数据 ---
