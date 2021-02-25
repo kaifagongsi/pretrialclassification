@@ -3,10 +3,12 @@ package com.kfgs.pretrialclassification.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.kfgs.pretrialclassification.domain.EmailIntervalEntity;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
@@ -64,4 +66,7 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
     int updateStateByIdAndWorker(@Param("id") String id, @Param("worker")String worker, @Param("state")String state);
 
     int updateStateById(@Param("id")String id,@Param("state")String state);
+
+
+    List<EmailIntervalEntity> findAll();
 }

@@ -1,6 +1,6 @@
-package com.kfgs.pretrialclassification.caseDisposition.service.impl;
+package com.kfgs.pretrialclassification.sendEmail.service.impl;
 
-import com.kfgs.pretrialclassification.caseDisposition.service.MailService;
+import com.kfgs.pretrialclassification.sendEmail.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -25,8 +25,7 @@ public class MailServiceImpl implements MailService {
     @Value("${spring.mail.username}")
     private String username;
 
-    @Value("${pretrialclassification.email.title}")
-    private String subject;
+
 
     /**
      * 发送html格式的邮件
@@ -62,7 +61,7 @@ public class MailServiceImpl implements MailService {
      * @param content 内容
      */
     @Override
-    public boolean sendHtmlMail(String[] to,String[] cc,String content) {
+    public boolean sendHtmlMail(String[] to,String[] cc,String subject,String content) {
         MimeMessage message=mailSender.createMimeMessage();
         try {
             //true表示需要创建一个multipart message

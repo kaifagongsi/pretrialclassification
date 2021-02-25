@@ -165,6 +165,26 @@
             and r.id = #{id}
          order by ipcmi,ipcoi,ipca,cci,cca,csets
     </select>
+    <select id="findAll" resultType="com.kfgs.pretrialclassification.domain.EmailIntervalEntity">
+          select substr(t.worker, 1, 6) as fldm,
+                    substr(t.worker, 8) as worker,
+                    t2.dep1,
+                   t2.dep2,
+                   t2.orgname,
+                   t.id,
+                   t2.email,
+                   t.worker as worker_all,
+                   t.fenpeitime,
+                   t1.simpleclasscode,
+                   t1.mingcheng
+              from FENLEI_BAOHU_RESULT t
+              left join FENLEI_BAOHU_MAIN t1
+                on t.id = t1.id
+              left join fenlei_baohu_userinfo t2
+                on substr(t.worker, 1, 6) = t2.loginname
+             where t.state != '2'
+             order by fldm asc
+    </select>
 
     <update id="updateResultRule">
         update fenlei_baohu_result r set r.state=#{state} where r.id=#{id}

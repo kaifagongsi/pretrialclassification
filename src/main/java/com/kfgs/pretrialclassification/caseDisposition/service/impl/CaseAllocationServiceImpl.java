@@ -3,7 +3,6 @@ package com.kfgs.pretrialclassification.caseDisposition.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.caseDisposition.service.CaseAllocationService;
-import com.kfgs.pretrialclassification.caseDisposition.service.MailService;
 import com.kfgs.pretrialclassification.common.utils.DateUtil;
 import com.kfgs.pretrialclassification.common.utils.IPUtil;
 import com.kfgs.pretrialclassification.common.utils.UserUtil;
@@ -17,19 +16,12 @@ import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
+import com.kfgs.pretrialclassification.sendEmail.service.impl.SendEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -50,6 +42,9 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
     @Autowired
     FenleiBaohuMainMapper fenleiBaohuMainMapper;
 
+    @Autowired
+    SendEmailService sendEmailService;
+
 
     @Value("${pretrialclassification.email.toFenlei}")
     private String toFenlei;
@@ -57,11 +52,8 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
     @Value("${pretrialclassification.email.toJiagong}")
     private String toJiagong;
 
-    @Value("${pretrialclassification.email.toAll}")
-    private String toAll;
 
-    @Autowired
-    private MailService mailService;
+
 
     @Override
     public List findAreaName() {
@@ -166,51 +158,7 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
 
     @Override
     public boolean sendEmail(String[] ids) {
-        List<FenleiBaohuResultExt> fenleiBaohuResultExts = fenleiBaohuResultMapper.AfterDeploymentSendEmail(ids);
-        List<String> to = new ArrayList<>();
-        List<String> cc = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
-        int state = -1;
-        sb.append("&nbsp;&nbsp;&nbsp;<table  border='1px' cellpadding='5px' style='font-size:14px;border-collapse: collapse;margin: 20px; '><thead><tr><th>预审编号</th><th>部门</th><th>主分人</th><th>发明名称</th><th>粗分号</th><th>分配时间</th></tr></thead><tbody>");
-        for (int i = 0; i < fenleiBaohuResultExts.size(); i++) {
-            FenleiBaohuResultExt r = fenleiBaohuResultExts.get(i);
-            String fenpeitime = r.getFenpeitime();
-            to.add(r.getEmail());
-
-            if("FL".equals(r.getOrgname()) && state != 2){//只有分类
-                state = 1;
-            }else if("JG".equals(r.getOrgname()) && state !=1){//只有加工
-                state = 2;
-            }else{
-                state = 3;
-            }
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
-                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMddHHmmss");
-                sb.append("<tr><td>"+ r.getId() + "</td><td>" + r.getDep1() + "</td><td>" + r.getWorker() + "</td><td>" + r.getMingcheng() + "</td><td>" + r.getSimpleclasscode()+ "</td><td>" +  sdf.format(sdf1.parse(fenpeitime)) + "</td></tr>" );
-            } catch (java.text.ParseException e1) {
-                e1.printStackTrace();
-            }
-        }
-        sb.append("</tbody></table>");
-
-        String content = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;各位领导，以下是今天新分配的保护中心案件列表! &nbsp;&nbsp;&nbsp;请注意查收！" + sb.toString();
-        if(state == 1){
-            cc.addAll(Arrays.asList(toFenlei.split(",")));
-        }else if(state == 2){
-            cc.addAll(Arrays.asList(toJiagong.split(",")));
-        }else if(state == 3){
-            cc.addAll(Arrays.asList(toAll.split(",")));
-        }
-
-        //list 去重
-        to = to.stream().distinct().collect(Collectors.toList());
-        cc = cc.stream().distinct().collect(Collectors.toList());
-        //转为String[] 数组
-        String[] toString = to.toArray(new String[to.size()]);
-        String[] ccString = cc.toArray(new String[cc.size()]);
-
-        return mailService.sendHtmlMail(toString,ccString, content);
+         return sendEmailService.sendEmail(ids);
     }
 
 }

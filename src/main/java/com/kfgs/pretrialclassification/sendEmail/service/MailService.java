@@ -1,4 +1,4 @@
-package com.kfgs.pretrialclassification.caseDisposition.service;
+package com.kfgs.pretrialclassification.sendEmail.service;
 
 public interface MailService {
     /**
@@ -15,5 +15,5 @@ public interface MailService {
      * @param cc  抄送者
      * @param content  内容
      */
-    boolean sendHtmlMail(String[] to,String[] cc,String content);
+    boolean sendHtmlMail(String[] to,String[] cc,String subject,String content);
 }
