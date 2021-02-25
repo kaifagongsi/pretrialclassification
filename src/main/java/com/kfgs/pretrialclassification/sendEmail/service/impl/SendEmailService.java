@@ -1,8 +1,14 @@
 package com.kfgs.pretrialclassification.sendEmail.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.kfgs.pretrialclassification.dao.FenleiBaohuMainMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
+import com.kfgs.pretrialclassification.dao.FenleiBaohuUserinfoMapper;
 import com.kfgs.pretrialclassification.domain.EmailIntervalEntity;
+import com.kfgs.pretrialclassification.domain.FenleiBaohuAdjudication;
+import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
+import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt;
 import com.kfgs.pretrialclassification.sendEmail.service.MailService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +27,12 @@ public class SendEmailService {
 
 
     @Autowired
+    FenleiBaohuMainMapper fenleiBaohuMainMapper;
+
+    @Autowired
+    FenleiBaohuUserinfoMapper fenleiBaohuUserinfoMapper;
+
+    @Autowired
     FenleiBaohuResultMapper fenleiBaohuResultMapper;
 
     @Value("${pretrialclassification.email.toFenlei}")
@@ -31,6 +43,15 @@ public class SendEmailService {
 
     @Value("${pretrialclassification.email.toGuiHua}")
     private String toGuiHua;
+
+    @Value("${pretrialclassification.arbiter.toFenlei}")
+    private String toFenlei_arbiter;
+
+    @Value("${pretrialclassification.arbiter.toJiagong}")
+    private String toJiagong_arbiter;
+
+    @Value("${pretrialclassification.arbiter.toGuiHua}")
+    private String toGuiHua_arbiter;
 
     @Autowired
     MailService mailService;
@@ -98,6 +119,48 @@ public class SendEmailService {
         return mailService.sendHtmlMail(to.toArray(new String[to.size()]),cc.toArray(new String[cc.size()]),"保护中心案件列表", content);
     }
 
+    /**
+     * 由于触发裁决，根据传入的 id发送邮件
+     * @param id  案件编号
+     * @return
+     */
+    public boolean sendEmailCaseArbiter(String id, String arbiter){
+        List<String> to = new ArrayList<>();
+        QueryWrapper qwMain = new QueryWrapper();
+        qwMain.eq("id",id);
+        FenleiBaohuMain fenleiBaohuMain = fenleiBaohuMainMapper.selectOne(qwMain);
+        // 有一个为加工或者分类  有两个表示为都有
+        ArrayList<String> arrayList = new ArrayList();
+        // 获取案件相关人员代码
+        List<FenleiBaohuResultExt> fenleiBaohuResults = fenleiBaohuResultMapper.selectListWithOrgNameByID(id);
+        for(FenleiBaohuResultExt result : fenleiBaohuResults){
+            to.add(result.getWorker().split("-")[0]);
+            if(!arrayList.contains(result.getOrgname())){
+                arrayList.add(result.getOrgname());
+            }
+        }
+        to.add(arbiter);
+        //获取人员邮箱  相关人员 +  裁决组长
+        to = fenleiBaohuUserinfoMapper.selectEmailByList(to);
+        // 抄送人
+        ArrayList<String> cc = new ArrayList<>();
+        cc.addAll(Arrays.asList(toGuiHua_arbiter));
+        if(arrayList.size() == 1){
+            if("JG".equalsIgnoreCase(arrayList.get(0))){
+                cc.addAll(Arrays.asList(toJiagong_arbiter));
+            }else{
+                cc.addAll(Arrays.asList(toFenlei_arbiter));
+            }
+        } else{
+            cc.addAll(Arrays.asList(toJiagong_arbiter));
+            cc.addAll(Arrays.asList(toFenlei_arbiter));
+        }
+        //拼接内容
+        StringBuffer sb = new StringBuffer();
+        sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;各位领导，案件编号为："+fenleiBaohuMain.getId()+"，案件名称为："+fenleiBaohuMain.getMingcheng() + "已触发裁决，请及时处理。");
+        mailService.sendHtmlMail(to.toArray(new String[to.size()]),cc.toArray(new String[cc.size()]),"保护中心裁决案件提醒",sb.toString());
+        return true;
+    }
 
     private void sendEmailToPerson(HashMap<String, List<EmailIntervalEntity>> map) {
         //收件人

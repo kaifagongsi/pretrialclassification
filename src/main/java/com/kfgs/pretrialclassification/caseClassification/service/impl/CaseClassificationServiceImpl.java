@@ -8,12 +8,10 @@ import com.kfgs.pretrialclassification.common.log.Log;
 import com.kfgs.pretrialclassification.common.utils.AdjudicationBusinessUtils;
 import com.kfgs.pretrialclassification.common.utils.DateUtil;
 import com.kfgs.pretrialclassification.dao.*;
-import com.kfgs.pretrialclassification.domain.FenleiBaohuLog;
-import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
-import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
-import com.kfgs.pretrialclassification.domain.FenleiBaohuUpdateIpc;
+import com.kfgs.pretrialclassification.domain.*;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
 import com.kfgs.pretrialclassification.domain.response.*;
+import com.kfgs.pretrialclassification.sendEmail.service.impl.SendEmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +39,9 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
 
     @Autowired
     FenleiBaohuUpdateipcMapper fenleiBaohuUpdateipcMapper;
+
+    @Autowired
+    SendEmailService sendEmailService;
 
     @Override
     @Transactional
@@ -441,7 +442,12 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                 int rule = updateCaseRule(id,queryResponseResult);
                 if (rule == 1) {
                     // 01.22 2021年2月25日 10:31:55  新增发送邮件功能
-
+                    String arbiter = ((FenleiBaohuAdjudication)queryResponseResult.getQueryResult().getMap().get("item")).getProcessingPerson();
+                    if(sendEmailService.sendEmailCaseArbiter(id,arbiter)){
+                        queryResponseResult.setMessage( "已成功发送邮件" + queryResponseResult.getMessage() );
+                    }else{
+                        queryResponseResult.setMessage("邮件发送失败，请自行告知裁决组长" +queryResponseResult.getMessage() );
+                    }
                     return queryResponseResult;
                 }else{
                     // 数据处理失败   要准备回滚数据 ---

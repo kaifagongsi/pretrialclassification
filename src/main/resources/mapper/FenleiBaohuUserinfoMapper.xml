@@ -98,5 +98,12 @@
     <select id="selectUpdateWorkerName" resultType="java.lang.String">
         select workername from fenlei_baohu_userinfo where  workername like concat('%',#{worker})
     </select>
+    <select id="selectEmailByList" resultType="java.lang.String">
+        select email from  fenlei_baohu_userinfo where loginname in
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+
+    </select>
 
 </mapper>

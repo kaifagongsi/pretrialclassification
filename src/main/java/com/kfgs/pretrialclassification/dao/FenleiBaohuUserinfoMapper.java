@@ -1,6 +1,5 @@
 package com.kfgs.pretrialclassification.dao;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
@@ -9,7 +8,6 @@ import com.kfgs.pretrialclassification.domain.request.ArbiterParam;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,4 +35,6 @@ public interface FenleiBaohuUserinfoMapper extends BaseMapper<FenleiBaohuUserinf
     String selectAdjudicatorByWorkerName(String workerName);
 
     String selectUpdateWorkerName(@Param("worker") String worker);
+
+    List<String> selectEmailByList(List<String> to);
 }

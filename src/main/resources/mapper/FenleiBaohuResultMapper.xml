@@ -185,6 +185,20 @@
              where t.state != '2'
              order by fldm asc
     </select>
+    <select id="selectWorkerEmailById" resultType="java.lang.String">
+        select email from fenlei_baohu_userinfo where workername in (
+            select worker from     FENLEI_BAOHU_RESULT   where id = #{id}
+        )
+    </select>
+    <select id="selectListWithOrgNameByID"
+            resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt">
+
+     select  r.worker, u.orgname
+        from fenlei_baohu_result r
+        left join  fenlei_baohu_userinfo u on r.worker = u.workername
+        where r.id=#{id}
+    </select>
+
 
     <update id="updateResultRule">
         update fenlei_baohu_result r set r.state=#{state} where r.id=#{id}

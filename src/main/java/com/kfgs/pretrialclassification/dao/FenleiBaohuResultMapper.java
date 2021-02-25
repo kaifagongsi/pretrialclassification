@@ -69,4 +69,8 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
 
 
     List<EmailIntervalEntity> findAll();
+
+    List<String> selectWorkerEmailById(String id);
+
+    List<FenleiBaohuResultExt> selectListWithOrgNameByID(String id);
 }
