@@ -70,9 +70,13 @@ pretrialclassification:
     license: Apache 2.0
     licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.html
   email:
-     toGuiHua: jixiaoqiang@cnipa.gov.cn,xuyong@cnipa.gov.cn,zhangyunpeng@cnipa.gov.cn,zhangtingting_1@cnipa.gov.cn,lixiaoliang@cnipa.gov.cn
+     toGuiHua: jixiaoqiang@cnipa.gov.cn,xuyong@cnipa.gov.cn,zhangyunpeng@cnipa.gov.cn,zhangtingting_1@cnipa.gov.cn,xupei@cnipa.gov.cn,lixiaoliang@cnipa.gov.cn
      toFenlei: wangwenjing@cnipa.gov.cn,zhangxing@cnipa.gov.cn,changdongying@cnipa.gov.cn,xiegaijun@cnipa.gov.cn,liujun_7@cnipa.gov.cn,wangzhiyun@cnipa.gov.cn,dongqian@cnipa.gov.cn,zhoujianjun@cnipa.gov.cn
      toJiagong: wangmiao@cnipa.gov.cn,liujingsheng@cnipa.gov.cn,yuhong@cnipa.gov.cn,lizhongning@cnipa.gov.cn,zhangguogang@cnipa.gov.cn,niehong@cnipa.gov.cn,lihao@cnipa.gov.cn,qinlu@cnipa.gov.cn,yujialing@cnipa.gov.cn,maxiaomei@cnipa.gov.cn,mengfanmin@cnipa.gov.cn,liuhaiyan@cnipa.gov.cn,gaojianye@cnipa.gov.cn
+  arbiter:
+     toGuiHua: xuyong@cnipa.gov.cn,zhangyunpeng@cnipa.gov.cn,zhangtingting_1@cnipa.gov.cn,xupei@cnipa.gov.cn,lixiaoliang@cnipa.gov.cn
+     toFenlei: wangwenjing@cnipa.gov.cn,zhangxing@cnipa.gov.cn,changdongying@cnipa.gov.cn
+     toJiagong: wangmiao@cnipa.gov.cn,mengfanmin@cnipa.gov.cn
   departmentRotation: FL
 
 mybatis-plus:
