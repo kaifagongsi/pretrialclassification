@@ -3,7 +3,7 @@
 <mapper namespace="com.kfgs.pretrialclassification.dao.FenleiBaohuMainMapper">
 
     <sql id="Base_Column_List">
-        ID,MINGCHENG,TYPE,SQR,SQH,PDF_PATH,STATE,SIMPLECLASSCODE,CHUANTIME,JINANTIME,MESSAGE,ORAGINIZATION,MAIN_CLASSIFIERS,VICE_CLASSIFIERS
+        ID,MINGCHENG,TYPE,SQR,SQH,PDF_PATH,STATE,SIMPLECLASSCODE,CHUANTIME,JINANTIME,MESSAGE,ORAGINIZATION
     </sql>
     <update id="updateIpciCciCcaCsetsById">
         update fenlei_baohu_main
@@ -81,7 +81,7 @@
 
     <select id="selectByCondition" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt">
         select m.id,m.mingcheng,m.type,m.sqr,m.sqh,m.pdf_path,m.state,m.simpleclasscode,m.message,m.oraginization,
-        m.cci,m.cca,m.csets,m.ipci,m.main_classifiers,m.vice_classifiers,
+        m.cci,m.cca,m.csets,m.ipci,
         (to_date(jinantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as jinantime,
         (to_date(chuantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as chuantime,
         t_mr.maintype,t_mr.mainworker,t_mr.asstype,t_mr.assworker
