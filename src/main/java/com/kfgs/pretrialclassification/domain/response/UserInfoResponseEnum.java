@@ -1,8 +1,9 @@
 package com.kfgs.pretrialclassification.domain.response;
 
-public enum UserInfoCode implements ResultCode {
+public enum UserInfoResponseEnum implements ResultCode {
     SUCCESS(true,20201,"用户查询成功"),
-    FAIL(false,10201,"用户查询失败");
+    FAIL(false,10201,"用户查询失败"),
+    EMAIL_FAIL(false,10202,"用户邮箱校验失败");
 
     //操作是否成功
     boolean success;
@@ -12,7 +13,7 @@ public enum UserInfoCode implements ResultCode {
     String message;
 
 
-    private UserInfoCode(Boolean success, int code, String message){
+    private UserInfoResponseEnum(Boolean success, int code, String message){
         this.success = success;
         this.code = code;
         this.message = message;

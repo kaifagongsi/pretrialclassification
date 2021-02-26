@@ -8,6 +8,7 @@ import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 import com.kfgs.pretrialclassification.userinfo.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import oracle.jdbc.proxy.annotation.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,6 +63,17 @@ public class UserController extends BaseController {
     @GetMapping("/departmentRotation/{ymlName}/{department}")
     public QueryResponseResult departmentRotation(@PathVariable("ymlName") String ymlName,@PathVariable("department") String department){
         return  userService.departmentRotation(ymlName,department);
+    }
+    @ApiOperation(value = "更新个人信息")
+    @PostMapping("/updateUserInfo")
+    public QueryResponseResult updateUserinfo(@RequestBody FenleiBaohuUserinfo fenleiBaohuUserinfo){
+        return userService.updateUserinfo(fenleiBaohuUserinfo);
+    }
+
+    @ApiOperation(value = "检查邮箱是否唯一")
+    @PostMapping("/chenckUserEmail/{email}")
+    public QueryResponseResult chenckUserEmail(@PathVariable String email){
+        return userService.chenckUserEmail(email);
     }
 
 }

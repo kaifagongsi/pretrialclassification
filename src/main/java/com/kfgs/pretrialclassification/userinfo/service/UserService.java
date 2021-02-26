@@ -23,4 +23,8 @@ public interface UserService {
     QueryResponseResult deleteUserByLoginname(String loginname);
 
     QueryResponseResult departmentRotation(String ymlName,String department);
+
+    QueryResponseResult updateUserinfo(FenleiBaohuUserinfo fenleiBaohuUserinfo);
+
+    QueryResponseResult chenckUserEmail(String email);
 }

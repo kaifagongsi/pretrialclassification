@@ -1,12 +1,10 @@
 package com.kfgs.pretrialclassification.userinfo.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.common.jwt.JwtTokenUtils;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuUserinfoMapper;
-import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.response.*;
@@ -14,6 +12,7 @@ import com.kfgs.pretrialclassification.userinfo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,7 +27,6 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -44,6 +42,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     @Lazy
     private RedisTemplate<String, Object> redisTemplate;
+
+    @Value("${pretrialclassification.mailboxsuffix}")
+    private String emailSuffix;
 
     private BoundHashOperations<String, String, Object> tokenStorage() {
         return redisTemplate.boundHashOps(jwtTokenUtils.getTokenHeader());
@@ -136,12 +137,8 @@ public class UserServiceImpl implements UserService {
         }else if(fenleiBaohuUserinfo.getDep1().equals("JG")){
             fenleiBaohuUserinfo.setDep1("数据加工部");
         }
-        if("user".equals(fenleiBaohuUserinfo.getType())){
-            fenleiBaohuUserinfo.setType("1");
-        }else if("admin".equals(fenleiBaohuUserinfo.getType())){
-            fenleiBaohuUserinfo.setType("3");
-        }
-        fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@cnipa.gov.cn");
+
+        fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@"+emailSuffix);
         fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
         int insert = userinfoMapper.insertEntity(fenleiBaohuUserinfo);
         if(1 == insert){
@@ -168,14 +165,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public QueryResponseResult getUserInfoByLoginName(String loginname) {
         FenleiBaohuUserinfo userinfo = userinfoMapper.selectOneByLoginname(loginname);
+        userinfo.setEmail(userinfo.getEmail().replace("@"+emailSuffix,""));
         Map resultMap = new HashMap();
         QueryResult queryResult = new QueryResult();
         if(userinfo == null){
-            return new QueryResponseResult(UserInfoCode.FAIL,null);
+            return new QueryResponseResult(UserInfoResponseEnum.FAIL,null);
         }else{
             resultMap.put("item",userinfo);
             queryResult.setMap(resultMap);
-            return new QueryResponseResult(UserInfoCode.SUCCESS,queryResult);
+            return new QueryResponseResult(UserInfoResponseEnum.SUCCESS,queryResult);
         }
     }
 
@@ -212,5 +210,30 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
             return new QueryResponseResult(CommonCode.FAIL,null);
         }
+    }
+
+    @Override
+    public QueryResponseResult updateUserinfo(FenleiBaohuUserinfo fenleiBaohuUserinfo) {
+        QueryWrapper<FenleiBaohuUserinfo> wrapper = new QueryWrapper();
+        wrapper.eq("loginname",fenleiBaohuUserinfo.getLoginname());
+        int update = userinfoMapper.update(fenleiBaohuUserinfo,wrapper);
+        if(1 == update){
+            return new QueryResponseResult(CommonCode.SUCCESS,null);
+        }else{
+            return new QueryResponseResult(CommonCode.FAIL,null);
+        }
+    }
+
+    @Override
+    public QueryResponseResult chenckUserEmail(String email) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("email",email+"@"+emailSuffix);
+        Integer integer = userinfoMapper.selectCount(queryWrapper);
+        if(integer < 1){
+            return new QueryResponseResult(CommonCode.SUCCESS,null);
+        }else{
+            return new QueryResponseResult(UserInfoResponseEnum.EMAIL_FAIL,null);
+        }
+
     }
 }
