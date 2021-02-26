@@ -111,7 +111,7 @@
             AND t_mr.mainworker like concat(concat('%',#{worker}),'%') or t_mr.assworker like concat(concat('%',#{worker}),'%')
         </if>
         <if test='state!="" and state=="1"' >
-            AND m.state = '1' or m.state = '7'
+            AND m.state = '1' or m.state = '7' or m.state = '9'
         </if>
         <if test='state!="" and state!="1"' >
             AND m.state = #{state}
