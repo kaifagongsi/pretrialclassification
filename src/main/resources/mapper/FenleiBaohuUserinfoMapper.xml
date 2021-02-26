@@ -21,7 +21,7 @@
     </sql>
 
     <sql id="Base_Column_List_After" >
-        loginname,password,name,ORGNAME,AREANAME,CLASSLEVEL,WORKERNAME,EMAIL,DEP1,DEP2,TYPE,IPCS,FIELDS,LAST_TIME,LAST_IPC,IS_ONLINE
+        loginname,password,name,ORGNAME,AREANAME,CLASSLEVEL,WORKERNAME,EMAIL,DEP1,DEP2,TYPE,IPCS,FIELDS,LAST_TIME,LAST_IPC,IS_ONLINE,ADJUDICATOR
     </sql>
 
 
@@ -68,9 +68,9 @@
 
     <insert id="insertEntity" parameterType="com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo">
         INSERT INTO FENLEI_BAOHU_USERINFO  (
-          LOGINNAME, PASSWORD, NAME, ORGNAME, AREANAME, CLASSLEVEL, WORKERNAME, EMAIL, DEP1, DEP2, TYPE, IPCS, FIELDS,   IS_ONLINE )
+          LOGINNAME, PASSWORD, NAME, ORGNAME, AREANAME, CLASSLEVEL, WORKERNAME, EMAIL, DEP1, DEP2, TYPE, IPCS, FIELDS,   IS_ONLINE, ADJUDICATOR )
         VALUES  (
-          #{loginname},#{password},#{name},#{orgname},#{areaname},#{classlevel},#{workername},#{email},#{dep1},#{dep2},#{type},#{ipcs},#{fields},#{isOnline}
+          #{loginname},#{password},#{name},#{orgname},#{areaname},#{classlevel},#{workername},#{email},#{dep1},#{dep2},#{type},#{ipcs},#{fields},#{isOnline},#{Adjudicator}
          )
     </insert>
 
