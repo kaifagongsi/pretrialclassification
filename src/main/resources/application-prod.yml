@@ -81,6 +81,7 @@ pretrialclassification:
     toFenlei: wangwenjing@cnipa.gov.cn,zhangxing@cnipa.gov.cn,changdongying@cnipa.gov.cn
     toJiagong: wangmiao@cnipa.gov.cn,mengfanmin@cnipa.gov.cn
   departmentRotation: FL
+  mailboxsuffix: cnipa.gov.cn
 
 mybatis-plus:
   type-aliases-package: com.kfgs.pretrialclassification.domain
