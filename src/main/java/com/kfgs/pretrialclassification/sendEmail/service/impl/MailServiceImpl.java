@@ -1,6 +1,7 @@
 package com.kfgs.pretrialclassification.sendEmail.service.impl;
 
 import com.kfgs.pretrialclassification.sendEmail.service.MailService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,6 +18,7 @@ import javax.mail.internet.MimeMessage;
  * @author:
  */
 @Service
+@Slf4j
 public class MailServiceImpl implements MailService {
 
     @Autowired
@@ -49,7 +51,8 @@ public class MailServiceImpl implements MailService {
             System.out.println("html格式邮件发送成功");
             return  true;
         }catch (Exception e){
-            System.out.println("html格式邮件发送失败");
+            log.error("html格式邮件发送失败,接受者：{}，主题：{}",to,subject);
+            e.printStackTrace();
             return false;
         }
     }
@@ -77,7 +80,8 @@ public class MailServiceImpl implements MailService {
             System.out.println("html格式邮件发送成功");
             return  true;
         }catch (Exception e){
-            System.out.println("html格式邮件发送失败");
+            log.error("html格式邮件发送失败,接受者：{}，抄送：{},主题：{}",to,cc,subject);
+            e.printStackTrace();
             return false;
         }
     }

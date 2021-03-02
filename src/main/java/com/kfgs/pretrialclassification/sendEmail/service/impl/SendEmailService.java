@@ -144,22 +144,21 @@ public class SendEmailService {
         to = fenleiBaohuUserinfoMapper.selectEmailByList(to);
         // 抄送人
         ArrayList<String> cc = new ArrayList<>();
-        cc.addAll(Arrays.asList(toGuiHua_arbiter));
+        cc.addAll(Arrays.asList(toGuiHua_arbiter.split(",")));
         if(arrayList.size() == 1){
             if("JG".equalsIgnoreCase(arrayList.get(0))){
-                cc.addAll(Arrays.asList(toJiagong_arbiter));
+                cc.addAll(Arrays.asList(toJiagong_arbiter.split(",")));
             }else{
-                cc.addAll(Arrays.asList(toFenlei_arbiter));
+                cc.addAll(Arrays.asList(toFenlei_arbiter.split(",")));
             }
         } else{
-            cc.addAll(Arrays.asList(toJiagong_arbiter));
-            cc.addAll(Arrays.asList(toFenlei_arbiter));
+            cc.addAll(Arrays.asList(toJiagong_arbiter.split(",")));
+            cc.addAll(Arrays.asList(toFenlei_arbiter.split(",")));
         }
         //拼接内容
         StringBuffer sb = new StringBuffer();
         sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;各位领导，案件编号为："+fenleiBaohuMain.getId()+"，案件名称为："+fenleiBaohuMain.getMingcheng() + "已触发裁决，请及时处理。");
-        mailService.sendHtmlMail(to.toArray(new String[to.size()]),cc.toArray(new String[cc.size()]),"保护中心裁决案件提醒",sb.toString());
-        return true;
+        return mailService.sendHtmlMail(to.toArray(new String[to.size()]),cc.toArray(new String[cc.size()]),"保护中心裁决案件提醒",sb.toString());
     }
 
     private void sendEmailToPerson(HashMap<String, List<EmailIntervalEntity>> map) {
