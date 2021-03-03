@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.common.jwt.JwtTokenUtils;
+import com.kfgs.pretrialclassification.common.log.Log;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuUserinfoMapper;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
@@ -51,6 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Log
     public FenleiBaohuUserinfoExt validateUsername(String username) {
         BoundHashOperations<String, String, Object> stringStringObjectBoundHashOperations = tokenStorage();
         Object o = stringStringObjectBoundHashOperations.get(username);
@@ -63,6 +65,7 @@ public class UserServiceImpl implements UserService {
 
     }
     @Override
+    @Log
     public Map findUserInfo() {
         Map result = new HashMap<>();
         // 从SecurityContextHolder中获取到，当前登录的用户信息。
@@ -99,6 +102,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    @Log
     public QueryResponseResult findUserList(String pageNo,String pageSize,Map map) {
         Page<FenleiBaohuUserinfo> page = new Page<>(Long.parseLong(pageNo),Long.parseLong(pageSize));
         String dep1 = null;
@@ -128,6 +132,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Log
     public QueryResponseResult addUserInfo(FenleiBaohuUserinfo fenleiBaohuUserinfo) {
         System.out.println(fenleiBaohuUserinfo);
         //设置分类/加工
@@ -149,6 +154,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Log
     public QueryResponseResult checkLoginName(String loginname) {
         FenleiBaohuUserinfo userinfo = userinfoMapper.selectOneByLoginname(loginname);
         Map resultMap = new HashMap();
@@ -163,6 +169,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Log
     public QueryResponseResult getUserInfoByLoginName(String loginname) {
         FenleiBaohuUserinfo userinfo = userinfoMapper.selectOneByLoginname(loginname);
         userinfo.setEmail(userinfo.getEmail().replace("@"+emailSuffix,""));
@@ -178,6 +185,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Log
     public QueryResponseResult deleteUserByLoginname(String loginname) {
         QueryWrapper<FenleiBaohuUserinfo> wrapper = new QueryWrapper();
         wrapper.eq("loginname",loginname);
@@ -213,9 +221,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Log
     public QueryResponseResult updateUserinfo(FenleiBaohuUserinfo fenleiBaohuUserinfo) {
         QueryWrapper<FenleiBaohuUserinfo> wrapper = new QueryWrapper();
         wrapper.eq("loginname",fenleiBaohuUserinfo.getLoginname());
+        fenleiBaohuUserinfo.setOrgname(fenleiBaohuUserinfo.getDep1());
+        if(fenleiBaohuUserinfo.getDep1().equals("FL")){
+            fenleiBaohuUserinfo.setDep1("分类审查部");
+        }else if(fenleiBaohuUserinfo.getDep1().equals("JG")){
+            fenleiBaohuUserinfo.setDep1("数据加工部");
+        }
+        fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@"+emailSuffix);
+        fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
         int update = userinfoMapper.update(fenleiBaohuUserinfo,wrapper);
         if(1 == update){
             return new QueryResponseResult(CommonCode.SUCCESS,null);
