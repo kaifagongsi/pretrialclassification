@@ -225,11 +225,14 @@ public class UserServiceImpl implements UserService {
     public QueryResponseResult updateUserinfo(FenleiBaohuUserinfo fenleiBaohuUserinfo) {
         QueryWrapper<FenleiBaohuUserinfo> wrapper = new QueryWrapper();
         wrapper.eq("loginname",fenleiBaohuUserinfo.getLoginname());
-        fenleiBaohuUserinfo.setOrgname(fenleiBaohuUserinfo.getDep1());
-        if(fenleiBaohuUserinfo.getDep1().equals("FL")){
+        if(fenleiBaohuUserinfo.getDep1().equals("FL") || fenleiBaohuUserinfo.getDep1().equals("分类审查部")){
+            fenleiBaohuUserinfo.setOrgname("FL");
             fenleiBaohuUserinfo.setDep1("分类审查部");
-        }else if(fenleiBaohuUserinfo.getDep1().equals("JG")){
+        }else if(fenleiBaohuUserinfo.getDep1().equals("JG") || fenleiBaohuUserinfo.getDep1().equals("数据加工部") ){
+            fenleiBaohuUserinfo.setOrgname("JG");
             fenleiBaohuUserinfo.setDep1("数据加工部");
+        }else {
+            return new QueryResponseResult(UserInfoResponseEnum.USER_PARAMS_ERROE,null);
         }
         fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@"+emailSuffix);
         fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
