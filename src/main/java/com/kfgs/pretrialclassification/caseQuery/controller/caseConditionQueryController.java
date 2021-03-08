@@ -1,13 +1,17 @@
 package com.kfgs.pretrialclassification.caseQuery.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.kfgs.pretrialclassification.caseQuery.service.CaseConditionQueryService;
 import com.kfgs.pretrialclassification.common.exception.PretrialClassificationException;
 import com.kfgs.pretrialclassification.common.controller.BaseController;
 
+import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -135,5 +139,17 @@ public class caseConditionQueryController extends BaseController{
         resultMap.put("code",20000);
         resultMap.put("data",dataTable);
         return resultMap;
+    }
+
+    @ApiOperation("更新案件导出状态")
+    @PostMapping("/caseExportFinish")
+    public QueryResponseResult caseExportFinish(String list){
+        JSONArray jsonArray = JSONArray.parseArray(list);
+        for (int i=0;i<jsonArray.size();i++){
+            JSONObject obj = jsonArray.getJSONObject(i);
+            String id = obj.getString("id");
+            System.out.println(id);
+        }
+        return null;
     }
 }

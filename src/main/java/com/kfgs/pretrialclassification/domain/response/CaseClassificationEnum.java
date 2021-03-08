@@ -15,7 +15,8 @@ public enum CaseClassificationEnum implements ResultCode {
     INVALID_CASE_UPDATE(false,30003,"非法操作,该案件已提出更正"),
     INVALID_CASE_FINISH(false,30004,"非法操作，该案件已完成出案"),
     INVALID_CASE_STATE(false,30005,"非法操作,请刷新后重试或联系管理员"),
-    NO_TRANS_WORKER(false,30006,"无效转案");
+    INCALID_CASE_RETRANS(false,30006,"存在人员重复转案，操作取消"),
+    NO_TRANS_WORKER(false,30007,"无效转案");
 
 
     private CaseClassificationEnum(Boolean success, int code, String message){

@@ -186,24 +186,37 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         if (list.size() == 0 || list == null){
             return new QueryResponseResult(CaseClassificationEnum.NO_TRANS_WORKER,null);
         }
-        /**
-         * 02.20修改 转案前对案件状态进行判断
-         */
         //案件id
         String id = list.get(0).getId();
         String worker = list.get(0).getFenpeiren();
+        /**
+         * 03.04修改 转案前对人员重复转案进行判断
+         */
+        List<String> transperson = getTransWorkerList(id);
+        for(int i=0;i<list.size();i++){
+            if (transperson.contains(list.get(i).getWorker())){
+                QueryResult result = new QueryResult();
+                Map<String,String> map = new HashMap<>();
+                map.put("name",list.get(i).getWorker());
+                result.setMap(map);
+                return new QueryResponseResult(CaseClassificationEnum.INCALID_CASE_RETRANS,result);
+            }
+        }
+        /**
+         * 02.20修改 转案前对案件状态进行判断
+         */
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("id",id);
         queryWrapper.eq("worker",worker);
         FenleiBaohuResult fenleiBaohuResult = fenleiBaohuResultMapper.selectOne(queryWrapper);
         String state = fenleiBaohuResult.getState();
-        if ("2".equals(state)){
+        if ("2".equals(state)){ //已完成
             return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_FINISH,null);
         }
-        if ("7".equals(state)){
+        if ("7".equals(state)){ //更正中
             return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_RULED,null);
         }
-        if ("9".equals(state)){
+        if ("9".equals(state)){ //裁决中
             return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_UPDATE,null);
         }
         else {
