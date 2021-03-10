@@ -62,6 +62,9 @@ public class caseConditionQueryController extends BaseController{
         if (endTime == null){
             endTime = "";
         }
+        if(oraginization == null){
+            oraginization = "";
+        }
         if(beginTime == "" && endTime != ""){
             beginTime = "19000000000000";
             endTime = endTime.replace("-","")+"235959";
