@@ -34,9 +34,9 @@
 
 
     <select id="findAreaName" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo">
-        select areaname,wm_concat(workername || '[' ||classlevel || ']' || '-' || decode(orgname,'FL','分类','JG','加工','')) as workername
+        select areaname,wm_concat(workername || '[' ||classlevel || ']' ) as workername
           from fenlei_baohu_userinfo
-        where areaname is not null and classlevel is not null and classlevel != 'C' and is_online = '1'
+        where areaname is not null and classlevel is not null and classlevel != 'Z' and is_online = '1'
         group by areaname
         order by areaname
     </select>
