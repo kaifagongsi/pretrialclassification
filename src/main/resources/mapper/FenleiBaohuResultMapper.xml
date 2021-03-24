@@ -30,6 +30,10 @@
             order by fldm asc
     </select>
 
+    <select id="AfterTransSendEmail" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt">
+
+    </select>
+
     <select id="selectCaseOut" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt" >
         select t.worker,
                 substr(t.worker,1,instr(t.worker,'-',1)-1) fldm,
@@ -193,12 +197,19 @@
     <select id="selectListWithOrgNameByID"
             resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt">
 
-     select  r.worker, u.orgname
+     select  r.worker, u.dep1
         from fenlei_baohu_result r
         left join  fenlei_baohu_userinfo u on r.worker = u.workername
         where r.id=#{id}
     </select>
 
+    <select id="findMainWorkerByID" resultType="java.lang.String">
+        select worker from fenlei_baohu_result where state='2' and ipcmi is not null and id=#{id}
+    </select>
+
+    <select id="findAssWorkerByID" resultType="java.lang.String">
+        select worker from fenlei_baohu_result where state='2' and ipcmi=null and id=#{id}
+    </select>
 
     <update id="updateResultRule">
         update fenlei_baohu_result r set r.state=#{state} where r.id=#{id}
