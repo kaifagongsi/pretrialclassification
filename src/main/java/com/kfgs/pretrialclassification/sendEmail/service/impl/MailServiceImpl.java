@@ -77,7 +77,7 @@ public class MailServiceImpl implements MailService {
             helper.setSubject(subject);
             helper.setText(content,true);
             mailSender.send(message);
-            System.out.println("html格式邮件发送成功");
+            System.out.println("html格式邮件抄送成功");
             return  true;
         }catch (Exception e){
             log.error("html格式邮件发送失败,接受者：{}，抄送：{},主题：{}",to,cc,subject);

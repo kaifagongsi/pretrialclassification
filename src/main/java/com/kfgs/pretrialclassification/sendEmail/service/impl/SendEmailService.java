@@ -44,14 +44,58 @@ public class SendEmailService {
     @Value("${pretrialclassification.email.toGuiHua}")
     private String toGuiHua;
 
+    @Value("${pretrialclassification.email.toYiBu}")
+    private String toYiBu;
+
+    @Value("${pretrialclassification.email.toErBu}")
+    private String toErBu;
+
+    @Value("${pretrialclassification.email.toSanBu}")
+    private String toSanBu;
+
+    @Value("${pretrialclassification.email.toSiBu}")
+    private String toSiBu;
+
+    @Value("${pretrialclassification.email.toYiBu_overtime}")
+    private String toYiBu_overtime;
+
+    @Value("${pretrialclassification.email.toErBu_overtime}")
+    private String toErBu_overtime;
+
+    @Value("${pretrialclassification.email.toSanBu_overtime}")
+    private String toSanBu_overtime;
+
+    @Value("${pretrialclassification.email.toSiBu_overtime}")
+    private String toSiBu_overtime;
+
+    @Value("${pretrialclassification.email.toSanBu_Trans}")
+    private String toSanBu_Trans;
+
+    @Value("${pretrialclassification.email.toSiBu_Trans}")
+    private String toSiBu_Trans;
+
+    @Value("${pretrialclassification.arbiter.toYiBu_arbiter}")
+    private String toYiBu_arbiter;
+
+    @Value("${pretrialclassification.arbiter.toErBu_arbiter}")
+    private String toErBu_arbiter;
+
+    @Value("${pretrialclassification.arbiter.toSanBu_arbiter}")
+    private String toSanBu_arbiter;
+
+    @Value("${pretrialclassification.arbiter.toSiBu_arbiter}")
+    private String toSiBu_arbiter;
+
+    @Value("${pretrialclassification.arbiter.toGuiHua_arbiter}")
+    private String toGuiHua_arbiter;
+
     @Value("${pretrialclassification.arbiter.toFenlei}")
     private String toFenlei_arbiter;
 
     @Value("${pretrialclassification.arbiter.toJiagong}")
     private String toJiagong_arbiter;
 
-    @Value("${pretrialclassification.arbiter.toGuiHua}")
-    private String toGuiHua_arbiter;
+
 
     @Autowired
     MailService mailService;
@@ -67,8 +111,45 @@ public class SendEmailService {
     }
 
     /**
+     * 0317 新增转案邮件提醒
+     */
+    public boolean sendTransEmail(String id,String fenpeiren,List<String> transworker){
+        List<String> to = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        sb.append("&nbsp;&nbsp;&nbsp;<table  border='1px' cellpadding='5px' style='font-size:14px;border-collapse: collapse;margin: 20px; '><thead><tr><th>预审编号</th><th>部门</th><th>分类员</th><th>转案来源</th><th>转案时间</th></tr></thead><tbody>");
+        for (int i=0;i<transworker.size();i++){
+            FenleiBaohuResultExt r = fenleiBaohuResultMapper.AfterTransSendEmail(id,transworker.get(i));
+            String fenpeitime = r.getFenpeitime();
+            String worker = r.getFldmworker();
+            to.add(r.getEmail());
+            if("三部".equals(r.getDep1())){
+                to.addAll(Arrays.asList(toSanBu_Trans.split(",")));
+            }else if ("一部".equals(r.getDep1())){ //一部同时发裁决人员
+                //获取裁决人员邮箱
+                String cjworker = fenleiBaohuUserinfoMapper.getArbiterByworker(worker);
+                String cjemail = fenleiBaohuUserinfoMapper.getEamilById(cjworker);
+                to.add(cjemail);
+            }
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
+                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMddHHmmss");
+                sb.append("<tr><td>"+ r.getId() + "</td><td>" + r.getDep1() + "</td><td>" + r.getWorker() + "</td><td>" + fenpeiren + "</td><td>" +  sdf.format(sdf1.parse(fenpeitime)) + "</td></tr>" );
+            } catch (java.text.ParseException e1) {
+                e1.printStackTrace();
+            }
+        }
+        sb.append("</tbody></table>");
+        String content = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;各位同事，以下是新转案的保护中心案件列表! &nbsp;&nbsp;&nbsp;请注意查收！" + sb.toString();
+        // 首先添加规划部门
+        //to.addAll(Arrays.asList(toGuiHua.split(",")));
+        //list 去重
+        to = to.stream().distinct().collect(Collectors.toList());
+        //发送邮件
+        return mailService.sendHtmlMail(to.toArray(new String[to.size()]),"保护中心案件列表", content);
+    }
+    /**
      * 由传入的ids 发送邮件提醒
-     * @param ids
+     * @param idsf
      * @return
      */
     public boolean sendEmail(String[] ids) {
@@ -82,14 +163,25 @@ public class SendEmailService {
             FenleiBaohuResultExt r = fenleiBaohuResultExts.get(i);
             String fenpeitime = r.getFenpeitime();
             to.add(r.getEmail());
-
-            if("FL".equals(r.getOrgname()) && state != 2){//只有分类
+            /**
+             * 20210317修改
+             */
+            if("三部".equals(r.getDep1())){
+                cc.addAll(Arrays.asList(toSanBu.split(",")));
+            }else if ("四部".equals(r.getDep1())){
+                cc.addAll(Arrays.asList(toSiBu.split(",")));
+            }else if ("一部".equals(r.getDep1())){
+                cc.addAll(Arrays.asList(toYiBu.split(",")));
+            }else if ("二部".equals(r.getDep1())){
+                cc.addAll(Arrays.asList(toErBu.split(",")));
+            }
+            /*if("FL".equals(r.getOrgname()) && state != 2){//只有分类
                 state = 1;
             }else if("JG".equals(r.getOrgname()) && state !=1){//只有加工
                 state = 2;
             }else{
                 state = 3;
-            }
+            }*/
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
                 SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -103,14 +195,15 @@ public class SendEmailService {
         String content = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;各位领导，以下是今天新分配的保护中心案件列表! &nbsp;&nbsp;&nbsp;请注意查收！" + sb.toString();
         // 首先添加规划部门
         cc.addAll(Arrays.asList(toGuiHua.split(",")));
-        if(state == 1){
+
+        /*if(state == 1){
             cc.addAll(Arrays.asList(toFenlei.split(",")));
         }else if(state == 2){
             cc.addAll(Arrays.asList(toJiagong.split(",")));
         }else if(state == 3){
             cc.addAll(Arrays.asList(toFenlei.split(",")));
             cc.addAll(Arrays.asList(toJiagong.split(",")));
-        }
+        }*/
 
         //list 去重
         to = to.stream().distinct().collect(Collectors.toList());
@@ -135,9 +228,15 @@ public class SendEmailService {
         List<FenleiBaohuResultExt> fenleiBaohuResults = fenleiBaohuResultMapper.selectListWithOrgNameByID(id);
         for(FenleiBaohuResultExt result : fenleiBaohuResults){
             to.add(result.getWorker().split("-")[0]);
-            if(!arrayList.contains(result.getOrgname())){
-                arrayList.add(result.getOrgname());
+            /**
+             * 0317修改
+             */
+            if (!arrayList.contains(result.getDep1())){
+                arrayList.add(result.getDep1());
             }
+            /*if(!arrayList.contains(result.getOrgname())){
+                arrayList.add(result.getOrgname());
+            }*/
         }
         to.add(arbiter);
         //获取人员邮箱  相关人员 +  裁决组长
@@ -145,7 +244,20 @@ public class SendEmailService {
         // 抄送人
         ArrayList<String> cc = new ArrayList<>();
         cc.addAll(Arrays.asList(toGuiHua_arbiter.split(",")));
-        if(arrayList.size() == 1){
+        if (arrayList.size() != 0){
+            for (int i=0;i<arrayList.size();i++){
+                if ("三部".equalsIgnoreCase(arrayList.get(i))){
+                    cc.addAll(Arrays.asList(toSanBu_arbiter.split(",")));
+                }else if ("四部".equalsIgnoreCase(arrayList.get(i))){
+                    cc.addAll(Arrays.asList(toSiBu_arbiter.split(",")));
+                }else if ("一部".equalsIgnoreCase(arrayList.get(i))){
+                    cc.addAll(Arrays.asList(toYiBu_arbiter.split(",")));
+                }else if ("二部".equalsIgnoreCase(arrayList.get(i))) {
+                    cc.addAll(Arrays.asList(toErBu_arbiter.split(",")));
+                }
+            }
+        }
+        /*if(arrayList.size() == 1){
             if("JG".equalsIgnoreCase(arrayList.get(0))){
                 cc.addAll(Arrays.asList(toJiagong_arbiter.split(",")));
             }else{
@@ -154,10 +266,10 @@ public class SendEmailService {
         } else{
             cc.addAll(Arrays.asList(toJiagong_arbiter.split(",")));
             cc.addAll(Arrays.asList(toFenlei_arbiter.split(",")));
-        }
+        }*/
         //拼接内容
         StringBuffer sb = new StringBuffer();
-        sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;各位领导，案件编号为："+fenleiBaohuMain.getId()+"，案件名称为："+fenleiBaohuMain.getMingcheng() + "已触发裁决，请及时处理。");
+        sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;各位领导，案件编号为："+fenleiBaohuMain.getId()+"，案件名称为："+fenleiBaohuMain.getMingcheng() + ",已触发裁决，请及时处理。");
         return mailService.sendHtmlMail(to.toArray(new String[to.size()]),cc.toArray(new String[cc.size()]),"保护中心裁决案件提醒",sb.toString());
     }
 
@@ -216,9 +328,15 @@ public class SendEmailService {
                     e.printStackTrace();
                 }
                 //用于判断分类加工部门收件人  此list应该最多只有两个
-                if(orgList.contains(b.getOrgname())){
+                /*if(orgList.contains(b.getOrgname())){
                 }else{
                     orgList.add(b.getOrgname());
+                }*/
+                // 0317修改
+                if (orgList.contains(b.getDep1())){
+
+                }else {
+                    orgList.add(b.getDep1());
                 }
             }
         }
@@ -227,10 +345,14 @@ public class SendEmailService {
         //配置分类加工部门的收件人
         for(int i = 0; i < orgList.size(); i++){
             String name = orgList.get(i);
-            if("FL".equals(name)){
-                ccEmailAddres.addAll(Arrays.asList(toFenlei.split(",")));
-            }else if("JG".equals(name)) {
-                ccEmailAddres.addAll(Arrays.asList(toJiagong.split(",")));
+            if("三部".equals(name)){
+                ccEmailAddres.addAll(Arrays.asList(toSanBu_overtime.split(",")));
+            }else if("四部".equals(name)) {
+                ccEmailAddres.addAll(Arrays.asList(toSiBu_overtime.split(",")));
+            }else if ("一部".equals(name)){
+                ccEmailAddres.addAll(Arrays.asList(toYiBu_overtime.split(",")));
+            }else if ("二部".equals(name)){
+                ccEmailAddres.addAll(Arrays.asList(toErBu_overtime.split(",")));
             }
         }
         //添加 规划发展部的人
