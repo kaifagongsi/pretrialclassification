@@ -113,7 +113,7 @@ public class SendEmailService {
     /**
      * 0317 新增转案邮件提醒
      */
-    public boolean sendTransEmail(String id,String fenpeiren,List<String> transworker){
+    /*public boolean sendTransEmail(String id,String fenpeiren,List<String> transworker){
         List<String> to = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         sb.append("&nbsp;&nbsp;&nbsp;<table  border='1px' cellpadding='5px' style='font-size:14px;border-collapse: collapse;margin: 20px; '><thead><tr><th>预审编号</th><th>部门</th><th>分类员</th><th>转案来源</th><th>转案时间</th></tr></thead><tbody>");
@@ -146,7 +146,7 @@ public class SendEmailService {
         to = to.stream().distinct().collect(Collectors.toList());
         //发送邮件
         return mailService.sendHtmlMail(to.toArray(new String[to.size()]),"保护中心案件列表", content);
-    }
+    }*/
     /**
      * 由传入的ids 发送邮件提醒
      * @param idsf
