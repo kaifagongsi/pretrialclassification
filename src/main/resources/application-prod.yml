@@ -77,13 +77,13 @@ pretrialclassification:
     toYiBu: wanglihong@cnipa.gov.cn
     toErBu: xiegaijun@cnipa.gov.cn
     toSanBu: wangwenjing@cnipa.gov.cn,changdongying@cnipa.gov.cn,lisiyao@cnipa.gov.cn
-    toSiBu: yuhong@cnipa.gov.cn,mengfanmin@cnipa.gov.cn,lisiyao@cnipa.gov.cn
+    toSiBu: yuhong@cnipa.gov.cn,mengfanmin@cnipa.gov.cn,lisiyao@cnipa.gov.cn,maxiaomei@cnipa.gov.cn
     toSanBu_Trans: lisiyao@cnipa.gov.cn
     toSiBu_Trans: lisiyao@cnipa.gov.cn
     toYiBu_overtime: wanglihong@cnipa.gov.cn
     toErBu_overtime: xiegaijun@cnipa.gov.cn
-    toSanBu_overtime: wangwenjing@cnipa.gov.cn,changdongying@cnipa.gov.cn,lisiyao@cnipa.gov.cn
-    toSiBu_overtime: changmao@cnipa.gov.cn,liujingsheng@cnipa.gov.cn,yuhong@cnipa.gov.cn,mengfanmin@cnipa.gov.cn,lisiyao@cnipa.gov.cn
+    toSanBu_overtime: wangwenjing@cnipa.gov.cn,changdongying@cnipa.gov.cn,lisiyao@cnipa.gov.cn,lizhenhua_1@cnipa.gov.cn,wangxue@cnipa.gov.cn,lixiaoliang_1@cnipa.gov.cn,lihao@cnipa.gov.cn,liujianhua@cnipa.gov.cn,liuhaiyan@cnipa.gov.cn,zhenjiuli@cnipa.gov.cn,dongqian@cnipa.gov.cn,wudezhuang@cnipa.gov.cn
+    toSiBu_overtime: changmao@cnipa.gov.cn,liujingsheng@cnipa.gov.cn,yuhong@cnipa.gov.cn,mengfanmin@cnipa.gov.cn,lisiyao@cnipa.gov.cn,maxiaomei@cnipa.gov.cn
     toFenlei:  wangwenjing@cnipa.gov.cn,zhangxing@cnipa.gov.cn,changdongying@cnipa.gov.cn,xiegaijun@cnipa.gov.cn,liujun_7@cnipa.gov.cn,wangzhiyun@cnipa.gov.cn,dongqian@cnipa.gov.cn,zhoujianjun@cnipa.gov.cn
     toJiagong: wangmiao@cnipa.gov.cn,liujingsheng@cnipa.gov.cn,yuhong@cnipa.gov.cn,lizhongning@cnipa.gov.cn,zhangguogang@cnipa.gov.cn,niehong@cnipa.gov.cn,lihao@cnipa.gov.cn,qinlu@cnipa.gov.cn,yujialing@cnipa.gov.cn,maxiaomei@cnipa.gov.cn,mengfanmin@cnipa.gov.cn,liuhaiyan@cnipa.gov.cn,gaojianye@cnipa.gov.cn
   arbiter:
@@ -91,8 +91,8 @@ pretrialclassification:
     toGuiHua_arbiter: xuyong@cnipa.gov.cn,wanglei_8@cnipa.gov.cn,zengnan@cnipa.gov.cn,lisiyao@cnipa.gov.cn
     toYiBu_arbiter: wanglihong@cnipa.gov.cn
     toErBu_arbiter: xiegaijun@cnipa.gov.cn
-    toSanBu_arbiter: wangwenjing@cnipa.gov.cn,changdongying@cnipa.gov.cn
-    toSiBu_arbiter: yuhong@cnipa.gov.cn,mengfanmin@cnipa.gov.cn
+    toSanBu_arbiter: wangwenjing@cnipa.gov.cn,changdongying@cnipa.gov.cn,lizhenhua_1@cnipa.gov.cn,wangxue@cnipa.gov.cn,lixiaoliang_1@cnipa.gov.cn,liujianhua@cnipa.gov.cn,liuhaiyan@cnipa.gov.cn,zhenjiuli@cnipa.gov.cn,dongqian@cnipa.gov.cn,wudezhuang@cnipa.gov.cn
+    toSiBu_arbiter: yuhong@cnipa.gov.cn,mengfanmin@cnipa.gov.cn,maxiaomei@cnipa.gov.cn
     toFenlei: wangwenjing@cnipa.gov.cn,zhangxing@cnipa.gov.cn,changdongying@cnipa.gov.cn
     toJiagong: wangmiao@cnipa.gov.cn,mengfanmin@cnipa.gov.cn
   departmentRotation: FL
