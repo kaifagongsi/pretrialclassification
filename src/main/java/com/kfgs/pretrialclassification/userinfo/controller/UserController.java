@@ -76,4 +76,15 @@ public class UserController extends BaseController {
         return userService.chenckUserEmail(email);
     }
 
+    @ApiOperation(value = "获取数据库中的部门信息")
+    @GetMapping("/getInitDep1s")
+    public QueryResponseResult getInitDep1s(){
+        return  userService.getInitDep1s();
+    }
+
+    @ApiOperation(value = "获取数据库中的部门信息下的处室信息")
+    @GetMapping("/getInitDep2sByDep1/{dep1}")
+    public QueryResponseResult getInitDep2s(@PathVariable String dep1){
+        return  userService.getInitDep2s(dep1);
+    }
 }

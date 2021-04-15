@@ -27,8 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -47,8 +46,17 @@ public class UserServiceImpl implements UserService {
     @Value("${pretrialclassification.mailboxsuffix}")
     private String emailSuffix;
 
+    @Value("${pretrialclassification.dep1s}")
+    private String dep1s;
+
+    @Value("${spring.application.name}")
+    private String serverName;
+
     private BoundHashOperations<String, String, Object> tokenStorage() {
         return redisTemplate.boundHashOps(jwtTokenUtils.getTokenHeader());
+    }
+    private BoundHashOperations<String, String, Object> tokenStorage(String key) {
+        return redisTemplate.boundHashOps(key);
     }
 
     @Override
@@ -62,7 +70,6 @@ public class UserServiceImpl implements UserService {
             System.out.println(o.toString());
             return (FenleiBaohuUserinfoExt) tokenStorage().get(username);
         }
-
     }
     @Override
     @Log
@@ -109,11 +116,12 @@ public class UserServiceImpl implements UserService {
         String dep2 = null;
         String isOnline = null;
         if(map.get("dep1") != null && StringUtils.isNotEmpty(map.get("dep1").toString())){
-            if(map.get("dep1").toString().equalsIgnoreCase("FL")){
+           /* if(map.get("dep1").toString().equalsIgnoreCase("FL")){
                 dep1 = "分类审查部";
             }else if(map.get("dep1").toString().equalsIgnoreCase("JG")){
                 dep1 = "数据加工部";
-            }
+            }*/
+            dep1 = map.get("dep1").toString();
         }
         if(map.get("dep2") != null && StringUtils.isNotEmpty(map.get("dep2").toString())){
             dep2 = map.get("dep2").toString();
@@ -135,17 +143,11 @@ public class UserServiceImpl implements UserService {
     @Log
     public QueryResponseResult addUserInfo(FenleiBaohuUserinfo fenleiBaohuUserinfo) {
         System.out.println(fenleiBaohuUserinfo);
-        //设置分类/加工
-        fenleiBaohuUserinfo.setOrgname(fenleiBaohuUserinfo.getDep1());
-        if(fenleiBaohuUserinfo.getDep1().equals("FL")){
-            fenleiBaohuUserinfo.setDep1("分类审查部");
-        }else if(fenleiBaohuUserinfo.getDep1().equals("JG")){
-            fenleiBaohuUserinfo.setDep1("数据加工部");
-        }
 
         fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@"+emailSuffix);
         fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
-        int insert = userinfoMapper.insertEntity(fenleiBaohuUserinfo);
+        int insert = userinfoMapper.insertSelective(fenleiBaohuUserinfo);
+        //int insert = userinfoMapper.insertEntity(fenleiBaohuUserinfo);
         if(1 == insert){
             return new QueryResponseResult(CommonCode.SUCCESS,null);
         }else{
@@ -225,15 +227,6 @@ public class UserServiceImpl implements UserService {
     public QueryResponseResult updateUserinfo(FenleiBaohuUserinfo fenleiBaohuUserinfo) {
         QueryWrapper<FenleiBaohuUserinfo> wrapper = new QueryWrapper();
         wrapper.eq("loginname",fenleiBaohuUserinfo.getLoginname());
-        if(fenleiBaohuUserinfo.getDep1().equals("FL") || fenleiBaohuUserinfo.getDep1().equals("分类审查部")){
-            fenleiBaohuUserinfo.setOrgname("FL");
-            fenleiBaohuUserinfo.setDep1("分类审查部");
-        }else if(fenleiBaohuUserinfo.getDep1().equals("JG") || fenleiBaohuUserinfo.getDep1().equals("数据加工部") ){
-            fenleiBaohuUserinfo.setOrgname("JG");
-            fenleiBaohuUserinfo.setDep1("数据加工部");
-        }else {
-            return new QueryResponseResult(UserInfoResponseEnum.USER_PARAMS_ERROE,null);
-        }
         fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@"+emailSuffix);
         fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
         int update = userinfoMapper.update(fenleiBaohuUserinfo,wrapper);
@@ -255,5 +248,26 @@ public class UserServiceImpl implements UserService {
             return new QueryResponseResult(UserInfoResponseEnum.EMAIL_FAIL,null);
         }
 
+    }
+
+    @Override
+    public QueryResponseResult getInitDep1s() {
+        //List<String> list = userinfoMapper.selectDistinctDep1();
+        List<String> list = Arrays.asList(dep1s.split(","));
+        QueryResult queryResult = new QueryResult();
+        queryResult.setList(list);
+        return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
+    }
+
+    @Override
+    public QueryResponseResult getInitDep2s(String dep1) {
+        // 直接从redis 获取数据
+        BoundHashOperations<String, String, Object> stringStringObjectBoundHashOperations = tokenStorage(serverName);
+        HashMap dep2s = (HashMap)stringStringObjectBoundHashOperations.get("dep2s");
+        String[] s = (String[])dep2s.get(dep1);
+        List<String> list = Arrays.asList(s);
+        QueryResult queryResult = new QueryResult();
+        queryResult.setList(list);
+        return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
     }
 }
