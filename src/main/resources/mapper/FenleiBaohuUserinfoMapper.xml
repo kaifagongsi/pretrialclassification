@@ -66,11 +66,121 @@
     </select>
 
 
+    <insert id="insertSelective" parameterType="com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo" >
+        insert into FENLEI_BAOHU_USERINFO
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="loginname != null" >
+                LOGINNAME,
+            </if>
+            <if test="password != null" >
+                PASSWORD,
+            </if>
+            <if test="name != null" >
+                NAME,
+            </if>
+            <if test="orgname != null" >
+                ORGNAME,
+            </if>
+            <if test="areaname != null" >
+                AREANAME,
+            </if>
+            <if test="classlevel != null" >
+                CLASSLEVEL,
+            </if>
+            <if test="workername != null" >
+                WORKERNAME,
+            </if>
+            <if test="email != null" >
+                EMAIL,
+            </if>
+            <if test="dep1 != null" >
+                DEP1,
+            </if>
+            <if test="dep2 != null" >
+                DEP2,
+            </if>
+            <if test="type != null" >
+                TYPE,
+            </if>
+            <if test="ipcs != null" >
+                IPCS,
+            </if>
+            <if test="fields != null" >
+                FIELDS,
+            </if>
+            <if test="lastTime != null" >
+                LAST_TIME,
+            </if>
+            <if test="lastIpc != null" >
+                LAST_IPC,
+            </if>
+            <if test="isOnline != null" >
+                IS_ONLINE,
+            </if>
+            <if test="adjudicator != null" >
+                ADJUDICATOR,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="loginname != null" >
+                #{loginname,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null" >
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null" >
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="orgname != null" >
+                #{orgname,jdbcType=VARCHAR},
+            </if>
+            <if test="areaname != null" >
+                #{areaname,jdbcType=VARCHAR},
+            </if>
+            <if test="classlevel != null" >
+                #{classlevel,jdbcType=VARCHAR},
+            </if>
+            <if test="workername != null" >
+                #{workername,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null" >
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="dep1 != null" >
+                #{dep1,jdbcType=VARCHAR},
+            </if>
+            <if test="dep2 != null" >
+                #{dep2,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null" >
+                #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="ipcs != null" >
+                #{ipcs,jdbcType=VARCHAR},
+            </if>
+            <if test="fields != null" >
+                #{fields,jdbcType=VARCHAR},
+            </if>
+            <if test="lastTime != null" >
+                #{lastTime,jdbcType=VARCHAR},
+            </if>
+            <if test="lastIpc != null" >
+                #{lastIpc,jdbcType=VARCHAR},
+            </if>
+            <if test="isOnline != null" >
+                #{isOnline,jdbcType=VARCHAR},
+            </if>
+            <if test="adjudicator != null" >
+                #{adjudicator,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
     <insert id="insertEntity" parameterType="com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo">
         INSERT INTO FENLEI_BAOHU_USERINFO  (
-          LOGINNAME, PASSWORD, NAME, ORGNAME, AREANAME, CLASSLEVEL, WORKERNAME, EMAIL, DEP1, DEP2, TYPE, IPCS, FIELDS,   IS_ONLINE, ADJUDICATOR )
+          LOGINNAME, PASSWORD, NAME,  AREANAME, CLASSLEVEL, WORKERNAME, EMAIL, DEP1, DEP2, TYPE, IPCS, FIELDS,   IS_ONLINE, ADJUDICATOR )
         VALUES  (
-          #{loginname},#{password},#{name},#{orgname},#{areaname},#{classlevel},#{workername},#{email},#{dep1},#{dep2},#{type},#{ipcs},#{fields},#{isOnline},#{Adjudicator}
+          #{loginname},#{password},#{name},#{areaname},#{classlevel},#{workername},#{email},#{dep1},#{dep2},#{type},#{ipcs},#{fields},#{isOnline},#{Adjudicator}
          )
     </insert>
 
@@ -104,6 +214,9 @@
             #{item}
         </foreach>
 
+    </select>
+    <select id="selectDistinctDep1" resultType="java.lang.String">
+        select  distinct dep1  fROM fenlei_baohu_userinfo
     </select>
 
 </mapper>

@@ -23,6 +23,8 @@ public interface FenleiBaohuUserinfoMapper extends BaseMapper<FenleiBaohuUserinf
 
     IPage<FenleiBaohuUserinfo> getUserList(IPage<FenleiBaohuUserinfo> page, @Param("dep1") String dep1,  @Param("dep2")String dep2,@Param("isOnline") String isOnline);
 
+    int insertSelective(FenleiBaohuUserinfo fenleiBaohuUserinfo);
+
     int insertEntity(FenleiBaohuUserinfo fenleiBaohuUserinfo);
 
     FenleiBaohuUserinfo selectOneByLoginname(String loginname);
@@ -37,4 +39,6 @@ public interface FenleiBaohuUserinfoMapper extends BaseMapper<FenleiBaohuUserinf
     String selectUpdateWorkerName(@Param("worker") String worker);
 
     List<String> selectEmailByList(List<String> to);
+
+    List<String> selectDistinctDep1();
 }
