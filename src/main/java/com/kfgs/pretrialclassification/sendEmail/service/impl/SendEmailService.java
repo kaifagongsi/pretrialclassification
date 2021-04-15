@@ -149,7 +149,7 @@ public class SendEmailService {
     }*/
     /**
      * 由传入的ids 发送邮件提醒
-     * @param idsf
+     * @param ids
      * @return
      */
     public boolean sendEmail(String[] ids) {
