@@ -46,11 +46,8 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
     SendEmailService sendEmailService;
 
 
-    @Value("${pretrialclassification.email.toFenlei}")
-    private String toFenlei;
 
-    @Value("${pretrialclassification.email.toJiagong}")
-    private String toJiagong;
+
 
 
 

@@ -178,10 +178,14 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         }
     }
 
+    /**
+     * 转案
+     *  已出案、裁决、更正案件不可进行转案
+     * @param list
+     * @return
+     */
     @Override
     @Transactional
-    //转案
-    //已出案、裁决、更正案件不可进行转案
     public QueryResponseResult caseTrans(List<FenleiBaohuResult> list) {
         if (list.size() == 0 || list == null){
             return new QueryResponseResult(CaseClassificationEnum.NO_TRANS_WORKER,null);
