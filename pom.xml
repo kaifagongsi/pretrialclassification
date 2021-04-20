@@ -236,7 +236,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>24.0-jre</version>
+                <version>29.0-jre</version>
             </dependency>
 
             <!--excel解析，前者用于引入HSSFWorkbook；后者用于引入XSSFWorkbook.-->
@@ -304,7 +304,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>24.0-jre</version>
+                <version>29.0-jre</version>
             </dependency>
 
         </dependencies>
