@@ -81,7 +81,7 @@
 
     <select id="selectByCondition" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt">
         select m.id,m.mingcheng,m.type,m.sqr,m.sqh,m.pdf_path,m.state,m.simpleclasscode,m.message,m.oraginization,
-        m.cci,m.cca,m.csets,m.ipci,
+        m.cci,m.cca,m.csets,m.ipci,m.is_export as export,
         (to_date(jinantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as jinantime,
         (to_date(chuantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as chuantime,
         t_mr.maintype,t_mr.mainworker,t_mr.asstype,t_mr.assworker
@@ -111,7 +111,7 @@
             AND t_mr.mainworker like concat(concat('%',#{worker}),'%') or t_mr.assworker like concat(concat('%',#{worker}),'%')
         </if>
         <if test='state!="" and state=="1"' >
-            AND m.state = '1' or m.state = '7' or m.state = '9'
+            AND m.state in ('1','7','9')
         </if>
         <if test='state!="" and state!="1"' >
             AND m.state = #{state}
@@ -190,6 +190,10 @@
             and  chuantime between #{begintime} and #{endtime}
         </if>
        group by oraginization
+    </select>
+
+    <select id="getExcelInfo" resultType="java.lang.String">
+        select id,mingcheng,type,oraginization,jinantime,ipci,cci,cca,csets from fenlei_baohu_main
     </select>
 
     <update id="updateMainRule">
