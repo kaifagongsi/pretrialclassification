@@ -10,6 +10,7 @@
               u.dep1,
               u.dep2,
               u.orgname,
+              u.adjudicator,
               r.id,
               m.mingcheng,
               u.email,
