@@ -35,11 +35,6 @@ public class SendEmailService {
     @Autowired
     FenleiBaohuResultMapper fenleiBaohuResultMapper;
 
-    @Value("${pretrialclassification.email.toFenlei}")
-    private String toFenlei;
-
-    @Value("${pretrialclassification.email.toJiagong}")
-    private String toJiagong;
 
     @Value("${pretrialclassification.email.toGuiHua}")
     private String toGuiHua;
@@ -157,15 +152,19 @@ public class SendEmailService {
         List<String> to = new ArrayList<>();
         List<String> cc = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
+        List<String> adjudicatorList = new ArrayList<>();
         int state = -1;
         sb.append("&nbsp;&nbsp;&nbsp;<table  border='1px' cellpadding='5px' style='font-size:14px;border-collapse: collapse;margin: 20px; '><thead><tr><th>预审编号</th><th>部门</th><th>主分人</th><th>发明名称</th><th>粗分号</th><th>分配时间</th></tr></thead><tbody>");
         for (int i = 0; i < fenleiBaohuResultExts.size(); i++) {
             FenleiBaohuResultExt r = fenleiBaohuResultExts.get(i);
             String fenpeitime = r.getFenpeitime();
+            // 添加收件人
             to.add(r.getEmail());
+            adjudicatorList.add(r.getAdjudicator());
             /**
              * 20210317修改
              */
+            // 添加抄送人
             if("三部".equals(r.getDep1())){
                 cc.addAll(Arrays.asList(toSanBu.split(",")));
             }else if ("四部".equals(r.getDep1())){
@@ -195,16 +194,9 @@ public class SendEmailService {
         String content = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;各位领导，以下是今天新分配的保护中心案件列表! &nbsp;&nbsp;&nbsp;请注意查收！" + sb.toString();
         // 首先添加规划部门
         cc.addAll(Arrays.asList(toGuiHua.split(",")));
-
-        /*if(state == 1){
-            cc.addAll(Arrays.asList(toFenlei.split(",")));
-        }else if(state == 2){
-            cc.addAll(Arrays.asList(toJiagong.split(",")));
-        }else if(state == 3){
-            cc.addAll(Arrays.asList(toFenlei.split(",")));
-            cc.addAll(Arrays.asList(toJiagong.split(",")));
-        }*/
-
+        // 20210520 新增案件对应人员的裁决组长为收件人
+        List<String> adjudicatorEmailList = fenleiBaohuUserinfoMapper.selectEmailByList(adjudicatorList);
+        to.addAll(adjudicatorEmailList);
         //list 去重
         to = to.stream().distinct().collect(Collectors.toList());
         cc = cc.stream().distinct().collect(Collectors.toList());
@@ -215,6 +207,7 @@ public class SendEmailService {
     /**
      * 由于触发裁决，根据传入的 id发送邮件
      * @param id  案件编号
+     * @param arbiter 裁决组长id
      * @return
      */
     public boolean sendEmailCaseArbiter(String id, String arbiter){
