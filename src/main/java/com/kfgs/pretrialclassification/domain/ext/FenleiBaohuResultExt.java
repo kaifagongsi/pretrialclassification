@@ -60,48 +60,52 @@ public class FenleiBaohuResultExt  extends FenleiBaohuResult {
     /* *
      * 发明件数
      */
-    private String fmCount; //发明件数
+    private String fmCount;
 
     /* *
      * 新型件数
      */
-    private String xxCount; //新型件数
+    private String xxCount;
 
     /* *
      * 总件数
      */
-    private String totalCount; //总件数
+    private String totalCount;
     /* *
      * 发明主分给分类号数
      */
-    private String fmzfNumCount; //发明主分给分类号数
+    private String fmzfNumCount;
     /* *
      * 发明副分给分类号数
      */
-    private String fmffNumCount; //发明副分给分类号数
+    private String fmffNumCount;
     /* *
      * 发明未给分类号数
      */
-    private String fmNoNumCount; //发明未给分类号数
+    private String fmNoNumCount;
     /* *
      * 新型主分给分类号数
      */
-    private String xxzfNumCount; //新型主分给分类号数
+    private String xxzfNumCount;
     /* *
      * 新型副分给分类号数
      */
-    private String xxffNumCount; //新型副分给分类号数
+    private String xxffNumCount;
     /* *
      * 新型未给分类号数
      */
-    private String xxNoNumCount; //新型未给分类号数
+    private String xxNoNumCount;
     /* *
      * 主裁决案件数
      */
-    private String cjNum; //主裁决案件数
+    private String cjNum;
     /* *
      * 副裁决案件数
      */
-    private String cjyNum; //副裁决案件数
+    private String cjyNum;
 
+    /**
+     * 裁决组长
+     */
+    private String adjudicator;
 }
