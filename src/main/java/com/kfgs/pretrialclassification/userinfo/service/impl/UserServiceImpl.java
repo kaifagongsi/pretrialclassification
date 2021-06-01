@@ -27,6 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Slf4j
@@ -143,7 +144,7 @@ public class UserServiceImpl implements UserService {
     @Log
     public QueryResponseResult addUserInfo(FenleiBaohuUserinfo fenleiBaohuUserinfo) {
         System.out.println(fenleiBaohuUserinfo);
-
+        fenleiBaohuUserinfo.setLastTime(new SimpleDateFormat("yyyy-MM-dd    HH:mm:ss").format(new Date()));
         fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@"+emailSuffix);
         fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
         int insert = userinfoMapper.insertSelective(fenleiBaohuUserinfo);
@@ -269,5 +270,15 @@ public class UserServiceImpl implements UserService {
         QueryResult queryResult = new QueryResult();
         queryResult.setList(list);
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
+    }
+
+    /**
+     * 返回用户的名称+代码+领域
+     * @param loginList 需要获取的用户登录名称的list
+     * @return
+     */
+    @Override
+    public List<String> getUserFullNameByList(List<String> loginList) {
+        return userinfoMapper.selectFullNameByLoginList(loginList);
     }
 }

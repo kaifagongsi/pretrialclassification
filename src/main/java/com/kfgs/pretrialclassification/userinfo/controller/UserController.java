@@ -2,9 +2,13 @@ package com.kfgs.pretrialclassification.userinfo.controller;
 
 import com.kfgs.pretrialclassification.common.controller.BaseController;
 import com.kfgs.pretrialclassification.common.utils.JsonResult;
+import com.kfgs.pretrialclassification.common.utils.SecurityUtil;
+import com.kfgs.pretrialclassification.common.vo.LoginUser;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
+import com.kfgs.pretrialclassification.domain.response.CommonCode;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
+import com.kfgs.pretrialclassification.domain.response.QueryResult;
 import com.kfgs.pretrialclassification.userinfo.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,6 +16,8 @@ import oracle.jdbc.proxy.annotation.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Api("用户信息")
@@ -22,6 +28,10 @@ public class UserController extends BaseController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    SecurityUtil securityUtil;
+
 
     @ApiOperation(value = "获取登录用户详细信息", notes = "获取登录用户详细信息")
     @GetMapping("/getUserInfo")
@@ -86,5 +96,20 @@ public class UserController extends BaseController {
     @GetMapping("/getInitDep2sByDep1/{dep1}")
     public QueryResponseResult getInitDep2s(@PathVariable String dep1){
         return  userService.getInitDep2s(dep1);
+    }
+
+    @ApiOperation(value = "获取当前登录人")
+    @GetMapping("/getUserOnLine")
+    public QueryResponseResult getUserOnLine(){
+        List<Object> allPrincipals = securityUtil.sessionRegistryGetAllPrincipals();
+        List<String> loginList = new ArrayList();
+        for(Object o : allPrincipals){
+            LoginUser user = (LoginUser) o;
+            loginList.add(user.getLoginname());
+        }
+        List<String> fullName = userService.getUserFullNameByList(loginList);
+        QueryResult queryResult = new QueryResult();
+        queryResult.setList(fullName);
+        return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
     }
 }

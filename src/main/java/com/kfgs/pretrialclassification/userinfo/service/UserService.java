@@ -4,6 +4,7 @@ import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 
+import java.util.List;
 import java.util.Map;
 
 public interface UserService {
@@ -30,4 +31,6 @@ public interface UserService {
     QueryResponseResult getInitDep1s();
 
     QueryResponseResult getInitDep2s(String dep1);
+
+    List<String> getUserFullNameByList(List<String> loginList);
 }
