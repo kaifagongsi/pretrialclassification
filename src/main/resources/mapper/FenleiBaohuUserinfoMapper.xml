@@ -218,5 +218,14 @@
     <select id="selectDistinctDep1" resultType="java.lang.String">
         select  distinct dep1  fROM fenlei_baohu_userinfo
     </select>
+    <select id="selectFullNameByLoginList" resultType="java.lang.String">
+        select areaname || '-' ||workername || '[' ||classlevel || ']'
+          from fenlei_baohu_userinfo
+        where loginname in
+        <foreach collection="list" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        order by areaname
+    </select>
 
 </mapper>
