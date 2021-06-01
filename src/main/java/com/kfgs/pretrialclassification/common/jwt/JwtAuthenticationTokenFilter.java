@@ -1,5 +1,7 @@
 package com.kfgs.pretrialclassification.common.jwt;
 
+import com.kfgs.pretrialclassification.common.utils.SecurityUtil;
+import com.kfgs.pretrialclassification.common.vo.LoginUser;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.userinfo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +43,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
 
+    @Autowired
+    SecurityUtil securityUtil;
+
     /**
      * 获取当前登录用户的信息
      * JwtUserDetails userDetails = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -73,6 +78,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     // 将用户信息，设置到 SecurityContext 中，可以在任何地方 使用 下面语句获取 获取 当前用户登录信息
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+                    securityUtil.sessionRegistryAddUser(tokenValue,new LoginUser(userDetails.getLoginname(),userDetails.getPassword(),"",""));
                 }else{
                     log.error("token  和 登录的用户不相同");
                 }

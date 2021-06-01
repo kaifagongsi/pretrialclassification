@@ -1,6 +1,7 @@
 package com.kfgs.pretrialclassification.login.service.impl;
 
 import com.kfgs.pretrialclassification.common.jwt.JwtTokenUtils;
+import com.kfgs.pretrialclassification.common.utils.SecurityUtil;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.login.service.LoginService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,9 @@ public class LoginServiceImpl implements LoginService {
     @Lazy
     private RedisTemplate<String, Object> redisTemplate;
 
+    @Autowired
+    private SecurityUtil securityUtil;
+
     private BoundHashOperations<String, String, Object> tokenStorage() {
         return redisTemplate.boundHashOps(jwtTokenUtils.getTokenHeader());
     }
@@ -57,11 +61,12 @@ public class LoginServiceImpl implements LoginService {
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         String tokenHeader = this.jwtTokenUtils.getTokenHeader();
         String completeToken = request.getHeader(tokenHeader);
+        String username = "";
         if (completeToken != null && completeToken.startsWith(this.jwtTokenUtils.getTokenHead())) {
             //1.redis 中去掉认证信息
             final String tokenValue = jwtTokenUtils.interceptCompleteToken(completeToken);
             // 根据 token值，获取 用户的 username
-            String username = jwtTokenUtils.getUsernameFromToken(tokenValue);
+            username = jwtTokenUtils.getUsernameFromToken(tokenValue);
             BoundHashOperations<String, String, Object> stringObjectObjectBoundHashOperations = tokenStorage();
             Long delete = stringObjectObjectBoundHashOperations.delete(username);
             log.info(username + "进入退出操作，删除redis"  + "数量：" + delete);
@@ -70,5 +75,7 @@ public class LoginServiceImpl implements LoginService {
         response.setHeader(tokenHeader, null);
         //3. 设置SecurityContextHolder 为null
         SecurityContextHolder.getContext().setAuthentication(null);
+        //4. 删除sessionRegistry
+        securityUtil.sessionRegistryRemoveUserByLoginName(username);
     }
 }

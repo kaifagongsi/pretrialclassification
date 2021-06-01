@@ -3,6 +3,7 @@ package com.kfgs.pretrialclassification.login.controller;
 import com.kfgs.pretrialclassification.common.jwt.JwtTokenUtils;
 import com.kfgs.pretrialclassification.common.log.Log;
 import com.kfgs.pretrialclassification.common.utils.JsonResult;
+import com.kfgs.pretrialclassification.common.utils.SecurityUtil;
 import com.kfgs.pretrialclassification.common.utils.VerifyCodeUtils;
 import com.kfgs.pretrialclassification.common.vo.LoginUser;
 import com.kfgs.pretrialclassification.common.vo.TokenValue;
@@ -39,6 +40,9 @@ public class LoginController {
     private JwtTokenUtils jwtTokenUtils;
 
     @Autowired
+    SecurityUtil securityUtil;
+
+    @Autowired
     @Lazy
     private RedisTemplate<String, String> redisTemplate;
 
@@ -59,6 +63,7 @@ public class LoginController {
         System.out.println("LoginUser : " + user);
         try {
             String jwtToken = loginService.login(user.getLoginname(), user.getPassword());
+
             //String jwtToken = fenleiBaohuUserinfoService.login(user.getLoginname(), user.getPassword());
             TokenValue tokenValue = TokenValue.builder()
                     .header(jwtTokenUtils.getTokenHeader())
@@ -68,6 +73,8 @@ public class LoginController {
                     .build();
             // 登录成功后！删除 redis 中的验证码
             redisTemplate.delete(user.getCodeKey());
+            //向session中添加当前用户
+            securityUtil.sessionRegistryAddUser(jwtToken,user);
             return JsonResult.success("登录成功", tokenValue);
         } catch (AuthenticationException ex) {
             return JsonResult.fail("用户名或密码错误");
