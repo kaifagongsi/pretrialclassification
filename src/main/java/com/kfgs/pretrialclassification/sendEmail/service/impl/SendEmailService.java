@@ -184,7 +184,7 @@ public class SendEmailService {
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
                 SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMddHHmmss");
-                sb.append("<tr><td>"+ r.getId() + "</td><td>" + r.getDep1() + "</td><td>" + r.getWorker() + "</td><td>" + r.getMingcheng() + "</td><td>" + r.getSimpleclasscode()+ "</td><td>" +  sdf.format(sdf1.parse(fenpeitime)) + "</td></tr>" );
+                sb.append("<tr><td>"+ r.getId() + "</td><td>" + r.getDep1() + r.getDep2() + "</td><td>" + r.getWorker() + "</td><td>" + r.getMingcheng() + "</td><td>" + r.getSimpleclasscode()+ "</td><td>" +  sdf.format(sdf1.parse(fenpeitime)) + "</td></tr>" );
             } catch (java.text.ParseException e1) {
                 e1.printStackTrace();
             }
