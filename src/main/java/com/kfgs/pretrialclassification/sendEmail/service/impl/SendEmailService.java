@@ -309,7 +309,7 @@ public class SendEmailService {
                             //2019年9月4日09:44:30  修改 bug：发现距离0小时的依然在列表中，且收件人没有此人，因此将列表调整
                             context.append("<tr>" +
                                     "<td style='border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;'>" + b.getId() + "</td>" +
-                                    "<td style='border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;'>" + b.getOrgname() + "</td>" +
+                                    "<td style='border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;'>" + b.getDep1()+" "+b.getDep2() + "</td>" +
                                     "<td style='border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;'>" + b.getWorker() + "</td>" +
                                     "<td style='border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;'>" + b.getMingcheng() + "</td>" +
                                     "<td style='border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;'>" + b.getSimpleclasscode() + "</td>" +

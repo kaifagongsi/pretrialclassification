@@ -187,7 +187,7 @@
               left join fenlei_baohu_userinfo t2
                 on substr(t.worker, 1, 6) = t2.loginname
              where t.state != '2'
-             order by fldm asc
+             order by nlssort(dep1,'NLS_SORT=SCHINESE_RADICAL_M') asc, nlssort(dep2,'NLS_SORT=SCHINESE_RADICAL_M') asc ,fldm asc
     </select>
     <select id="selectWorkerEmailById" resultType="java.lang.String">
         select email from fenlei_baohu_userinfo where workername in (
