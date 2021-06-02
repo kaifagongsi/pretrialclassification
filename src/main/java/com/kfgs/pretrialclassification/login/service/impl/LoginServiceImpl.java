@@ -59,6 +59,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) {
+        log.info("经过一次退出登录");
         String tokenHeader = this.jwtTokenUtils.getTokenHeader();
         String completeToken = request.getHeader(tokenHeader);
         String username = "";
