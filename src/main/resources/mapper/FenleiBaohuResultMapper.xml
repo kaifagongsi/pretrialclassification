@@ -27,8 +27,7 @@
              <foreach collection="array" open="(" close=")" separator="," item="item">
                  #{item}
              </foreach>
-
-            order by fldm asc
+            order by nlssort(dep1,'NLS_SORT=SCHINESE_RADICAL_M') asc, nlssort(dep2,'NLS_SORT=SCHINESE_RADICAL_M') asc ,fldm asc
     </select>
 
     <select id="AfterTransSendEmail" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt">
