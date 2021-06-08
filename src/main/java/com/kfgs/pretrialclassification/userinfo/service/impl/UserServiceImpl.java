@@ -144,7 +144,7 @@ public class UserServiceImpl implements UserService {
     @Log
     public QueryResponseResult addUserInfo(FenleiBaohuUserinfo fenleiBaohuUserinfo) {
         System.out.println(fenleiBaohuUserinfo);
-        fenleiBaohuUserinfo.setLastTime(new SimpleDateFormat("yyyy-MM-dd    HH:mm:ss").format(new Date()));
+        fenleiBaohuUserinfo.setLastTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
         fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@"+emailSuffix);
         fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
         int insert = userinfoMapper.insertSelective(fenleiBaohuUserinfo);
