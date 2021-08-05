@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.common.jwt.JwtTokenUtils;
 import com.kfgs.pretrialclassification.common.log.Log;
+import com.kfgs.pretrialclassification.common.service.impl.ReadisInitService;
+import com.kfgs.pretrialclassification.common.utils.TrimeUtil;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuUserinfoMapper;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.DumperOptions;
@@ -26,6 +29,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -53,6 +57,9 @@ public class UserServiceImpl implements UserService {
     @Value("${spring.application.name}")
     private String serverName;
 
+    @Autowired
+    ReadisInitService readisInitService;
+
     private BoundHashOperations<String, String, Object> tokenStorage() {
         return redisTemplate.boundHashOps(jwtTokenUtils.getTokenHeader());
     }
@@ -68,8 +75,7 @@ public class UserServiceImpl implements UserService {
         if(  null == o){
             return null;
         }else{
-            System.out.println(o.toString());
-            return (FenleiBaohuUserinfoExt) tokenStorage().get(username);
+             return (FenleiBaohuUserinfoExt) tokenStorage().get(username);
         }
     }
     @Override
@@ -110,7 +116,6 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    @Log
     public QueryResponseResult findUserList(String pageNo,String pageSize,Map map) {
         Page<FenleiBaohuUserinfo> page = new Page<>(Long.parseLong(pageNo),Long.parseLong(pageSize));
         String dep1 = null;
@@ -143,21 +148,24 @@ public class UserServiceImpl implements UserService {
     @Override
     @Log
     public QueryResponseResult addUserInfo(FenleiBaohuUserinfo fenleiBaohuUserinfo) {
-        System.out.println(fenleiBaohuUserinfo);
-        fenleiBaohuUserinfo.setLastTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
-        fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@"+emailSuffix);
-        fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
-        int insert = userinfoMapper.insertSelective(fenleiBaohuUserinfo);
-        //int insert = userinfoMapper.insertEntity(fenleiBaohuUserinfo);
-        if(1 == insert){
-            return new QueryResponseResult(CommonCode.SUCCESS,null);
-        }else{
+        try {
+            TrimeUtil.objectToTrime(fenleiBaohuUserinfo);
+            fenleiBaohuUserinfo.setLastTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
+            fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@"+emailSuffix);
+            fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
+            int insert = userinfoMapper.insertSelective(fenleiBaohuUserinfo);
+            if(1 == insert){
+                return new QueryResponseResult(CommonCode.SUCCESS,null);
+            }else{
+                return new QueryResponseResult(CommonCode.FAIL,null);
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
             return new QueryResponseResult(CommonCode.FAIL,null);
         }
     }
 
     @Override
-    @Log
     public QueryResponseResult checkLoginName(String loginname) {
         FenleiBaohuUserinfo userinfo = userinfoMapper.selectOneByLoginname(loginname);
         Map resultMap = new HashMap();
@@ -190,13 +198,27 @@ public class UserServiceImpl implements UserService {
     @Override
     @Log
     public QueryResponseResult deleteUserByLoginname(String loginname) {
-        QueryWrapper<FenleiBaohuUserinfo> wrapper = new QueryWrapper();
-        wrapper.eq("loginname",loginname);
-        int delete = userinfoMapper.delete(wrapper);
-        if(1 == delete){
-            return new QueryResponseResult(CommonCode.SUCCESS,null);
+        //1.从redis中获取是否有
+        BoundHashOperations<String, Object, Object> pretrialClassification = redisTemplate.boundHashOps(serverName);
+        List distinctAdjudicator = (List)pretrialClassification.get("distinctAdjudicator");
+        if( distinctAdjudicator.size() == 0 && distinctAdjudicator.isEmpty()){
+            distinctAdjudicator = userinfoMapper.selectDistinctAdjudicator();
+            BoundHashOperations<String, Object, Object> stringObjectObjectBoundHashOperations = redisTemplate.boundHashOps(serverName);
+            stringObjectObjectBoundHashOperations.put("distinctAdjudicator",distinctAdjudicator);
+            log.info("向redis中写入已设置的裁决组长");
+        }
+        if(distinctAdjudicator.contains(loginname)){
+            return new QueryResponseResult(UserinfoCode.USERINFO_FAIL_HAVINGARBITER,null);
         }else{
-            return new QueryResponseResult(CommonCode.FAIL,null);
+            QueryWrapper<FenleiBaohuUserinfo> wrapper = new QueryWrapper();
+            wrapper.eq("loginname",loginname);
+            int delete = userinfoMapper.delete(wrapper);
+            if(1 == delete){
+                readisInitService.initArbiter();
+                return new QueryResponseResult(CommonCode.SUCCESS,null);
+            }else{
+                return new QueryResponseResult(CommonCode.FAIL,null);
+            }
         }
     }
 
@@ -211,8 +233,7 @@ public class UserServiceImpl implements UserService {
             Yaml yaml = new Yaml(dumperOptions);
             Map map  = (Map)yaml.load(new FileInputStream(url.getFile()));
             Map mapDepartmentRotation  = (Map) map.get("pretrialclassification");
-            System.out.println("这是修改前："+mapDepartmentRotation.get("departmentRotation"));
-
+            log.info("这是修改前："+mapDepartmentRotation.get("departmentRotation"));
             mapDepartmentRotation.put("departmentRotation",department);
             yaml.dump(map, new OutputStreamWriter(new FileOutputStream(url.getFile())));
             log.info("修改了部门轮换，旧值为：" + mapDepartmentRotation.get("departmentRotation") + "。新值为：" + department);
@@ -226,14 +247,22 @@ public class UserServiceImpl implements UserService {
     @Override
     @Log
     public QueryResponseResult updateUserinfo(FenleiBaohuUserinfo fenleiBaohuUserinfo) {
-        QueryWrapper<FenleiBaohuUserinfo> wrapper = new QueryWrapper();
-        wrapper.eq("loginname",fenleiBaohuUserinfo.getLoginname());
-        fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@"+emailSuffix);
-        fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
-        int update = userinfoMapper.update(fenleiBaohuUserinfo,wrapper);
-        if(1 == update){
-            return new QueryResponseResult(CommonCode.SUCCESS,null);
-        }else{
+        try{
+            String time = fenleiBaohuUserinfo.getLastTime();
+            TrimeUtil.objectToTrime(fenleiBaohuUserinfo);
+            QueryWrapper<FenleiBaohuUserinfo> wrapper = new QueryWrapper();
+            wrapper.eq("loginname",fenleiBaohuUserinfo.getLoginname());
+            fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@"+emailSuffix);
+            fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
+            fenleiBaohuUserinfo.setLastTime(time);
+            int update = userinfoMapper.update(fenleiBaohuUserinfo,wrapper);
+            if(1 == update){
+                readisInitService.initArbiter();
+                return new QueryResponseResult(CommonCode.SUCCESS,null);
+            }else{
+                return new QueryResponseResult(CommonCode.FAIL,null);
+            }
+        }catch (Exception e){
             return new QueryResponseResult(CommonCode.FAIL,null);
         }
     }
@@ -251,6 +280,10 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    /**
+     * 放弃使用 因为直接存在redis 中 了
+     * @return
+     */
     @Override
     public QueryResponseResult getInitDep1s() {
         //List<String> list = userinfoMapper.selectDistinctDep1();
@@ -265,8 +298,7 @@ public class UserServiceImpl implements UserService {
         // 直接从redis 获取数据
         BoundHashOperations<String, String, Object> stringStringObjectBoundHashOperations = tokenStorage(serverName);
         HashMap dep2s = (HashMap)stringStringObjectBoundHashOperations.get("dep2s");
-        String[] s = (String[])dep2s.get(dep1);
-        List<String> list = Arrays.asList(s);
+        List<String> list = (List<String>) dep2s.get(dep1);
         QueryResult queryResult = new QueryResult();
         queryResult.setList(list);
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);

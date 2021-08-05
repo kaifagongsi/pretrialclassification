@@ -216,7 +216,7 @@
 
     </select>
     <select id="selectDistinctDep1" resultType="java.lang.String">
-        select  distinct dep1  fROM fenlei_baohu_userinfo
+        select  distinct dep1  fROM fenlei_baohu_userinfo order by nlssort(dep1,'NLS_SORT=SCHINESE_RADICAL_M')
     </select>
     <select id="selectFullNameByLoginList" resultType="java.lang.String">
         select areaname || '-' ||workername || '[' ||classlevel || ']'
@@ -226,6 +226,13 @@
             #{item}
         </foreach>
         order by areaname
+    </select>
+    <select id="selectDistinctAdjudicator" resultType="java.lang.String">
+        select distinct ADJUDICATOR from fenlei_baohu_userinfo  where adjudicator is not null
+    </select>
+    <select id="selectDistinctDep2ByDep1" resultType="java.lang.String">
+        select distinct dep2 from fenlei_baohu_userinfo  where dep1 = #{dep1} and  dep2 is not null
+        order by nlssort(dep2,'NLS_SORT=SCHINESE_RADICAL_M')
     </select>
 
 </mapper>

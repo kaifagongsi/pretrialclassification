@@ -14,6 +14,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import oracle.jdbc.proxy.annotation.Post;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -31,6 +34,13 @@ public class UserController extends BaseController {
 
     @Autowired
     SecurityUtil securityUtil;
+
+    @Autowired
+    @Lazy
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Value("${spring.application.name}")
+    private String serverName;
 
 
     @ApiOperation(value = "获取登录用户详细信息", notes = "获取登录用户详细信息")
@@ -89,7 +99,10 @@ public class UserController extends BaseController {
     @ApiOperation(value = "获取数据库中的部门信息")
     @GetMapping("/getInitDep1s")
     public QueryResponseResult getInitDep1s(){
-        return  userService.getInitDep1s();
+        List list = (List)redisTemplate.boundHashOps(serverName).get("dep1s");
+        QueryResult queryResult = new QueryResult();
+        queryResult.setList(list);
+        return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
     }
 
     @ApiOperation(value = "获取数据库中的部门信息下的处室信息")

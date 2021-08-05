@@ -43,4 +43,9 @@ public interface FenleiBaohuUserinfoMapper extends BaseMapper<FenleiBaohuUserinf
     List<String> selectDistinctDep1();
 
     List<String> selectFullNameByLoginList(List<String> loginList);
+
+    List<String> selectDistinctAdjudicator();
+
+    List<String> selectDistinctDep2ByDep1(String dep1);
+
 }
