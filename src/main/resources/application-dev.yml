@@ -11,7 +11,7 @@ spring:
     active: @activatedProperties@
   datasource:
     druid:
-      url: jdbc:oracle:thin:@172.17.0.239:1521:orcl
+      url: jdbc:oracle:thin:@172.17.0.17:1521:orcl
       #url: jdbc:oracle:thin:@192.168.8.107:1521:orcl
       username: zljg
       password: zljg123456
@@ -36,7 +36,7 @@ spring:
   session:
     store-type: redis # 选择使用redis 作为session存储
   redis:
-    host: 172.17.0.239
+    host: 172.17.0.17
     port: 6379
     password:
     jedis:
