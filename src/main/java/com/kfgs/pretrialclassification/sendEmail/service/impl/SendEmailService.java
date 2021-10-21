@@ -12,6 +12,7 @@ import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt;
 import com.kfgs.pretrialclassification.sendEmail.service.MailService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -160,7 +161,12 @@ public class SendEmailService {
             String fenpeitime = r.getFenpeitime();
             // 添加收件人
             to.add(r.getEmail());
-            adjudicatorList.add(r.getAdjudicator());
+            if(StringUtils.isNotEmpty(r.getAdjudicator())){
+                adjudicatorList.add(r.getAdjudicator());
+            }else{
+                log.error("当前人员的裁决组长为空，"+ r.toString());
+            }
+
             /**
              * 20210317修改
              */

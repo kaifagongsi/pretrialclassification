@@ -7,7 +7,10 @@ import com.kfgs.pretrialclassification.common.jwt.JwtTokenUtils;
 import com.kfgs.pretrialclassification.common.log.Log;
 import com.kfgs.pretrialclassification.common.service.impl.ReadisInitService;
 import com.kfgs.pretrialclassification.common.utils.TrimeUtil;
+import com.kfgs.pretrialclassification.common.utils.UUIDUtil;
+import com.kfgs.pretrialclassification.dao.FenleiBaohuLogMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuUserinfoMapper;
+import com.kfgs.pretrialclassification.domain.FenleiBaohuLog;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.response.*;
@@ -43,6 +46,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
+
+    @Autowired
+    private FenleiBaohuLogMapper fenleiBaohuLogMapper;
 
     @Autowired
     @Lazy
@@ -150,10 +156,19 @@ public class UserServiceImpl implements UserService {
     public QueryResponseResult addUserInfo(FenleiBaohuUserinfo fenleiBaohuUserinfo) {
         try {
             TrimeUtil.objectToTrime(fenleiBaohuUserinfo);
-            fenleiBaohuUserinfo.setLastTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
+            String data = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date());
+            fenleiBaohuUserinfo.setLastTime(data);
             fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@"+emailSuffix);
             fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
             int insert = userinfoMapper.insertSelective(fenleiBaohuUserinfo);
+            //后期用Aop 解决
+            FenleiBaohuLog log = new FenleiBaohuLog();
+            FenleiBaohuUserinfo info =(FenleiBaohuUserinfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            log.setId(UUIDUtil.getUUID());
+            log.setMessage("新增用户：" + fenleiBaohuUserinfo.toString() + "，操作人:" +  info.getLoginname() + "" + info.getName() + info.getWorkername());
+            log.setTime(data);
+            log.setResult("新增用户");
+            fenleiBaohuLogMapper.insert(log);
             if(1 == insert){
                 return new QueryResponseResult(CommonCode.SUCCESS,null);
             }else{
@@ -167,6 +182,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public QueryResponseResult checkLoginName(String loginname) {
+        loginname = loginname.replaceAll("[\\t\\n\\r]","").trim().replaceAll(" +","");
         FenleiBaohuUserinfo userinfo = userinfoMapper.selectOneByLoginname(loginname);
         Map resultMap = new HashMap();
         if(userinfo == null){
@@ -213,6 +229,14 @@ public class UserServiceImpl implements UserService {
             QueryWrapper<FenleiBaohuUserinfo> wrapper = new QueryWrapper();
             wrapper.eq("loginname",loginname);
             int delete = userinfoMapper.delete(wrapper);
+            //后期用Aop 解决
+            FenleiBaohuLog log = new FenleiBaohuLog();
+            FenleiBaohuUserinfo info =(FenleiBaohuUserinfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            log.setId(UUIDUtil.getUUID());
+            log.setMessage("删除用户：" + loginname + "，操作人:" +  info.getLoginname() + "" + info.getName() + info.getWorkername());
+            log.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
+            log.setResult("删除用户");
+            fenleiBaohuLogMapper.insert(log);
             if(1 == delete){
                 readisInitService.initArbiter();
                 return new QueryResponseResult(CommonCode.SUCCESS,null);
@@ -256,6 +280,14 @@ public class UserServiceImpl implements UserService {
             fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
             fenleiBaohuUserinfo.setLastTime(time);
             int update = userinfoMapper.update(fenleiBaohuUserinfo,wrapper);
+            //后期用Aop 解决
+            FenleiBaohuLog log = new FenleiBaohuLog();
+            FenleiBaohuUserinfo info =(FenleiBaohuUserinfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            log.setId(UUIDUtil.getUUID());
+            log.setMessage("更新用户：" + fenleiBaohuUserinfo.toString() + "，操作人:" +  info.getLoginname() + "" + info.getName() + info.getWorkername());
+            log.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
+            log.setResult("更新用户");
+            fenleiBaohuLogMapper.insert(log);
             if(1 == update){
                 readisInitService.initArbiter();
                 return new QueryResponseResult(CommonCode.SUCCESS,null);

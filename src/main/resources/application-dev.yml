@@ -11,8 +11,8 @@ spring:
     active: @activatedProperties@
   datasource:
     druid:
-      url: jdbc:oracle:thin:@172.17.0.17:1521:orcl
-      #url: jdbc:oracle:thin:@192.168.8.107:1521:orcl
+      #url: jdbc:oracle:thin:@172.17.0.17:1521:orcl
+      url: jdbc:oracle:thin:@192.168.8.107:1521:orcl
       username: zljg
       password: zljg123456
       driverClassName: oracle.jdbc.driver.OracleDriver

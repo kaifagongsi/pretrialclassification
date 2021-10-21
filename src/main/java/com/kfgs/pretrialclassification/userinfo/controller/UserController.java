@@ -111,6 +111,7 @@ public class UserController extends BaseController {
         return  userService.getInitDep2s(dep1);
     }
 
+   /* 没有人会点退出，改功能没有什么意义
     @ApiOperation(value = "获取当前登录人")
     @GetMapping("/getUserOnLine")
     public QueryResponseResult getUserOnLine(){
@@ -124,5 +125,5 @@ public class UserController extends BaseController {
         QueryResult queryResult = new QueryResult();
         queryResult.setList(fullName);
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
-    }
+    }*/
 }
