@@ -30,9 +30,9 @@
             order by nlssort(dep1,'NLS_SORT=SCHINESE_RADICAL_M') asc, nlssort(dep2,'NLS_SORT=SCHINESE_RADICAL_M') asc ,fldm asc
     </select>
 
-    <select id="AfterTransSendEmail" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt">
+    <!--<select id="AfterTransSendEmail" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt">
 
-    </select>
+    </select>-->
 
     <select id="selectCaseOut" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt" >
         select t.worker,
@@ -60,8 +60,11 @@
         <if test="userName!='' ">
             AND  substr(t.worker,instr(t.worker,'-')+1)=#{userName}
         </if>
-        <if test="dept!='' ">
-            AND  t.worker in (select workername from FENLEI_BAOHU_USERINFO where orgname =#{dept})
+        <if test="dept1!='' ">
+            AND  t.worker in (select workername from FENLEI_BAOHU_USERINFO where dep1 =#{dept1})
+        </if>
+        <if test="dept2!='' ">
+            AND  t.worker in (select workername from FENLEI_BAOHU_USERINFO where dep2 =#{dept2})
         </if>
         group by t.worker
     </select>
