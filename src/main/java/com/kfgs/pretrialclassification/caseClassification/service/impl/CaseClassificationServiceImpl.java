@@ -4,16 +4,20 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.caseArbiter.service.CaseArbiterService;
 import com.kfgs.pretrialclassification.caseClassification.service.CaseClassificationService;
-import com.kfgs.pretrialclassification.common.log.Log;
 import com.kfgs.pretrialclassification.common.utils.AdjudicationBusinessUtils;
 import com.kfgs.pretrialclassification.common.utils.DateUtil;
+import com.kfgs.pretrialclassification.common.utils.SecurityUtil;
 import com.kfgs.pretrialclassification.dao.*;
 import com.kfgs.pretrialclassification.domain.*;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
+import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.response.*;
 import com.kfgs.pretrialclassification.sendEmail.service.impl.SendEmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -460,6 +464,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                 if (rule == 1) {
                     // 01.22 2021年2月25日 10:31:55  新增发送邮件功能
                     String arbiter = ((FenleiBaohuAdjudication)queryResponseResult.getQueryResult().getMap().get("item")).getProcessingPerson();
+                    // bug记录：不应该由于邮件发送失败造成事务回滚 ，解决方法：修改事务 的传播 将邮件发送设置为新事务
                     if(sendEmailService.sendEmailCaseArbiter(id,arbiter)){
                         queryResponseResult.setMessage( "已成功发送邮件" + queryResponseResult.getMessage() );
                     }else{
@@ -714,4 +719,23 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         return sdf.format(new Date(timestamp));
     }
 
+    @Override
+    public QueryResponseResult judgeIfLastFinish(String id ) {
+        List<String> unFinish = fenleiBaohuResultMapper.getCaseUnFinish(id);
+        if (unFinish.size() == 1){
+            // 表示最后一个出案
+            // 判断是否是否有多个主分,除去当前操作人外
+            FenleiBaohuUserinfoExt loginUser = SecurityUtil.getLoginUser();
+            int mapperIPCMINotNull = fenleiBaohuResultMapper.getIPCMINotNull(id,loginUser.getWorkername());
+            if(mapperIPCMINotNull == 0){
+                return  new QueryResponseResult(CommonCode.SUCCESS,null);
+            }else{
+                //已存在主分号
+                return new QueryResponseResult(CommonCode.FAIL,null);
+            }
+        }else{
+            return new QueryResponseResult(CommonCode.FAIL,null);
+        }
+
+    }
 }

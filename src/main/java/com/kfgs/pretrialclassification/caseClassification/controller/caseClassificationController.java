@@ -226,6 +226,12 @@ public class caseClassificationController extends BaseController {
     public QueryResponseResult caseCorrect(@RequestBody FenleiBaohuResult fenleiBaohuResult){
         return caseClassificationService.caseCorrect(fenleiBaohuResult);
     }
+    @ApiOperation("判断是否最后一个出案，是否有人有主分号")
+    @GetMapping("/lastFinishAndMoreIPCMI")
+    public QueryResponseResult judgeIfLastFinish(String id ){
+        return caseClassificationService.judgeIfLastFinish(id);
+    }
+
    /* @ApiOperation("result表，根据案件id和人员id出案")
     @GetMapping("/caseFinish")
     public QueryResponseResult caseFinish(String ids, String user){

@@ -3,7 +3,6 @@ package com.kfgs.pretrialclassification.caseClassification.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
-import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 
 import java.util.List;
@@ -58,4 +57,6 @@ public interface CaseClassificationService {
     //最后一个人出案
     public QueryResponseResult lastFinish( String id,String user,QueryResponseResult queryResponseResult );
 
+    // 判断是否最后一个人出案
+    QueryResponseResult judgeIfLastFinish(String id);
 }

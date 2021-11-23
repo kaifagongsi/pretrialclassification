@@ -73,4 +73,6 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
     List<String> selectWorkerEmailById(String id);
 
     List<FenleiBaohuResultExt> selectListWithOrgNameByID(String id);
+
+    int getIPCMINotNull(String id,String worker );
 }
