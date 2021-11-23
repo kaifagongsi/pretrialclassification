@@ -16,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -216,6 +218,7 @@ public class SendEmailService {
      * @param arbiter 裁决组长id
      * @return
      */
+
     public boolean sendEmailCaseArbiter(String id, String arbiter){
         List<String> to = new ArrayList<>();
         QueryWrapper qwMain = new QueryWrapper();
