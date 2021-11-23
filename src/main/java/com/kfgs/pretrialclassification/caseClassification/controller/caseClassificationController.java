@@ -293,4 +293,10 @@ public class caseClassificationController extends BaseController {
         return null;
     }*/
 
+    @ApiOperation("CPC转IPC")
+    @GetMapping("/cpc2ipc")
+    public QueryResponseResult cpcToIpc(String cci,String cca ){
+        return caseClassificationService.cpcToIpc(cci,cca);
+    }
+
 }

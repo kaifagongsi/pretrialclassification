@@ -738,4 +738,16 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         }
 
     }
+
+    @Override
+    public QueryResponseResult cpcToIpc(String cci, String cca) {
+        System.out.println(cci + "-------"+ cca);
+        Map map = new HashMap();
+        map.put("ipcmi","主分");
+        map.put("ipcoi","副分");
+        map.put("ipca","附件信息");
+        QueryResult queryResult = new QueryResult();
+        queryResult.setMap(map);
+        return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
+    }
 }

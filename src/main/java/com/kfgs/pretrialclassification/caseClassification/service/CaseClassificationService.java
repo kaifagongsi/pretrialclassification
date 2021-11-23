@@ -59,4 +59,6 @@ public interface CaseClassificationService {
 
     // 判断是否最后一个人出案
     QueryResponseResult judgeIfLastFinish(String id);
+
+    QueryResponseResult cpcToIpc(String cci, String cca);
 }
