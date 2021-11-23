@@ -1,6 +1,7 @@
 package com.kfgs.pretrialclassification.common.utils;
 
 import com.kfgs.pretrialclassification.common.vo.LoginUser;
+import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -38,12 +39,12 @@ public class SecurityUtil {
     /**
      * 从ThreadLocal获取其自己的SecurityContext，从而获取在Security上下文中缓存的登录用户
      */
-    public static User getLoginUser() {
-        User user = null;
+    public static FenleiBaohuUserinfoExt getLoginUser() {
+        FenleiBaohuUserinfoExt user = null;
         SecurityContext ctx = SecurityContextHolder.getContext();
         Authentication auth = ctx.getAuthentication();
         if (auth.getPrincipal() instanceof UserDetails) {
-            user = (User) auth.getPrincipal();
+            user = (FenleiBaohuUserinfoExt) auth.getPrincipal();
         }
         return user;
     }
