@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.internet.MimeMessage;
 
@@ -64,6 +66,7 @@ public class MailServiceImpl implements MailService {
      * @param content 内容
      */
     @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED )
     public boolean sendHtmlMail(String[] to,String[] cc,String subject,String content) {
         MimeMessage message=mailSender.createMimeMessage();
         try {
