@@ -3,4 +3,11 @@
 <mapper namespace="com.kfgs.pretrialclassification.dao.FenleiBaohuCpctoipcMapper">
 
 
+    <select id="getIpcByCpcList" resultType="java.lang.String">
+        select wm_concat(ipc) from fenlei_baohu_cpctoipc
+        where cpc in
+        <foreach collection="list"  open="(" close=")" item="item" separator=",">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

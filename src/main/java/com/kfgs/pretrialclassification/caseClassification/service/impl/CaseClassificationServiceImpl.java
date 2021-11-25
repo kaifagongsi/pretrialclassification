@@ -9,11 +9,13 @@ import com.kfgs.pretrialclassification.common.utils.DateUtil;
 import com.kfgs.pretrialclassification.common.utils.SecurityUtil;
 import com.kfgs.pretrialclassification.dao.*;
 import com.kfgs.pretrialclassification.domain.*;
+import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuAdjudicationExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.response.*;
 import com.kfgs.pretrialclassification.sendEmail.service.impl.SendEmailService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,6 +48,9 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
 
     @Autowired
     SendEmailService sendEmailService;
+
+    @Autowired
+    FenleiBaohuCpctoipcMapper fenleiBaohuCpctoipcMapper;
 
     @Override
     @Transactional
@@ -742,10 +747,37 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     @Override
     public QueryResponseResult cpcToIpc(String cci, String cca) {
         System.out.println(cci + "-------"+ cca);
+        FenleiBaohuAdjudicationExt ext = new FenleiBaohuAdjudicationExt();
+        QueryResponseResult result = null;
+        String  cciAll = null;
+        String ccaAll = null;
+        String ipcmi = null;
+        String ipcoi = null;
+        String ipca = null;
+        if(StringUtils.isNotEmpty(cci)){
+            // 1.获取完整cci，并校验
+            ext.setCci(cci);
+            result = caseArbiterService.checkIPC_CCI_CCA(ext, "cci");
+            cciAll = result.getQueryResult().getMap().get("newClassification").toString();
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("cpc",cciAll.split(",")[0]);
+            // 1.1获取主分
+            ipcmi = fenleiBaohuCpctoipcMapper.selectOne(queryWrapper).getIpc();
+            // 1.2 获取副分  去掉主分号
+            List<String> strings = Arrays.asList(cciAll.substring(cciAll.indexOf(",") + 1).split(","));
+            ipcoi = fenleiBaohuCpctoipcMapper.getIpcByCpcList(strings);
+        }
+        if(StringUtils.isNotEmpty(cca)){
+            // 2.获取完整cci，并校验
+            ext.setCca(cca);
+            result = caseArbiterService.checkIPC_CCI_CCA(ext, "cca");
+            ccaAll = result.getQueryResult().getMap().get("newClassification").toString();
+            ipca = fenleiBaohuCpctoipcMapper.getIpcByCpcList(Arrays.asList(ccaAll.split(",")));
+        }
         Map map = new HashMap();
-        map.put("ipcmi","主分");
-        map.put("ipcoi","副分");
-        map.put("ipca","附件信息");
+        map.put("ipcmi",ipcmi.replaceAll("CPCONLY","").replaceAll(",,",","));
+        map.put("ipcoi",ipcoi.replaceAll("CPCONLY","").replaceAll(",,",","));
+        map.put("ipca",ipca.replaceAll("CPCONLY","").replaceAll(",,",","));
         QueryResult queryResult = new QueryResult();
         queryResult.setMap(map);
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
