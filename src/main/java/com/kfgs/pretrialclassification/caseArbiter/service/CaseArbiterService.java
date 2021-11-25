@@ -128,19 +128,19 @@ public class CaseArbiterService   {
         }
         String ipc = null;
         String codeType = "";
-        if("ipcoi".equals(codeName)){
+        if("ipcoi".equalsIgnoreCase(codeName)){
             ipc = ext.getIpcoi();
             codeType = "IPC";
-        }else if ("ipca".equals(codeName)){
+        }else if ("ipca".equalsIgnoreCase(codeName)){
             ipc = ext.getIpca();
             codeType = "IPC";
-        }else if ( "ipcmi".equals(codeName)){
+        }else if ( "ipcmi".equalsIgnoreCase(codeName)){
             ipc = ext.getIpcmi();
             codeType = "IPC";
-        }else if ("cci".equals(codeName)){
+        }else if ("cci".equalsIgnoreCase(codeName)){
             ipc = ext.getCci();
             codeType = "CPC";
-        }else if ("cca".equals(codeName)){
+        }else if ("cca".equalsIgnoreCase(codeName)){
             ipc = ext.getCca();
             codeType = "CPC";
         }
