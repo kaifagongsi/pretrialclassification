@@ -235,4 +235,12 @@
         order by nlssort(dep2,'NLS_SORT=SCHINESE_RADICAL_M')
     </select>
 
+    <!--<select id="getArbiterByworker" resultType="java.lang.String">
+        select adjudicator from fenlei_baohu_userinfo where workername=#{worker}
+    </select>
+
+    <select id="getEamilById" resultType="java.lang.String">
+        select email from fenlei_baohu_userinfo where loginname=#{id}
+    </select>-->
+
 </mapper>

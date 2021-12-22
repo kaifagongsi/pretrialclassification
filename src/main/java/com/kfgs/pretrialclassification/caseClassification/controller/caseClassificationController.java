@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -107,9 +109,9 @@ public class caseClassificationController extends BaseController {
                 beginTime="";
                 endTime="";
             }
-            Map<String, Object> dataTable = getDataTable(caseClassificationService.findCaseByState(page, limit, state, classtype, user,beginTime,endTime));
+            List<FenleiBaohuMainResultExt> list = caseClassificationService.findCaseByState(limit, state, classtype, user,beginTime,endTime);
             resultMap.put("code", 20000);
-            resultMap.put("data", dataTable);
+            resultMap.put("data", list);
             resultMap.put("user",user);
         }
         return resultMap;
@@ -218,6 +220,19 @@ public class caseClassificationController extends BaseController {
     @Log
     public QueryResponseResult caseFinishTest(String ids,String user){
         return  caseClassificationService.caseFinish(ids,user);
+    }
+
+    @ApiOperation("批量出案")
+    @RequestMapping(value = "/caseOutInBulk", method = RequestMethod.POST)
+    @Log
+    public QueryResponseResult caseOutInBulk(String list, String worker, HttpServletResponse response) throws Exception {
+        //解析批量案件id
+        JSONArray jsonArray = JSONArray.parseArray(list);
+        List<String> idList = new ArrayList<>();
+        for(int i=0;i<jsonArray.size();i++){
+            idList.add(jsonArray.get(i).toString());
+        }
+        return caseClassificationService.caseOutInBulk(idList,worker,response);
     }
 
     @ApiOperation("分类号更正")

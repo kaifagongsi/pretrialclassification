@@ -50,4 +50,6 @@ public interface FenleiBaohuMainMapper extends BaseMapper<FenleiBaohuMain> {
     int updateByIdAndWithOutNotExport(@Param("id") String id, @Param("ipci")String ipci,@Param("cci") String cci, @Param("cca")String cca, @Param("csets")String csets);
 
     int updateStateById(@Param("id") String id, @Param("state") String state);
+
+    List<String> getExcelInfo(List<String> ids);
 }

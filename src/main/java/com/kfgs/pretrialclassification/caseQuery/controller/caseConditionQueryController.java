@@ -10,17 +10,13 @@ import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author mango
@@ -154,5 +150,32 @@ public class caseConditionQueryController extends BaseController{
             System.out.println(id);
         }
         return null;
+    }
+
+    //@ApiOperation(value = "Excel导出",produces = "application/octet-stream")
+    @RequestMapping(value = "/exportExcel", method = RequestMethod.POST)
+    //@ResponseBody
+    public QueryResponseResult exportExcel(String list, HttpServletResponse response) throws IOException {
+        // 解析要导出的案件id
+        JSONArray jsonArray = JSONArray.parseArray(list);
+        List<String> idList = new ArrayList<>();
+        for(int i=0;i<jsonArray.size();i++){
+            idList.add(jsonArray.get(i).toString());
+        }
+        return caseConditionQueryService.exportExcel(idList,response);
+    }
+
+    /**
+     * 2021.11.11修改 exportExcelToZip
+     */
+    @RequestMapping(value = "/exportExcelToZip", method = RequestMethod.POST)
+    public QueryResponseResult exportExcelToZip(String list,HttpServletResponse response) throws  IOException {
+        //解析要导出的案件id
+        JSONArray jsonArray = JSONArray.parseArray(list);
+        List<String> idList = new ArrayList<>();
+        for(int i=0;i<jsonArray.size();i++){
+            idList.add(jsonArray.get(i).toString());
+        }
+        return caseConditionQueryService.exportExcelToZip(idList,response);
     }
 }

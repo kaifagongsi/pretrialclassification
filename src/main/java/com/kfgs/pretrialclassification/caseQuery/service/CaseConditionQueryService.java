@@ -1,7 +1,9 @@
 package com.kfgs.pretrialclassification.caseQuery.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -30,4 +32,10 @@ public interface CaseConditionQueryService {
 
     //根据申请人查询案件
     IPage findBySQR(String pageNo,String limit,String sqr);
+
+    //Excel导出
+    QueryResponseResult exportExcel(List<String> list, HttpServletResponse response);
+
+    //批量导出Excel为压缩包
+    QueryResponseResult exportExcelToZip(List<String> list,HttpServletResponse response);
 }

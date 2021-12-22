@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.List;
+
 @Repository
 public interface FenleiBaohuAdjudicationMapper extends BaseMapper<FenleiBaohuAdjudication> {
     IPage<FenleiBaohuAdjudicationExt> getArbiterInitList(Page<?> page, @Param("username") String username);

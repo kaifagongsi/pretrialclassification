@@ -3,15 +3,18 @@ package com.kfgs.pretrialclassification.caseClassification.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
+import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
 public interface CaseClassificationService {
 
     //按状态查询登录用户的案件
-    IPage findCaseByState(String page, String limit, String state, String classtype, String user,String begintime,String endtime);
+    //IPage findCaseByState(String page, String limit, String state, String classtype, String user,String begintime,String endtime);
+    List<FenleiBaohuMainResultExt> findCaseByState(String limit, String state, String classtype, String user,String begintime,String endtime);
 
     //获取案件详情
     Map getCaseInfo(String id, String worker);
@@ -49,6 +52,9 @@ public interface CaseClassificationService {
 
     //个人出案
     QueryResponseResult caseFinish(String id,String user);
+
+    //批量出案
+    QueryResponseResult caseOutInBulk(List<String> ids, String worker,HttpServletResponse response);
 
     //提交更正
     QueryResponseResult caseCorrect(FenleiBaohuResult fenleiBaohuResult);

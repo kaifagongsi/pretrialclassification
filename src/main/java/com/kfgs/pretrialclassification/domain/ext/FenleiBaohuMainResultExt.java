@@ -46,8 +46,8 @@ public class FenleiBaohuMainResultExt extends FenleiBaohuMain {
     }
 
     /*
-        IPCA
-         */
+     IPCA
+     */
     private String ipca;
     /*
     IPCOI
@@ -94,5 +94,17 @@ public class FenleiBaohuMainResultExt extends FenleiBaohuMain {
      */
     private String asstype;
 
+    public String getChuantype() {
+        return chuantype;
+    }
+
+    public void setChuantype(String chuantype) {
+        this.chuantype = chuantype;
+    }
+
+    /*
+        出案类型
+         */
+    private String chuantype;
 
 }

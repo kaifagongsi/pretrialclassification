@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -44,6 +45,9 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     CaseArbiterService caseArbiterService;
 
     @Autowired
+    FenleiBaohuAdjudicationMapper fenleiBaohuAdjudicationMapper;
+
+    @Autowired
     FenleiBaohuUpdateipcMapper fenleiBaohuUpdateipcMapper;
 
     @Autowired
@@ -55,11 +59,34 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     @Override
     @Transactional
     //按状态查询分类员下案件
-    public IPage findCaseByState(String pageNo, String limit, String state, String classtype, String user,String begintime,String endtime) {
+    public List<FenleiBaohuMainResultExt> findCaseByState(String limit, String state, String classtype, String user,String begintime,String endtime) {
         Map resultMap = new HashMap();
-        Page<FenleiBaohuMainResultExt> page = new Page<>(Long.parseLong(pageNo),Long.parseLong(limit));
-        IPage<FenleiBaohuMainResultExt> iPage = fenleiBaohuResultMapper.selectCaseByState(page,state,classtype,user,begintime,endtime);
-        return iPage;
+        List<FenleiBaohuMainResultExt> list = fenleiBaohuResultMapper.selectCaseByState(state,classtype,user,begintime,endtime);
+        // 遍历查询结果确定已出案案件出案类型
+        if (state == "2"){
+            for(int i=0;i<list.size();i++){
+                FenleiBaohuMainResultExt fenleiBaohuMainResultExt = list.get(i);
+                String id = fenleiBaohuMainResultExt.getId();
+                String ipcmi = fenleiBaohuMainResultExt.getIpcmi();
+                String ipcoi = fenleiBaohuMainResultExt.getIpcoi();
+                // 判断是否进裁决
+                QueryWrapper queryWrapper = new QueryWrapper();
+                queryWrapper.eq("id",id);
+                List<FenleiBaohuAdjudication> adjList = fenleiBaohuAdjudicationMapper.selectList(queryWrapper);
+                if (adjList != null && adjList.size()!=0){
+                    fenleiBaohuMainResultExt.setChuantype("出案进裁决");
+                    continue;
+                }
+                if (ipcmi != null) {
+                    fenleiBaohuMainResultExt.setChuantype("主分出案");
+                }else if (ipcmi == null && ipcoi == null){
+                    fenleiBaohuMainResultExt.setChuantype("空号出案");
+                }else if (ipcmi == null && ipcoi != null) {
+                    fenleiBaohuMainResultExt.setChuantype("副分出案");
+                }
+            }
+        }
+        return list;
     }
 
     @Override
@@ -233,6 +260,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_UPDATE,null);
         }
         else {
+            List<String> tranworker=new ArrayList<>();
             for (int i=0;i<list.size();i++){
                 int res = fenleiBaohuResultMapper.insert(list.get(i));
                 if (res == 1){
@@ -245,6 +273,11 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                     fenleiBaohuLogMapper.insert(log);
                 }
             }
+            /**
+             * 0317修改 增加转案发送邮件功能
+             */
+            //sendEmailService.sendTransEmail(id,worker,tranworker);
+
             return new QueryResponseResult(CommonCode.SUCCESS,null);
         }
     }
@@ -428,16 +461,40 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         return null;
     }
 
+    @Override
+    public QueryResponseResult caseOutInBulk(List<String> idlist,String worker,HttpServletResponse response) {
+        if (idlist == null || idlist.size() == 0){
+            return new QueryResponseResult(CommonCode.INVALID_PARAM,null);
+        } else {
+            int arbFlag = 0;
+            QueryResponseResult queryResponseResult = new QueryResponseResult();
+            for (int i=0;i<idlist.size();i++) {
+                queryResponseResult = caseFinish(idlist.get(i),worker);
+                if (!queryResponseResult.isSuccess()){
+                    arbFlag ++;
+                }
+            }
+            if (arbFlag != 0){ // 代表有案件进裁决
+                queryResponseResult.setSuccess(false);
+                queryResponseResult.setMessage("有案件进入裁决，请到裁决列表查看详情");
+                //return new QueryResponseResult(CommonCode.SUCCESS,null);
+                return queryResponseResult;
+            }else {
+                queryResponseResult.setMessage("批量出案完成");
+                return queryResponseResult;
+            }
+        }
+    }
+
     /**
      * 最后一个出案,判断是否进裁决,不用裁决则出案完成更改result表和main表案件状态，否则进入裁决
      * 校验：无主分、多个主分、超过两人给出组合码且总数大于99组,FM案件CPC为空
-     *  该方法有多出应用，修改时要注意
+     *  该方法有多处应用，修改时要注意
      * @param id 案件id
      * @param queryResponseResult 响应结果
      * @return
      */
     @Override
-    @Transactional
     public QueryResponseResult lastFinish( String id,String user,QueryResponseResult queryResponseResult ){
         if(queryResponseResult == null){
             queryResponseResult = new QueryResponseResult();
