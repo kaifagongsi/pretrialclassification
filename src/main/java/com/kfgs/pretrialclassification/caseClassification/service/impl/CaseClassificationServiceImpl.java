@@ -275,6 +275,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             }
             /**
              * 0317修改 增加转案发送邮件功能
+             * 2021-12-21 暂时放弃
              */
             //sendEmailService.sendTransEmail(id,worker,tranworker);
 
