@@ -17,6 +17,7 @@ import com.kfgs.pretrialclassification.domain.response.QueryResult;
 import com.kfgs.pretrialclassification.userinfo.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -311,6 +312,12 @@ public class caseClassificationController extends BaseController {
     @ApiOperation("CPC转IPC")
     @GetMapping("/cpc2ipc")
     public QueryResponseResult cpcToIpc(String cci,String cca ){
+        if(StringUtils.isNotEmpty(cci)){
+            cci = cci.replaceAll(" ","");
+        }
+        if(StringUtils.isNotEmpty(cca)){
+            cca = cca.replaceAll(" ","");
+        }
         return caseClassificationService.cpcToIpc(cci,cca);
     }
 

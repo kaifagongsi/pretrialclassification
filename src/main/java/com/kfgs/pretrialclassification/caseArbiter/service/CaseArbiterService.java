@@ -367,18 +367,18 @@ public class CaseArbiterService   {
     //校验ipca,ipcmi,ipcoi之间的重复
     private boolean checkRepeatIpc(FenleiBaohuAdjudicationExt ext) {
         ArrayList list = new ArrayList();
-        if(ext.getIpcmi() != null){
+        if(ext.getIpcmi() != null && StringUtils.isNotEmpty(ext.getIpcmi())){
             //加入主分
             list.add(ext.getIpcmi().toUpperCase());
         }
-        if(ext.getIpcoi() != null){
+        if(ext.getIpcoi() != null && StringUtils.isNotEmpty(ext.getIpcoi())){
             //加入副分
             String[] ipcoi = ext.getIpcoi().split(",");
             for(String s : ipcoi){
                 list.add(s.toUpperCase());
             }
         }
-        if(ext.getIpca() != null){
+        if(ext.getIpca() != null && StringUtils.isNotEmpty(ext.getIpca())){
             //加入附加信息
             String[] ipca = ext.getIpca().split(",");
             for(String s : ipca){
@@ -397,14 +397,14 @@ public class CaseArbiterService   {
     private boolean checkRepeatCpc(FenleiBaohuAdjudicationExt ext) {
         ArrayList list = new ArrayList();
 
-        if(ext.getCci() != null){
+        if(ext.getCci() != null && StringUtils.isNotEmpty(ext.getCci())){
             //加入CCI
             String[] CCI = ext.getCci().split(",");
             for(String s : CCI){
                 list.add(s);
             }
         }
-        if(ext.getCca() != null){
+        if(ext.getCca() != null && StringUtils.isNotEmpty(ext.getCca())){
             //加入附加信息
             String[] cca = ext.getCca().split(",");
             for(String s : cca){

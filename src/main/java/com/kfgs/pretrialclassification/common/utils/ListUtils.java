@@ -5,6 +5,7 @@ import org.apache.commons.collections4.ComparatorUtils;
 
 import java.text.Collator;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ListUtils {
 
@@ -93,6 +94,17 @@ public class ListUtils {
             result.add(value);
         }
         return result;
+    }
+
+    //list 去重
+    public static List<String> delRepeatReturnList(List<String> list){
+        return list.stream().distinct().collect(Collectors.toList());
+    }
+
+    //list 去重
+    public static String delRepeatReturnString(List<String> list){
+        List<String> collect = list.stream().distinct().collect(Collectors.toList());
+        return collect.stream().collect(Collectors.joining(","));
     }
 
 

@@ -213,8 +213,8 @@
     <select id="findAssWorkerByID" resultType="java.lang.String">
         select worker from fenlei_baohu_result where state='2' and ipcmi is null and id=#{id}
     </select>
-    <select id="getIPCMINotNull" resultType="java.lang.Integer">
-        select count( ipcmi) from fenlei_baohu_result where id = #{id} and state in  ('0','1','2','9') and ipcmi is not null
+    <select id="getIPCMINotNullAndWorker" resultType="java.lang.Integer">
+        select count( ipcmi) from fenlei_baohu_result where id = #{id} and state = '2' and ipcmi is not null and worker != #{worker}
     </select>
 
     <update id="updateResultRule">

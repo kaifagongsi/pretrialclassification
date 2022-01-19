@@ -6,6 +6,7 @@ import com.kfgs.pretrialclassification.caseArbiter.service.CaseArbiterService;
 import com.kfgs.pretrialclassification.caseClassification.service.CaseClassificationService;
 import com.kfgs.pretrialclassification.common.utils.AdjudicationBusinessUtils;
 import com.kfgs.pretrialclassification.common.utils.DateUtil;
+import com.kfgs.pretrialclassification.common.utils.ListUtils;
 import com.kfgs.pretrialclassification.common.utils.SecurityUtil;
 import com.kfgs.pretrialclassification.dao.*;
 import com.kfgs.pretrialclassification.domain.*;
@@ -789,7 +790,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             // 表示最后一个出案
             // 判断是否是否有多个主分,除去当前操作人外
             FenleiBaohuUserinfoExt loginUser = SecurityUtil.getLoginUser();
-            int mapperIPCMINotNull = fenleiBaohuResultMapper.getIPCMINotNull(id,loginUser.getWorkername());
+            int mapperIPCMINotNull = fenleiBaohuResultMapper.getIPCMINotNullAndWorker(id,loginUser.getWorkername());
             if(mapperIPCMINotNull == 0){
                 return  new QueryResponseResult(CommonCode.SUCCESS,null);
             }else{
@@ -797,7 +798,8 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                 return new QueryResponseResult(CommonCode.FAIL,null);
             }
         }else{
-            return new QueryResponseResult(CommonCode.FAIL,null);
+            // 表示可以出案
+            return new QueryResponseResult(CommonCode.SUCCESS,null);
         }
 
     }
@@ -816,14 +818,29 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             // 1.获取完整cci，并校验
             ext.setCci(cci);
             result = caseArbiterService.checkIPC_CCI_CCA(ext, "cci");
-            cciAll = result.getQueryResult().getMap().get("newClassification").toString();
-            QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("cpc",cciAll.split(",")[0]);
-            // 1.1获取主分
-            ipcmi = fenleiBaohuCpctoipcMapper.selectOne(queryWrapper).getIpc();
-            // 1.2 获取副分  去掉主分号
-            List<String> strings = Arrays.asList(cciAll.substring(cciAll.indexOf(",") + 1).split(","));
-            ipcoi = fenleiBaohuCpctoipcMapper.getIpcByCpcList(strings);
+            if( result.getCode()!= 20000){
+                return result;
+            }else{
+                cciAll = result.getQueryResult().getMap().get("newClassification").toString();
+                QueryWrapper queryWrapper = new QueryWrapper();
+                queryWrapper.eq("cpc",cciAll.split(",")[0]);
+                // 1.1获取主分
+                ipcmi = fenleiBaohuCpctoipcMapper.selectOne(queryWrapper).getIpc();
+                // 1.2 获取副分
+                // 1.2.1去掉主分号
+                if(cciAll.contains(",")){
+                    List<String> strings = Arrays.asList(cciAll.substring(cciAll.indexOf(",") + 1).split(","));
+                    ipcoi = fenleiBaohuCpctoipcMapper.getIpcByCpcList(strings);
+                    ipcoi = ListUtils.delRepeatReturnString(Arrays.asList(ipcoi.split(",")));
+                    //副分中，直接含有重复的主分号，去掉
+                    ipcoi = ipcoi.replaceAll(ipcmi,"").replaceAll(",,",",");
+                    if(ipcoi.length() == 1){
+                        ipcoi = "";
+                    }
+                }else{
+                    ipcoi = "";
+                }
+            }
         }
         if(StringUtils.isNotEmpty(cca)){
             // 2.获取完整cci，并校验
@@ -831,11 +848,30 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             result = caseArbiterService.checkIPC_CCI_CCA(ext, "cca");
             ccaAll = result.getQueryResult().getMap().get("newClassification").toString();
             ipca = fenleiBaohuCpctoipcMapper.getIpcByCpcList(Arrays.asList(ccaAll.split(",")));
+            ipca = ListUtils.delRepeatReturnString(Arrays.asList(ipca.split(",")));
         }
         Map map = new HashMap();
-        map.put("ipcmi",ipcmi.replaceAll("CPCONLY","").replaceAll(",,",","));
-        map.put("ipcoi",ipcoi.replaceAll("CPCONLY","").replaceAll(",,",","));
-        map.put("ipca",ipca.replaceAll("CPCONLY","").replaceAll(",,",","));
+        if(StringUtils.isNotEmpty(ipcmi)){
+            map.put("ipcmi",ipcmi.replaceAll("CPCONLY","").replaceAll(",,",","));
+        }else{
+            map.put("ipcmi","");
+        }
+
+        if(StringUtils.isNotEmpty(ipcoi)){
+            map.put("ipcoi",ipcoi.replaceAll("CPCONLY","").replaceAll(",,",","));
+        }else{
+            map.put("ipcoi","");
+        }
+        if(StringUtils.isNotEmpty(ipca)){
+            ipca = ipca.replaceAll("CPCONLY","").replaceAll(",,",",");
+            if(ipca.equalsIgnoreCase(",")){
+                map.put("ipca","");
+            }else{
+                map.put("ipca",ipca);
+            }
+        }else{
+            map.put("ipca","");
+        }
         QueryResult queryResult = new QueryResult();
         queryResult.setMap(map);
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
