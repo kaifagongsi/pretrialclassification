@@ -83,4 +83,6 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
 
     //根据案件id获取副分类员
     List<String> findAssWorkerByID(@Param("id") String id);
+
+    List<FenleiBaohuResult> selectUnFinishListByLoginName(@Param("loginname")String loginname);
 }

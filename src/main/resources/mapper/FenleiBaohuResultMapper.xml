@@ -216,6 +216,10 @@
     <select id="getIPCMINotNullAndWorker" resultType="java.lang.Integer">
         select count( ipcmi) from fenlei_baohu_result where id = #{id} and state = '2' and ipcmi is not null and worker != #{worker}
     </select>
+    <select id="selectUnFinishListByLoginName"
+            resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuResult">
+        select  * from fenlei_baohu_result r where   r.worker = #{loginname} and r.state != '2'
+    </select>
 
     <update id="updateResultRule">
         update fenlei_baohu_result r set r.state=#{state} where r.id=#{id}

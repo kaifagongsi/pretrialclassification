@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -828,14 +829,26 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                 ipcmi = fenleiBaohuCpctoipcMapper.selectOne(queryWrapper).getIpc();
                 // 1.2 获取副分
                 // 1.2.1去掉主分号
+                final String ipcmi_f = ipcmi;
                 if(cciAll.contains(",")){
                     List<String> strings = Arrays.asList(cciAll.substring(cciAll.indexOf(",") + 1).split(","));
                     ipcoi = fenleiBaohuCpctoipcMapper.getIpcByCpcList(strings);
-                    ipcoi = ListUtils.delRepeatReturnString(Arrays.asList(ipcoi.split(",")));
+                    //副分自行去重
+                    List<String> ipcoiList = ListUtils.delRepeatReturnList(Arrays.asList(ipcoi.split(",")));
+                    // 副分去掉主分号
+                    ipcoiList = ipcoiList.stream().filter(t ->
+                            !t.equals(ipcmi_f)
+                    ).collect(Collectors.toList());
+                    /*ipcoi = ListUtils.delRepeatReturnString(Arrays.asList(ipcoi.split(",")));
                     //副分中，直接含有重复的主分号，去掉
                     ipcoi = ipcoi.replaceAll(ipcmi,"").replaceAll(",,",",");
                     if(ipcoi.length() == 1){
                         ipcoi = "";
+                    }*/
+                    if(ipcoiList.size() == 0){
+                        ipcoi = "";
+                    }else{
+                        ipcoi = ipcoiList.stream().map(String::valueOf).collect(Collectors.joining(","));
                     }
                 }else{
                     ipcoi = "";

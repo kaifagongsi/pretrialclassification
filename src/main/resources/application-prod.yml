@@ -74,7 +74,7 @@ pretrialclassification:
     licenseUrl: https://www.apache.org/licenses/LICENSE-2.0.html
   email:
     # 进案邮件提醒
-    toGuiHua: xuyong@cnipa.gov.cn,wanglei_8@cnipa.gov.cn,zengnan@cnipa.gov.cn,lisiyao@cnipa.gov.cn
+    toGuiHua: xuyong@cnipa.gov.cn,wanglei_8@cnipa.gov.cn,zengnan@cnipa.gov.cn,lisiyao@cnipa.gov.cn,qinlu@cnipa.gov.cn,ningyonghuai@cnipa.gov.cn,chenyankang@cnipa.gov.cn,huangshanshan@cnipa.gov.cn
     toYiBu: zhangxing@cnipa.gov.cn,zhangguogang@cnipa.gov.cn,gaojianye@cnipa.gov.cn,wanglihong@cnipa.gov.cn
     toErBu: xiegaijun@cnipa.gov.cn
     toSanBu: wangwenjing@cnipa.gov.cn,changdongying@cnipa.gov.cn,lizhenhua_1@cnipa.gov.cn,wangxue@cnipa.gov.cn,lihao@cnipa.gov.cn,liujianhua@cnipa.gov.cn,liuhaiyan@cnipa.gov.cn,zhenjiuli@cnipa.gov.cn,dongqian@cnipa.gov.cn,wudezhuang@cnipa.gov.cn,lisiyao@cnipa.gov.cn

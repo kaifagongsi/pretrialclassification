@@ -9,8 +9,10 @@ import com.kfgs.pretrialclassification.common.service.impl.ReadisInitService;
 import com.kfgs.pretrialclassification.common.utils.TrimeUtil;
 import com.kfgs.pretrialclassification.common.utils.UUIDUtil;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuLogMapper;
+import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuUserinfoMapper;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuLog;
+import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.response.*;
@@ -49,6 +51,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private FenleiBaohuLogMapper fenleiBaohuLogMapper;
+
+    @Autowired
+    private FenleiBaohuResultMapper fenleiBaohuResultMapper;
 
     @Autowired
     @Lazy
@@ -272,6 +277,14 @@ public class UserServiceImpl implements UserService {
     @Log
     public QueryResponseResult updateUserinfo(FenleiBaohuUserinfo fenleiBaohuUserinfo) {
         try{
+            //1.如果修改了用户的在岗和不在岗
+            FenleiBaohuUserinfo dbInfo = userinfoMapper.selectOneByLoginname(fenleiBaohuUserinfo.getLoginname());
+            if(dbInfo.getIsOnline() != fenleiBaohuUserinfo.getIsOnline()){
+                List<FenleiBaohuResult> results = fenleiBaohuResultMapper.selectUnFinishListByLoginName(String.valueOf(fenleiBaohuUserinfo.getWorkername()));
+                if(results != null && results.size() != 0){
+                    return new QueryResponseResult(UserinfoCode.USERINFO_FAIL_CANNOTUPDATA_ONINE,null);
+                }
+            }
             String time = fenleiBaohuUserinfo.getLastTime();
             TrimeUtil.objectToTrime(fenleiBaohuUserinfo);
             QueryWrapper<FenleiBaohuUserinfo> wrapper = new QueryWrapper();
@@ -294,6 +307,8 @@ public class UserServiceImpl implements UserService {
             }else{
                 return new QueryResponseResult(CommonCode.FAIL,null);
             }
+
+
         }catch (Exception e){
             return new QueryResponseResult(CommonCode.FAIL,null);
         }

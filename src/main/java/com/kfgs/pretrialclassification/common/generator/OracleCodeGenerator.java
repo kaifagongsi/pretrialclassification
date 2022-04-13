@@ -19,7 +19,7 @@ import java.util.Scanner;
 public class OracleCodeGenerator {
 
     // 数据库 URL
-    private static final String URL = "jdbc:oracle:thin:@172.17.1.56:1521:orcl";
+    private static final String URL = "jdbc:oracle:thin:@172.17.0.17:1521:orcl";
     // 数据库驱动
     private static final String DRIVER_NAME = "oracle.jdbc.driver.OracleDriver";
     // 数据库用户名
@@ -31,7 +31,7 @@ public class OracleCodeGenerator {
     // 包的基础路径
     private static final String BASE_PACKAGE_URL = "com.kfgs.pretrialclassification";
     // xml文件路径
-    private static final String XML_PACKAGE_URL = "/src/main/resources/mapper/caseDisposition/";
+    private static final String XML_PACKAGE_URL = "/src/main/resources/mapper/";
     // xml 文件模板
     private static final String XML_MAPPER_TEMPLATE_PATH = "generator/templates/mapper.xml";
     // dao 文件模板
