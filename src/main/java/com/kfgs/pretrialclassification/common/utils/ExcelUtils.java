@@ -187,9 +187,9 @@ public class ExcelUtils {
 
     public  static void setSheetCellValue(HSSFSheet hssfSheet,List<String> dtos,String[] headersKey) {
         int rows = dtos.size();
-        for (int i=1;i<+rows;i ++){
+        for (int i=0;i<rows;i ++){
             //HSSFRow row = hssfSheet.createRow(hssfSheet.getLastRowNum() + 1);
-            HSSFRow row = hssfSheet.createRow(i);
+            HSSFRow row = hssfSheet.createRow(hssfSheet.getLastRowNum() + 1);
             int count = -1;
             String line = dtos.get(i).replaceAll("\\[","").replaceAll("\\]","");
             String[] lines = line.split(",");

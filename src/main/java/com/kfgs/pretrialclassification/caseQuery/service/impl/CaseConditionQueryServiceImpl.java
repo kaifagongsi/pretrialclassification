@@ -219,11 +219,16 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
         if (idlist == null || idlist.size() == 0){
             return new QueryResponseResult(CommonCode.INVALID_PARAM,null);
         }else {
+            //idlist去重
+            List doubleList= new ArrayList();
+            Set set = new HashSet();
+            set.addAll(idlist);
+            doubleList.addAll(set);
             String[] headers = new String[]{"预审申请号","申请主体","发明名称","发明类型","所属保护中心","预审接收日","分类号"/*,"CCI","CCA","C-Sets","主分类员","副分类员"*/};
             String[] headersKey = new String[]{"id","sqr","mingcheng","type","oraginization","jinantime","ipci"/*,"cci","cca","csets","mainworker","assworker"*/};
             try {
                 //生成要导出的数据
-                Map<String, List<String>> map = createExcelInfo(idlist);
+                Map<String, List<String>> map = createExcelInfo(doubleList);
                 //导出
                 excelsToZip(response,map,headers,headersKey);
                 return new QueryResponseResult(CommonCode.SUCCESS,null);
@@ -296,10 +301,11 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
         ServletOutputStream outputStream = response.getOutputStream();
         ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
         try{
-            map.forEach((k,v) -> {
+            for (String k:map.keySet()){
                 //新建一个Excel并设置sheet头
                 HSSFWorkbook workbook = ExcelUtils.createExcelAndSetHeaders(headers,k);
                 //向sheet中填充对象的数据
+                List<String> v = map.get(k);
                 ExcelUtils.setSheetCellValue(workbook.getSheet(k),v,headersKey);
                 try{
                     //创建压缩文件
@@ -322,7 +328,7 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
                         e1.printStackTrace();
                     }
                 }
-            });
+            };
             zipOutputStream.flush();
         }catch (Exception e){
             e.printStackTrace();
