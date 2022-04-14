@@ -84,14 +84,12 @@
         m.cci,m.cca,m.csets,m.ipci,m.is_export as export,
         (to_date(jinantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as jinantime,
         (to_date(chuantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as chuantime,
-        t_mr.maintype,t_mr.mainworker,t_mr.asstype,t_mr.assworker
+        t.mainworker,t.assworker
         from FENLEI_BAOHU_MAIN m
         left join
-        (select t2.id,t2.maintype,t2.mainworker,t2.ipci_main,t1.ipci_ass,t1.asstype,t1.assworker,t2.ipci_main||','||t1.ipci_ass as ipci from
-        (select r.id,r.worker as mainworker,'主' as maintype,r.ipci ipci_main from FENLEI_BAOHU_RESULT r where r.ipcmi is not null )t2
-        left join
-        (select r.id,'副' as asstype,wm_concat(r.worker) as assworker,wm_concat(r.ipci) as ipci_ass from FENLEI_BAOHU_RESULT r where r.ipcmi is null and r.ipcoi is not null group by r.id)t1
-        on t2.id=t1.id)t_mr on m.id=t_mr.id where 1=1
+        (select id,wm_concat(case when ipcmi is not null then worker end) as mainworker,
+        wm_concat(case when ipcmi is null then worker end) as assworker
+        from fenlei_baohu_result group by id)t on m.id=t.id where 1=1
         <if test="id!=''">
             AND m.id like concat(concat('%',#{id}),'%')
         </if>
@@ -108,7 +106,7 @@
             AND m.sqh like concat(concat('%',#{sqh}),'%')
         </if>
         <if test="worker!=''">
-            AND t_mr.mainworker like concat(concat('%',#{worker}),'%') or t_mr.assworker like concat(concat('%',#{worker}),'%')
+            AND t.mainworker like concat(concat('%',#{worker}),'%') or t.assworker like concat(concat('%',#{worker}),'%')
         </if>
         <if test='state!="" and state=="1"' >
             AND m.state in ('1','7','9')
@@ -119,7 +117,6 @@
         <if test="begintime!=''and endtime!=''">
             AND m.chuantime between #{begintime} and #{endtime}
         </if>
-
     </select>
 
     <select id="searchByVagueCondition" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt">
