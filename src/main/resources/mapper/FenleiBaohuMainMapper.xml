@@ -124,22 +124,20 @@
         m.cci,m.cca,m.csets,m.ipci,m.is_export as export,
         (to_date(jinantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as jinantime,
         (to_date(chuantime,'yyyymmddhh24miss') - to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))*86400000 as chuantime,
-        t_mr.maintype,t_mr.mainworker,t_mr.asstype,t_mr.assworker
+        t.mainworker,t.assworker
         from FENLEI_BAOHU_MAIN m
         left join
-        (select t2.id,t2.maintype,t2.mainworker,t2.ipci_main,t1.ipci_ass,t1.asstype,t1.assworker,t2.ipci_main||','||t1.ipci_ass as ipci from
-        (select r.id,r.worker as mainworker,r.classtype as maintype,r.ipci ipci_main from FENLEI_BAOHU_RESULT r where r.classtype='主')t2
-        left join
-        (select r.id,wm_concat(distinct r.classtype) as asstype,wm_concat(r.worker) as assworker,wm_concat(r.ipci) as ipci_ass from FENLEI_BAOHU_RESULT r where r.classtype='副' group by r.id)t1
-        on t2.id=t1.id)t_mr on m.id=t_mr.id where 1=1
+        (select id,wm_concat(case when ipcmi is not null then worker end) as mainworker,
+        wm_concat(case when ipcmi is null then worker end) as assworker
+        from fenlei_baohu_result group by id)t on m.id=t.id where 1=1
         <if test="id!=''">
             AND m.id like concat(concat('%',#{id}),'%')
         </if>
-        <if test="sqr!=''">
-            AND m.sqr like concat(concat('%',#{sqr}),'%')
-        </if>
         <if test="mingcheng!=''">
             AND m.mingcheng like concat(concat('%',#{mingcheng}),'%')
+        </if>
+        <if test="sqr!=''">
+            AND m.sqr like concat(concat('%',#{sqr}),'%')
         </if>
     </select>
 

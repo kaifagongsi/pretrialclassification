@@ -28,6 +28,9 @@ public interface CaseClassificationService {
     //分类员条件查询案件
     FenleiBaohuMain searchByCondition(String id, String sqh, String mingcheng);
 
+    //分类员模糊查询案件
+    IPage searchByVagueCondition(String pageNo,String limit,String id, String sqr, String mingcheng);
+
     //获取案件主副分详情
     List<FenleiBaohuResult> getSingleResult(String id, String sqr, String mingcheng);
 

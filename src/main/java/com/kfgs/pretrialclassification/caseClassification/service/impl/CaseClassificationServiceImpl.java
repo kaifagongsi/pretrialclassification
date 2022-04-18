@@ -183,6 +183,14 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     }
 
     @Override
+    public IPage searchByVagueCondition(String pageNo,String limit,String id, String sqr, String mingcheng) {
+        Map resultMap = new HashMap();
+        Page<FenleiBaohuMainResultExt> page = new Page<>(Long.parseLong(pageNo),Long.parseLong(limit));
+        IPage<FenleiBaohuMainResultExt> iPage = fenleiBaohuMainMapper.searchByVagueCondition(page,id,sqr,mingcheng);
+        return iPage;
+    }
+
+    @Override
     @Transactional
     //查找主副分详细信息
     public List<FenleiBaohuResult> getSingleResult(String id, String sqr, String mingcheng) {

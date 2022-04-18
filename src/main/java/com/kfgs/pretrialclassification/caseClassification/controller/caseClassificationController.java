@@ -149,6 +149,16 @@ public class caseClassificationController extends BaseController {
         }
     }
 
+    @ApiOperation("分类员界面条件查询案件，模糊查询")
+    @GetMapping("/searchByVagueCondition")
+    public Map searchByVagueCondition(String page,String limit,String id,String sqr,String mingcheng){
+        Map resultMap = new HashMap();
+        Map<String, Object> dataTable = getDataTable(caseClassificationService.searchByVagueCondition(page,limit,id,sqr,mingcheng));
+        resultMap.put("code",20000);
+        resultMap.put("data",dataTable);
+        return resultMap;
+    }
+
     @ApiOperation("result表，根据案件id查询已存在转案人员列表")
     @GetMapping("/getTransWorkerList")
     public Map getTransWorkerList(String id){
