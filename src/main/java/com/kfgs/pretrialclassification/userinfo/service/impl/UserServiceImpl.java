@@ -38,6 +38,7 @@ import java.lang.reflect.Array;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -285,30 +286,33 @@ public class UserServiceImpl implements UserService {
                     return new QueryResponseResult(UserinfoCode.USERINFO_FAIL_CANNOTUPDATA_ONINE,null);
                 }
             }
-            String time = fenleiBaohuUserinfo.getLastTime();
-            TrimeUtil.objectToTrime(fenleiBaohuUserinfo);
-            QueryWrapper<FenleiBaohuUserinfo> wrapper = new QueryWrapper();
-            wrapper.eq("loginname",fenleiBaohuUserinfo.getLoginname());
-            fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@"+emailSuffix);
-            fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
-            fenleiBaohuUserinfo.setLastTime(time);
-            int update = userinfoMapper.update(fenleiBaohuUserinfo,wrapper);
-            //后期用Aop 解决
-            FenleiBaohuLog log = new FenleiBaohuLog();
-            FenleiBaohuUserinfo info =(FenleiBaohuUserinfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            log.setId(UUIDUtil.getUUID());
-            log.setMessage("更新用户：" + fenleiBaohuUserinfo.toString() + "，操作人:" +  info.getLoginname() + "" + info.getName() + info.getWorkername());
-            log.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
-            log.setResult("更新用户");
-            fenleiBaohuLogMapper.insert(log);
-            if(1 == update){
-                readisInitService.initArbiter();
-                return new QueryResponseResult(CommonCode.SUCCESS,null);
+            String adjudicator = fenleiBaohuUserinfo.getAdjudicator();
+            if( StringUtils.isNotEmpty(adjudicator) && adjudicator.length() ==6 && Pattern.compile("\\d{6}").matcher(adjudicator).find()){
+                String time = fenleiBaohuUserinfo.getLastTime();
+                TrimeUtil.objectToTrime(fenleiBaohuUserinfo);
+                QueryWrapper<FenleiBaohuUserinfo> wrapper = new QueryWrapper();
+                wrapper.eq("loginname",fenleiBaohuUserinfo.getLoginname());
+                fenleiBaohuUserinfo.setEmail(fenleiBaohuUserinfo.getEmail()+"@"+emailSuffix);
+                fenleiBaohuUserinfo.setWorkername(fenleiBaohuUserinfo.getLoginname()+"-"+fenleiBaohuUserinfo.getName());
+                fenleiBaohuUserinfo.setLastTime(time);
+                int update = userinfoMapper.update(fenleiBaohuUserinfo,wrapper);
+                //后期用Aop 解决
+                FenleiBaohuLog log = new FenleiBaohuLog();
+                FenleiBaohuUserinfo info =(FenleiBaohuUserinfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                log.setId(UUIDUtil.getUUID());
+                log.setMessage("更新用户：" + fenleiBaohuUserinfo.toString() + "，操作人:" +  info.getLoginname() + "" + info.getName() + info.getWorkername());
+                log.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
+                log.setResult("更新用户");
+                fenleiBaohuLogMapper.insert(log);
+                if(1 == update){
+                    readisInitService.initArbiter();
+                    return new QueryResponseResult(CommonCode.SUCCESS,null);
+                }else{
+                    return new QueryResponseResult(CommonCode.FAIL,null);
+                }
             }else{
-                return new QueryResponseResult(CommonCode.FAIL,null);
+                return new QueryResponseResult(UserinfoCode.USERINFO_FAIL_ADJUDICATOR,null);
             }
-
-
         }catch (Exception e){
             return new QueryResponseResult(CommonCode.FAIL,null);
         }

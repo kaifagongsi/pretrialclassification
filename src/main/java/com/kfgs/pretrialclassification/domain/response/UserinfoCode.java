@@ -2,8 +2,10 @@ package com.kfgs.pretrialclassification.domain.response;
 
 public enum UserinfoCode implements ResultCode {
     USERINFO_FAIL_HAVINGARBITER(false,26001,"删除失败，此人员为裁决组长，并且任有分类员将其设置为上一级裁决组长"),
-    USERINFO_FAIL_CANNOTUPDATA_ONINE(false,26001,"修改失败，该用户下，仍有案件未处理"),
+    USERINFO_FAIL_CANNOTUPDATA_ONINE(false,26002,"修改失败，该用户下，仍有案件未处理"),
+    USERINFO_FAIL_ADJUDICATOR(false,26003,"修改失败，原因：裁决组长设置失败，必须为6位数字"),
     USERINFO_SUCCESS(true,20000,"操作成功");
+
 
 
     //操作是否成功
