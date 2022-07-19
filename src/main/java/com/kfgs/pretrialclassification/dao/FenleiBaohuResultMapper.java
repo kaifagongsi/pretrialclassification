@@ -25,6 +25,8 @@ import java.util.Map;
 @Repository
 public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
 
+    int updateByModel(@Param("entity")FenleiBaohuResult result,@Param("id") String id,@Param("worker")String worker,@Param("state")String state);
+
     List<FenleiBaohuResultExt> AfterDeploymentSendEmail(String[] ids);
 
     IPage<FenleiBaohuResultExt> selectCaseOut(Page<FenleiBaohuResult> page, @Param("begintime") String begintime, @Param("endtime") String endtime, @Param("type") String type, @Param("dept1") String dept1, @Param("dept2") String dept2,@Param("userName") String userName);

@@ -170,12 +170,12 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
                 result.set*/
                 BeanUtils.copyProperties(fenleiBaohuUpdateIpc,result);
                 result.setState("2");
-                QueryWrapper queryWrapper  = new QueryWrapper<>();
+               /* QueryWrapper queryWrapper  = new QueryWrapper<>();
                 queryWrapper.eq("id",id);
                 queryWrapper.eq("worker",worker);
-                queryWrapper.eq("state","9");
+                queryWrapper.eq("state","9");*/
                 // 0.2 更新result表的分类号信息和案子状态
-                int update = fenleiBaohuResultMapper.update(result,queryWrapper);
+                int update = fenleiBaohuResultMapper.updateByModel(result,id,worker,"9");
                 if(update == 1){
                     /**
                      * 不考虑是否出发裁决，直接通过
