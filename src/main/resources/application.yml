@@ -1,4 +1,9 @@
-spring:
-  profiles:
-    active: @activatedProperties@
-
+nacos:
+  config:
+    server-addr: 172.17.0.17:8848
+    namespace: e75ce0ad-2b34-4594-918b-b7a08047d187
+    type: yaml
+    auto-refresh: true
+    bootstrap:
+      enable: true
+    data-id: nw-bhzx

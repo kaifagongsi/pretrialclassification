@@ -20,19 +20,18 @@
         <spring-boot.version>2.1.5.RELEASE</spring-boot.version>
         <mybatis.version>3.4.5</mybatis.version>
         <commons-lang3.version>3.6</commons-lang3.version>
-        <fastdfs-client-java.version>1.27.0.0</fastdfs-client-java.version>
         <hutool.version>4.5.7</hutool.version>
     </properties>
 
-    <profiles>
+   <!-- <profiles>
         <profile>
             <id>dev</id>
             <activation>
-                <!-- 默认环境 -->
+                &lt;!&ndash; 默认环境 &ndash;&gt;
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <!-- 环境标识，需要与配置文件的名称相对应 -->
+                &lt;!&ndash; 环境标识，需要与配置文件的名称相对应 &ndash;&gt;
                 <activatedProperties>dev</activatedProperties>
             </properties>
         </profile>
@@ -42,7 +41,7 @@
                 <activatedProperties>prod</activatedProperties>
             </properties>
         </profile>
-    </profiles>
+    </profiles>-->
 
         <dependencies>
             <!-- web  -->
@@ -227,17 +226,8 @@
                 <artifactId>fastjson</artifactId>
                 <version>2.0.0</version>
             </dependency>
-            <dependency>
-                <groupId>net.oschina.zcx7878</groupId>
-                <artifactId>fastdfs-client-java</artifactId>
-                <version>1.27.0.0</version>
-            </dependency>
 
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>24.0-jre</version>
-            </dependency>
+
 
             <!--excel解析，前者用于引入HSSFWorkbook；后者用于引入XSSFWorkbook.-->
             <dependency>
@@ -307,6 +297,11 @@
                 <version>24.0-jre</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.alibaba.boot</groupId>
+                <artifactId>nacos-config-spring-boot-starter</artifactId>
+                <version>0.2.10</version>
+            </dependency>
         </dependencies>
 
     <repositories>

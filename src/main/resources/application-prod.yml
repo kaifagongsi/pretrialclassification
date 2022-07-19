@@ -8,7 +8,7 @@ spring:
   application:
     name: PretrialClassification
   profiles:
-    active: @activatedProperties@
+    active: prod
   datasource:
     druid:
       url: jdbc:oracle:thin:@192.168.8.107:1521:orcl
