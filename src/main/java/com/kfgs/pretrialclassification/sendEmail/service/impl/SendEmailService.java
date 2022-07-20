@@ -1,6 +1,7 @@
 package com.kfgs.pretrialclassification.sendEmail.service.impl;
 
 
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuMainMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
@@ -39,58 +40,58 @@ public class SendEmailService {
     FenleiBaohuResultMapper fenleiBaohuResultMapper;
 
 
-    @Value("${pretrialclassification.email.toGuiHua}")
+    @NacosValue(value = "${pretrialclassification.email.toGuiHua:30}",autoRefreshed = true)
     private String toGuiHua;
 
-    @Value("${pretrialclassification.email.toYiBu}")
+    @NacosValue(value = "${pretrialclassification.email.toYiBu:30}",autoRefreshed = true)
     private String toYiBu;
 
-    @Value("${pretrialclassification.email.toErBu}")
+    @NacosValue(value = "${pretrialclassification.email.toErBu:30}",autoRefreshed = true)
     private String toErBu;
 
-    @Value("${pretrialclassification.email.toSanBu}")
+    @NacosValue(value = "${pretrialclassification.email.toSanBu:30}",autoRefreshed = true)
     private String toSanBu;
 
-    @Value("${pretrialclassification.email.toSiBu}")
+    @NacosValue(value = "${pretrialclassification.email.toSiBu:30}",autoRefreshed = true)
     private String toSiBu;
 
-    @Value("${pretrialclassification.email.toYiBu_overtime}")
+    @NacosValue(value = "${pretrialclassification.email.toYiBu_overtime:30}",autoRefreshed = true)
     private String toYiBu_overtime;
 
-    @Value("${pretrialclassification.email.toErBu_overtime}")
+    @NacosValue(value = "${pretrialclassification.email.toErBu_overtime:30}",autoRefreshed = true)
     private String toErBu_overtime;
 
-    @Value("${pretrialclassification.email.toSanBu_overtime}")
+    @NacosValue(value = "${pretrialclassification.email.toSanBu_overtime:30}",autoRefreshed = true)
     private String toSanBu_overtime;
 
-    @Value("${pretrialclassification.email.toSiBu_overtime}")
+    @NacosValue(value = "${pretrialclassification.email.toSiBu_overtime:30}",autoRefreshed = true)
     private String toSiBu_overtime;
 
-    @Value("${pretrialclassification.email.toSanBu_Trans}")
+    @NacosValue(value = "${pretrialclassification.email.toSanBu_Trans:30}",autoRefreshed = true)
     private String toSanBu_Trans;
 
-    @Value("${pretrialclassification.email.toSiBu_Trans}")
+    @NacosValue(value = "${pretrialclassification.email.toSiBu_Trans:30}",autoRefreshed = true)
     private String toSiBu_Trans;
 
-    @Value("${pretrialclassification.arbiter.toYiBu_arbiter}")
+    @NacosValue(value = "${pretrialclassification.arbiter.toYiBu_arbiter:30}",autoRefreshed = true)
     private String toYiBu_arbiter;
 
-    @Value("${pretrialclassification.arbiter.toErBu_arbiter}")
+    @NacosValue(value = "${pretrialclassification.arbiter.toErBu_arbiter:30}",autoRefreshed = true)
     private String toErBu_arbiter;
 
-    @Value("${pretrialclassification.arbiter.toSanBu_arbiter}")
+    @NacosValue(value = "${pretrialclassification.arbiter.toSanBu_arbiter:30}",autoRefreshed = true)
     private String toSanBu_arbiter;
 
-    @Value("${pretrialclassification.arbiter.toSiBu_arbiter}")
+    @NacosValue(value = "${pretrialclassification.arbiter.toSiBu_arbiter:30}",autoRefreshed = true)
     private String toSiBu_arbiter;
 
-    @Value("${pretrialclassification.arbiter.toGuiHua_arbiter}")
+    @NacosValue(value = "${pretrialclassification.arbiter.toGuiHua_arbiter:30}",autoRefreshed = true)
     private String toGuiHua_arbiter;
 
-    @Value("${pretrialclassification.arbiter.toFenlei}")
+    @NacosValue(value = "${pretrialclassification.arbiter.toFenlei:30}",autoRefreshed = true)
     private String toFenlei_arbiter;
 
-    @Value("${pretrialclassification.arbiter.toJiagong}")
+    @NacosValue(value = "${pretrialclassification.arbiter.toJiagong:30}",autoRefreshed = true)
     private String toJiagong_arbiter;
 
 
