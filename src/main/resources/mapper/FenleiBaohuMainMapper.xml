@@ -117,6 +117,9 @@
         <if test="begintime!=''and endtime!=''">
             AND m.chuantime between #{begintime} and #{endtime}
         </if>
+        <if test="enterBeginTime!=''and enterEndTime!=''">
+            AND m.jinantime between #{enterBeginTime} and #{enterEndTime}
+        </if>
     </select>
 
     <select id="searchByVagueCondition" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt">

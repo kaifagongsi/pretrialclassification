@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuAdjudication;
+import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuAdjudicationExt;
 import com.kfgs.pretrialclassification.domain.request.ArbiterParam;
 import org.apache.ibatis.annotations.Param;
@@ -27,4 +28,6 @@ public interface FenleiBaohuAdjudicationMapper extends BaseMapper<FenleiBaohuAdj
     IPage<FenleiBaohuAdjudicationExt> getArbiterPersonInitList(Page<FenleiBaohuAdjudicationExt> page, @Param("username")String loginname);
 
     //int updateAdjudicatorById(@Param("adjudicator") String adjudicator, @Param("id") String id);
+    IPage<FenleiBaohuAdjudicationExt> selectAdjudicationOut(Page<FenleiBaohuAdjudicationExt> page, @Param("begintime") String begintime, @Param("endtime") String endtime);
+
 }

@@ -36,4 +36,5 @@ public class FenleiBaohuAdjudicationExt extends FenleiBaohuAdjudication   {
      */
     private String path;
 
+    private String cjNum;
 }
