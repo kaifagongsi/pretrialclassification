@@ -54,10 +54,19 @@
           and
             ad.ADJUDICATOR like  '%'||#{username}||'%'
     </select>
+
+    <select id="selectAdjudicationOut" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuAdjudicationExt">
+        select PROCESSINGPERSON, COUNT(1) as cjNum
+        FROM FENLEI_BAOHU_ADJUDICATION
+        <if test="begintime!=''and endtime!=''">
+            WHERE substr(finishtime, 1, 8) between #{begintime} and #{endtime}
+        </if>
+        GROUP BY PROCESSINGPERSON
+    </select>
+
     <select id="selectAdjudicatorWorker" resultType="java.lang.String">
         select ADJUDICATOR from FENLEI_BAOHU_ADJUDICATION where id = #{id}
     </select>
-
 
     <update id="saveAribiterClassfication" parameterType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuAdjudicationExt">
         update FENLEI_BAOHU_ADJUDICATION
@@ -81,7 +90,6 @@
                 CSETS = #{ext.csets},
             </if>
         </set>
-
         where
            id = #{ext.id}
           and
@@ -89,6 +97,7 @@
           and
            PROCESSINGPERSON = #{username}
     </update>
+
     <update id="updateAdjudicatorById">
         <if test="list.size == 0">
             update FENLEI_BAOHU_ADJUDICATION
@@ -105,6 +114,7 @@
             where id = #{id}
         </if>
     </update>
+
     <update id="updateCaseStateAndFinishTime">
         update FENLEI_BAOHU_ADJUDICATION set state = #{state}, FINISHTIME = #{finishTime} where id = #{id} and PROCESSINGPERSON = #{loginame} AND STATE = '7'
     </update>

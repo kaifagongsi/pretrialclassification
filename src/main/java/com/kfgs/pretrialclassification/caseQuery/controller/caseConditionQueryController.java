@@ -31,7 +31,7 @@ public class caseConditionQueryController extends BaseController{
 
     @ApiOperation("main表，查询所有案件")
     @GetMapping("/findAllCase")
-    public Map findAllCase(String page,String limit,String id,String mingcheng,String oraginization,String sqr,String sqh,String worker,String state,String beginTime,String endTime) throws PretrialClassificationException {
+    public Map findAllCase(String page,String limit,String id,String mingcheng,String oraginization,String sqr,String sqh,String worker,String state,String beginTime,String endTime,String enterBeginTime,String enterEndTime) throws PretrialClassificationException {
         //获取查询条件
         Map resultMap = new HashMap();
         if(state == null || state == "all" || state.equals("all") || state==""){
@@ -58,6 +58,12 @@ public class caseConditionQueryController extends BaseController{
         if (endTime == null){
             endTime = "";
         }
+        if(enterBeginTime == null){
+            enterBeginTime = "";
+        }
+        if (enterEndTime == null){
+            enterEndTime = "";
+        }
         if(oraginization == null){
             oraginization = "";
         }
@@ -75,7 +81,21 @@ public class caseConditionQueryController extends BaseController{
             beginTime="";
             endTime="";
         }
-        Map<String, Object> dataTable = getDataTable(caseConditionQueryService.findAll(page,limit,id,mingcheng,oraginization,sqr,sqh,worker,state,beginTime,endTime));
+        if(enterBeginTime == "" && enterEndTime != ""){
+            enterBeginTime = "19000000000000";
+            enterEndTime = enterEndTime.replace("-","")+"235959";
+        }else if(enterBeginTime != "" && enterEndTime == ""){
+            enterBeginTime = enterBeginTime.replace("-","")+"000000";
+            enterEndTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString();
+            enterEndTime = enterEndTime.replace("-","")+"235959";
+        }else if(enterBeginTime != "" && enterEndTime != ""){
+            enterBeginTime = enterBeginTime.replace("-","")+"000000";
+            enterEndTime = enterEndTime.replace("-","")+"235959";
+        }else{
+            enterBeginTime="";
+            enterEndTime="";
+        }
+        Map<String, Object> dataTable = getDataTable(caseConditionQueryService.findAll(page,limit,id,mingcheng,oraginization,sqr,sqh,worker,state,beginTime,endTime, enterBeginTime, enterEndTime));
         resultMap.put("code",20000);
         resultMap.put("data",dataTable);
         return resultMap;

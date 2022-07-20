@@ -12,4 +12,8 @@ public interface CaseStatisticService {
 
     // 出案量统计，按照各个保护中心
     IPage countCaseOutWithOrg(String pageNo, String limit,String beginTime,String endTime);
+
+    //工作量统计
+    IPage accountWork(String pageNo, String limit, String beginTime, String endTime, String type, String dept1, String dept2, String userName);
+
 }

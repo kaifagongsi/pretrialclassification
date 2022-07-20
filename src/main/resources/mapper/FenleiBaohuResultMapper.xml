@@ -283,6 +283,66 @@
         select  * from fenlei_baohu_result r where   r.worker = #{loginname} and r.state != '2'
     </select>
 
+    <select id="accountWork" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt" >
+        select t.worker,
+        substr(t.worker,1,instr(t.worker,'-',1)-1) fldm,
+        substr(t.worker,instr(t.worker,'-',1)+1) workerName,
+        (select concat(u.dep1, u.dep2) from FENLEI_BAOHU_USERINFO u where u.workername = t.worker) as dep1,
+        (select u.areaname from FENLEI_BAOHU_USERINFO u where u.workername = t.worker) as areaName,
+        sum(decode(a.type,'FM',decode(t.ipcmi, NULL,0,1),0)) fmzfNumCount,
+        sum(decode(a.type,'FM',decode(t.ipcmi,NULL,decode(coalesce(t.ipci, t.ipca, t.ipcmi,t.ipcoi, t.cci,t.cca,t.csets), NULL, 0, 1),0),0)) fmffNumCount,
+        sum(decode(a.type,'FM',decode(coalesce(t.ipci, t.ipca, t.ipcmi,t.ipcoi, t.cci,t.cca,t.csets), NULL, 1, 0), 0)) fmNoNumCount,
+
+        sum(decode(a.type,'XX',decode(t.ipcmi, NULL,0,1),0)) xxzfNumCount,
+        sum(decode(a.type,'XX',decode(t.ipcmi,NULL,decode(coalesce(t.ipci, t.ipca, t.ipcmi,t.ipcoi, t.cci,t.cca,t.csets), NULL, 0, 1),0),0)) xxffNumCount,
+        sum(decode(a.type,'XX',decode(coalesce(t.ipci, t.ipca, t.ipcmi,t.ipcoi, t.cci,t.cca,t.csets), NULL, 1, 0), 0)) xxNoNumCount,
+
+        count(distinct a.id) as totalCount
+        from fenlei_baohu_main a, fenlei_baohu_result t
+        where  a.id = t.id
+        <if test="begintime!=''and endtime!=''">
+            AND t.chuantime between #{begintime} and #{endtime}
+        </if>
+        <if test="type!='' ">
+            AND t.classtype=#{type}
+        </if>
+        <if test="userName!='' ">
+            AND  substr(t.worker,instr(t.worker,'-')+1)=#{userName}
+        </if>
+        <if test="dept1!='' ">
+            AND  t.worker in (select workername from FENLEI_BAOHU_USERINFO where dep1 =#{dept1})
+        </if>
+        <if test="dept2!='' ">
+            AND  t.worker in (select workername from FENLEI_BAOHU_USERINFO where dep2 =#{dept2})
+        </if>
+        group by t.worker
+    </select>
+
+    <select id="selectAllCase" resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt">
+        select r.id,
+        r.worker,
+        substr(r.worker,1,instr(r.worker,'-',1)-1) fldm,
+        r.cci,r.cca,r.csets,r.ipci,r.ipca,r.ipcmi,r.ipcoi,
+        m.type as typeVal
+        from fenlei_baohu_result r,fenlei_baohu_main m
+        where  r.id = m.id
+        <if test="begintime!=''and endtime!=''">
+            AND r.chuantime between #{begintime} and #{endtime}
+        </if>
+        <if test="type!='' ">
+            AND r.classtype=#{type}
+        </if>
+        <if test="userName!='' ">
+            AND  substr(r.worker,instr(r.worker,'-')+1)=#{userName}
+        </if>
+        <if test="dept1!='' ">
+            AND  r.worker in (select workername from FENLEI_BAOHU_USERINFO where dep1 =#{dept1})
+        </if>
+        <if test="dept2!='' ">
+            AND  r.worker in (select workername from FENLEI_BAOHU_USERINFO where dep2 =#{dept2})
+        </if>
+    </select>
+
     <update id="updateResultRule">
         update fenlei_baohu_result r set r.state=#{state} where r.id=#{id}
     </update>

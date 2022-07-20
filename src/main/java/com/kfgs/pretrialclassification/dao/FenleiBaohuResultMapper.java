@@ -87,4 +87,9 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
     List<String> findAssWorkerByID(@Param("id") String id);
 
     List<FenleiBaohuResult> selectUnFinishListByLoginName(@Param("loginname")String loginname);
+
+    List<FenleiBaohuResultExt> selectAllCase(@Param("begintime") String begintime, @Param("endtime") String endtime, @Param("type") String type, @Param("dept1") String dept1, @Param("dept2") String dept2, @Param("userName") String userName);
+
+    IPage<FenleiBaohuResultExt> accountWork(Page<FenleiBaohuResult> page, @Param("begintime") String begintime, @Param("endtime") String endtime, @Param("type") String type, @Param("dept1") String dept1, @Param("dept2") String dept2,@Param("userName") String userName);
+
 }

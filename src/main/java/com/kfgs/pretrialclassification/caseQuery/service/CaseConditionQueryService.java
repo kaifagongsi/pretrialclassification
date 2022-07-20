@@ -10,7 +10,7 @@ import java.util.Map;
 public interface CaseConditionQueryService {
 
     //查询所有案件
-    IPage findAll(String pageNo, String limit,String id,String name,String oraginization,String sqr,String sqh,String worker,String state,String begintime,String endtime);
+    IPage findAll(String pageNo, String limit,String id,String name,String oraginization,String sqr,String sqh,String worker,String state,String begintime,String endtime,String enterBeginTime,String enterEndTime);
 
     //根据搜索条件查询案件
     IPage findByCondition(String pageNo, String limit, Map conList);

@@ -80,7 +80,7 @@ public class CaseHandleServiceImpl implements CaseHandleService {
     @Override
     public IPage selectByCondition(String pageNo, String limit) {
         Page<FenleiBaohuMainResultExt> page = new Page<FenleiBaohuMainResultExt>(Long.parseLong(pageNo),Long.parseLong(limit));
-        return fenleiBaohuMainMapper.selectByCondition(page,"","","","","","1","","","");
+        return fenleiBaohuMainMapper.selectByCondition(page,"","","","","","1","","","", "", "");
     }
 
 }

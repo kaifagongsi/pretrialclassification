@@ -108,4 +108,34 @@ public class FenleiBaohuResultExt  extends FenleiBaohuResult {
      * 裁决组长
      */
     private String adjudicator;
+
+    /* *
+     * 发明主分出案点数
+     */
+    private String fmzfPoint;
+    /* *
+     * 发明副分出案点数
+     */
+    private String fmffPoint;
+    /* *
+     * 总的出案点数
+     */
+    private String totalPoint;
+    /* *
+     * 新型主分出案点数
+     */
+    private String xxzfPoint;
+    /* *
+     * 新型副分出案点数
+     */
+    private String xxffPoint;
+    /* *
+     * 主裁决点数
+     */
+    private String cjPoint;
+    /**
+     * 案件类型
+     */
+    private String typeVal;
+
 }

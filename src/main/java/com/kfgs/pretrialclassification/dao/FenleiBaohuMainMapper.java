@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -30,7 +29,7 @@ public interface FenleiBaohuMainMapper extends BaseMapper<FenleiBaohuMain> {
     IPage<FenleiBaohuMainResultExt> searchByVagueCondition(IPage<FenleiBaohuMainResultExt> page, @Param("id") String id,@Param("sqr") String sqr,@Param("mingcheng") String mingcheng);
     //IPage<FenleiBaohuMainResultExt> selectByCondition(IPage<FenleiBaohuMainResultExt> page, @Param("ew") Wrapper<FenleiBaohuMainResultExt> queryWrapper);
 
-    IPage<FenleiBaohuMainResultExt> selectByCondition(IPage<FenleiBaohuMainResultExt> page, @Param("id") String id,@Param("name") String name,@Param("oraginization") String oraginization,@Param("sqr") String sqr,@Param("sqh") String sqh,@Param("worker") String worker,@Param("state") String state,@Param("begintime") String begintime,@Param("endtime") String endtime);
+    IPage<FenleiBaohuMainResultExt> selectByCondition(IPage<FenleiBaohuMainResultExt> page, @Param("id") String id,@Param("name") String name,@Param("oraginization") String oraginization,@Param("sqr") String sqr,@Param("sqh") String sqh,@Param("worker") String worker,@Param("state") String state,@Param("begintime") String begintime,@Param("endtime") String endtime, @Param("enterBeginTime")String enterBeginTime, @Param("enterEndTime")String enterEndTime);
 
     FenleiBaohuMain searchByCondition(@Param("id") String id,@Param("sqr") String sqr,@Param("mingcheng") String mingcheng);
 
@@ -53,4 +52,5 @@ public interface FenleiBaohuMainMapper extends BaseMapper<FenleiBaohuMain> {
     int updateStateById(@Param("id") String id, @Param("state") String state);
 
     List<String> getExcelInfo(List<String> ids);
+
 }
