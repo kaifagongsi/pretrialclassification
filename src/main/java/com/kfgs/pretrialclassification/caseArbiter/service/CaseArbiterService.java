@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.applet.AppletContext;
 import java.lang.reflect.Array;
@@ -474,7 +475,7 @@ public class CaseArbiterService   {
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
     }
     // 裁决组长出案
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public QueryResponseResult arbiterChuAn(String id) {
         //1.修改案件状态以及出案时间
         String finishTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
@@ -525,8 +526,9 @@ public class CaseArbiterService   {
             if(main_j == 1 && i == 1 && (update_int == fenleiBaohuResults.size())){
                 return new QueryResponseResult(CommonCode.SUCCESS,null);
             }else{
-                int c = 1/0;
-                return new QueryResponseResult(CommonCode.FAIL,null);
+                //手动回滚事务
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return new QueryResponseResult(ArbiterResponseEnum.ARBITER_NEED_PEPLE_ERROR,null);
             }
         }
     }

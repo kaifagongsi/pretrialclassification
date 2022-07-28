@@ -27,7 +27,9 @@ public enum ArbiterResponseEnum implements ResultCode{
     CSETS_TOO_MORE_GE(false,23006,"csets超过99个,或者小于2个"),
     CCI_CCA_REPEAT(false,23007,"CCI、CCA中有重复分类号"),
     CANNOT_RESOLVE_ABBREVIATION_error(false,23008,"分类号格式错误"),
-    IPMI_ONLY_ONE(false,23009,"主分类号仅有一个");
+    IPMI_ONLY_ONE(false,23009,"主分类号仅有一个"),
+    ARBITER_NEED_PEPLE_ERROR(false,23010,"裁决案件出案异常,后台数据异常，请联系管理员");
+
 
 
     private ArbiterResponseEnum(Boolean success, int code, String message){

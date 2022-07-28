@@ -4,6 +4,9 @@
     <update id="updateByIdAndWorker">
         update FENLEI_BAOHU_UPDATEIPC set state = #{state} where id = #{id} and worker = #{worker}
     </update>
+    <update id="updateOtherState">
+        update FENLEI_BAOHU_UPDATEIPC set state = '3' where id = #{id} and worker != #{user}
+    </update>
 
     <select id="selectFenleiBaohuUpdateIpcPage"
             resultType="com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUpdateipcExt">

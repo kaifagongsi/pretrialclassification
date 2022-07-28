@@ -15,6 +15,7 @@ import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.response.*;
 import com.kfgs.pretrialclassification.sendEmail.service.impl.SendEmailService;
+import com.kfgs.pretrialclassification.updateIpc.service.FenleiBaohuUpdateipcService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
@@ -457,7 +459,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         unFinish = fenleiBaohuResultMapper.getCaseUnFinish(id);
         if (unFinish.size() == 1){
             //最后一个未出案
-            return lastFinish(id,user,queryResponseResult);
+            return lastFinish(id,user,queryResponseResult,CaseClassificationServiceImpl.class);
         }else if (unFinish.size() > 1){
             /**
              * 不是最后一个出案,可直接出案,不改变main表状态
@@ -506,7 +508,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
      * @return
      */
     @Override
-    public QueryResponseResult lastFinish( String id,String user,QueryResponseResult queryResponseResult ){
+    public QueryResponseResult lastFinish( String id,String user,QueryResponseResult queryResponseResult,Class clzss ){
         if(queryResponseResult == null){
             queryResponseResult = new QueryResponseResult();
         }
@@ -543,10 +545,14 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                     }else{
                         queryResponseResult.setMessage("邮件发送失败，请自行告知裁决组长" +queryResponseResult.getMessage() );
                     }
+                    if(clzss == FenleiBaohuUpdateipcService.class){
+                        fenleiBaohuUpdateipcMapper.updateOtherState(id,user);
+                    }
                     return queryResponseResult;
                 }else{
                     // 数据处理失败   要准备回滚数据 ---
-                    int c = 1 / 0;
+                    //手动回滚事务
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return new QueryResponseResult(CommonCode.FAIL,null);
                 }
             } else {

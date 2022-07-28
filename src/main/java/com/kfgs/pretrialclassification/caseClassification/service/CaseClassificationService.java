@@ -64,7 +64,7 @@ public interface CaseClassificationService {
 
 
     //最后一个人出案
-    public QueryResponseResult lastFinish( String id,String user,QueryResponseResult queryResponseResult );
+    public QueryResponseResult lastFinish( String id,String user,QueryResponseResult queryResponseResult,Class clzss );
 
     // 判断是否最后一个人出案
     QueryResponseResult judgeIfLastFinish(String id);

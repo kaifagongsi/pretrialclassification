@@ -24,4 +24,5 @@ public interface FenleiBaohuUpdateipcMapper extends BaseMapper<FenleiBaohuUpdate
 
     int updateByIdAndWorker(@Param("id") String id, @Param("worker") String worker, @Param("state") String state);
 
+    void updateOtherState(@Param("id")String id, @Param("user")String user);
 }

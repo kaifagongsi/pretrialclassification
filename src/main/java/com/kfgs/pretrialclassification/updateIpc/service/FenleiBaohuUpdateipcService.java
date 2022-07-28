@@ -80,23 +80,39 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
      * @param state 案件状态
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public QueryResponseResult updateIpcState(String id, String state,String worker) {
+        //0.判断当前案件是否处在裁决
         QueryWrapper<FenleiBaohuResult> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",id);
+        queryWrapper.eq("state","7");
+        List<FenleiBaohuResult> results = fenleiBaohuResultMapper.selectList(queryWrapper);
+        if(!results.isEmpty() && results.size() != 0){
+            return new QueryResponseResult(UpdateIpcResponseEnum.UPDATE_CASE_STATE_ERROR,null);
+        }else {
+            queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("id",id);
+            queryWrapper.in("state",new ArrayList<>(Arrays.asList("0","1")));
+            List<FenleiBaohuResult> fenleiBaohuResultsStateTwoCount = fenleiBaohuResultMapper.selectList(queryWrapper);
+            if(fenleiBaohuResultsStateTwoCount.size() == 0){//表述均已出案
+                return AllProChuanCaoZuo(id,worker,state);
+            }else{ // 表示有一人未出案
+                return OneOrMoreNotChuAn(id,worker,state);
+            }
+        }
         //<FenleiBaohuResult> fenleiBaohuResultsCount = fenleiBaohuResultMapper.selectList(queryWrapper);
         //queryWrapper.eq("state","2");
-        queryWrapper.in("state",new ArrayList<>(Arrays.asList("0","1","7")));
-        List<FenleiBaohuResult> fenleiBaohuResultsStateTwoCount = fenleiBaohuResultMapper.selectList(queryWrapper);
+//        queryWrapper.in("state",new ArrayList<>(Arrays.asList("0","1","7")));
+//        List<FenleiBaohuResult> fenleiBaohuResultsStateTwoCount = fenleiBaohuResultMapper.selectList(queryWrapper);
         //一个案件如果多次提出更正就会有bug
        /* QueryWrapper<FenleiBaohuUpdateIpc> queryWrapperUpdateIpc = new QueryWrapper<>();
         queryWrapperUpdateIpc.eq("id",id).eq("state","0").eq("worker",worker);*/
        // String worker = fenleiBaohuUpdateipcMapper.selectOne(queryWrapperUpdateIpc).getWorker();
-        if(fenleiBaohuResultsStateTwoCount.size() == 0){//表述均已出案
+        /*if(fenleiBaohuResultsStateTwoCount.size() == 0){//表述均已出案
             return AllProChuanCaoZuo(id,worker,state);
         }else{ // 表示有一人未出案
             return OneOrMoreNotChuAn(id,worker,state);
-        }
+        }*/
     }
 
     /**
@@ -182,7 +198,8 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
                      */
                     fenleiBaohuUpdateIpc.setState("1");
                     fenleiBaohuUpdateipcMapper.update(fenleiBaohuUpdateIpc,queryWrapperUpdate);
-                    return caseClassificationService.lastFinish(id, worker,null);
+
+                    return caseClassificationService.lastFinish(id, worker,null,FenleiBaohuUpdateipcService.class);
                 }else{
                     return new QueryResponseResult(UpdateIpcResponseEnum.CANNOT_PASS_AMEND_UPDATEIPC,null);
                 }
