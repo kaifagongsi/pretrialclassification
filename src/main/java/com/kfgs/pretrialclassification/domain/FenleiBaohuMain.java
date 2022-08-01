@@ -123,4 +123,29 @@ public class FenleiBaohuMain implements Serializable {
 
     @TableField("EXPORT_TIME")
     private String exportTime;
+
+    /**
+     * 主分类员，有且仅有一个
+     */
+    @TableField("MAIN_CLASSIFIERS")
+    private String mainClassifiers;
+
+    /**
+     * 副分人员
+     *
+     */
+    @TableField("VICE_CLASSIFIERS")
+    private String viceClassifiers;
+
+    /**
+     * 模糊匹配使用的的名称
+     */
+    @TableField("FUZZY_MATCH_NAME")
+    private String fuzzyMatchName;
+
+    /**
+     * 模糊匹配结构存储
+     */
+    @TableField("FUZZY_MATCH_RESULT")
+    private String fuzzyMatchResult;
 }

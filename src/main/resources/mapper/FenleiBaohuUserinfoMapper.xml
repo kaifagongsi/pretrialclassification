@@ -23,6 +23,9 @@
     <sql id="Base_Column_List_After" >
         loginname,password,name,ORGNAME,AREANAME,CLASSLEVEL,WORKERNAME,EMAIL,DEP1,DEP2,TYPE,IPCS,FIELDS,LAST_TIME,LAST_IPC,IS_ONLINE,ADJUDICATOR
     </sql>
+    <update id="updatePasswordByLoginname">
+        update fenlei_baohu_userinfo set password = #{newPassword} where loginname = #{loginName} and password = #{oldPsssword}
+    </update>
 
 
     <!--关联到用户的权限信息-->

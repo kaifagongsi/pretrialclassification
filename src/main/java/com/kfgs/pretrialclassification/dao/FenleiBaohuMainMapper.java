@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author mango
@@ -53,4 +55,49 @@ public interface FenleiBaohuMainMapper extends BaseMapper<FenleiBaohuMain> {
 
     List<String> getExcelInfo(List<String> ids);
 
+    /**
+     * 将FUZZY_MATCH_NAME、FUZZY_MATCH_RESUKT清空
+     */
+    void updateFuzzyColumnNull();
+
+    /**
+     * 将FUZZY_MATCH_NAME字段跟新为去掉一种的前八个字符
+     */
+    void updateFuzzyNameColumn();
+
+    /**
+     * 返回所有数据map
+     * @return
+     */
+    @MapKey("id")
+    Map<String,FenleiBaohuMain> findDataToMapComma();
+
+    /** 将中文逗号替换为英文逗号  */
+    void updateSqrComma();
+
+    /** 将中文分号替换为英文逗号 */
+    void updateSqrSemicolonCN();
+
+    /** 将英文分号替换为英文逗号 */
+    void updateSqrSemicolonEN();
+
+    /** 精确匹配名称相同，申请人相同 */
+    List<String> selectIdByExactMatchMingChengAndExactMatchSqr(@Param("mingcheng") String mingcheng,@Param("sqr")String sqr, @Param("exclude") String exclude);
+    /** 精确匹配名称相同，申请人相同 */
+    List<String> selectIdByFuzzyMatchMingChengAndExactMatchSqr(@Param("mingcheng") String mingcheng,@Param("sqr")String sqr , @Param("exclude") String exclude);
+
+    /** 名称相同 */
+    List<String> selectIdByExactMatchMingCheng(@Param("mingcheng") String mingcheng , @Param("exclude") String exclude);
+
+    /** 名称模糊相同 */
+    List<String> selectIdByFuzzyMatchMingCheng(String mingcheng , @Param("exclude") String exclude);
+
+    /** 根据ID跟新表中的FUZZY_MATCH_RESULT字段*/
+    void updateFuzzyResultById(@Param("result")String result, @Param("id")String id);
+
+    /** 查找名称相同的案件 */
+    List<FenleiBaohuMain> selectByExactMatchMingCheng(@Param("mingcheng")String mingcheng, @Param("id")String id);
+
+    /** 查找名称模糊相同的案件 */
+    List<FenleiBaohuMain> selectByFuzzyMatchMingCheng(@Param("mingcheng")String mingcheng, @Param("id")String id);
 }

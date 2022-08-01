@@ -48,4 +48,6 @@ public interface FenleiBaohuUserinfoMapper extends BaseMapper<FenleiBaohuUserinf
 
     List<String> selectDistinctDep2ByDep1(String dep1);
 
+    int updatePasswordByLoginname(@Param("oldPsssword") String oldPsssword,@Param("newPassword")String newPassword,@Param("loginName")String loginName);
+
 }

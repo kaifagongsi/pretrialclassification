@@ -5,6 +5,30 @@
     <sql id="Base_Column_List">
         ID,MINGCHENG,TYPE,SQR,SQH,PDF_PATH,STATE,SIMPLECLASSCODE,CHUANTIME,JINANTIME,MESSAGE,ORAGINIZATION
     </sql>
+    
+    <resultMap id="BaseResultMap" type="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
+        <id column="ID" jdbcType="VARCHAR" property="id" />
+        <result column="MINGCHENG" jdbcType="VARCHAR" property="mingcheng" />
+        <result column="TYPE" jdbcType="VARCHAR" property="type" />
+        <result column="SQR" jdbcType="VARCHAR" property="sqr" />
+        <result column="SQH" jdbcType="VARCHAR" property="sqh" />
+        <result column="PDF_PATH" jdbcType="VARCHAR" property="pdfPath" />
+        <result column="STATE" jdbcType="VARCHAR" property="state" />
+        <result column="SIMPLECLASSCODE" jdbcType="VARCHAR" property="simpleclasscode" />
+        <result column="CHUANTIME" jdbcType="VARCHAR" property="chuantime" />
+        <result column="JINANTIME" jdbcType="VARCHAR" property="jinantime" />
+        <result column="MESSAGE" jdbcType="VARCHAR" property="message" />
+        <result column="ORAGINIZATION" jdbcType="VARCHAR" property="oraginization" />
+        <result column="CCI" jdbcType="VARCHAR" property="cci" />
+        <result column="CCA" jdbcType="VARCHAR" property="cca" />
+        <result column="CSETS" jdbcType="VARCHAR" property="csets" />
+        <result column="IPCI" jdbcType="VARCHAR" property="ipci" />
+        <result column="EXPORT_TIME" jdbcType="VARCHAR" property="exportTime" />
+        <result column="MAIN_CLASSIFIERS" jdbcType="VARCHAR" property="mainClassifiers" />
+        <result column="VICE_CLASSIFIERS" jdbcType="VARCHAR" property="viceClassifiers" />
+        <result column="FUZZY_MATCH_NAME" jdbcType="VARCHAR" property="fuzzyMatchName" />
+        <result column="FUZZY_MATCH_RESULT" jdbcType="VARCHAR" property="fuzzyMatchResult" />
+    </resultMap>
     <update id="updateIpciCciCcaCsetsById">
         update fenlei_baohu_main
         <set>
@@ -217,6 +241,27 @@
     <select id="getExcelInfo" resultType="java.lang.String">
         select id,mingcheng,type,oraginization,jinantime,ipci,cci,cca,csets from fenlei_baohu_main
     </select>
+    <select id="findDataToMapComma" resultMap="BaseResultMap">
+        select * from FENLEI_BAOHU_MAIN where (mingcheng is not null and sqr is not null) and (mingcheng is not null) and (sqr is not null)
+    </select>
+    <select id="selectIdByExactMatchMingChengAndExactMatchSqr" resultType="java.lang.String">
+        select id from fenlei_baohu_main where mingcheng = #{mingcheng} and sqr = #{sqr}  and id != #{exclude}
+    </select>
+    <select id="selectIdByFuzzyMatchMingChengAndExactMatchSqr" resultType="java.lang.String">
+        select id from fenlei_baohu_main where fuzzy_match_name = #{mingcheng} and sqr = #{sqr} and id != #{exclude}
+    </select>
+    <select id="selectIdByExactMatchMingCheng" resultType="java.lang.String">
+        select id from fenlei_baohu_main where mingcheng = #{mingcheng} and id != #{exclude}
+    </select>
+    <select id="selectIdByFuzzyMatchMingCheng" resultType="java.lang.String">
+        select id from fenlei_baohu_main where fuzzy_match_name = #{mingcheng} and id != #{exclude}
+    </select>
+    <select id="selectByExactMatchMingCheng" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
+        select * from fenlei_baohu_main where mingcheng = #{mingcheng} and id != #{id} and sqr is not null
+    </select>
+    <select id="selectByFuzzyMatchMingCheng" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
+        select * from fenlei_baohu_main where fuzzy_match_name = #{mingcheng} and id != #{id} and sqr is not null
+    </select>
 
     <update id="updateMainRule">
         update fenlei_baohu_main m set m.state=#{state},m.chuantime=#{chuantime} where m.id=#{id}
@@ -238,6 +283,26 @@
             state = #{state}
         where
             id = #{id}
+    </update>
+    <update id="updateFuzzyColumnNull">
+        update fenlei_baohu_main
+        set
+            FUZZY_MATCH_NAME = '' , FUZZY_MATCH_RESULT = ''
+    </update>
+    <update id="updateFuzzyNameColumn">
+        update fenlei_baohu_main set fuzzy_match_name = substr(replace(mingcheng,'一种',''),0,8)
+    </update>
+    <update id="updateSqrComma">
+        update fenlei_baohu_main set sqr = replace(sqr,'，',',') where sqr like '%，%'
+    </update>
+    <update id="updateSqrSemicolonCN">
+        update fenlei_baohu_main set sqr = replace(sqr,'；',',') where sqr like '%；%'
+    </update>
+    <update id="updateSqrSemicolonEN">
+         update fenlei_baohu_main set sqr = replace(sqr,';',',') where sqr like '%;%'
+    </update>
+    <update id="updateFuzzyResultById">
+        update fenlei_baohu_main set FUZZY_MATCH_RESULT = #{result} where id = #{id}
     </update>
 
 </mapper>
