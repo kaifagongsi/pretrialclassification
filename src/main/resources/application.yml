@@ -1,7 +1,9 @@
 nacos:
   config:
+    #外网测试
     server-addr: 172.17.0.17:8848
     namespace: e75ce0ad-2b34-4594-918b-b7a08047d187
+    #内网环境
     #server-addr: 10.75.109.80
     #namespace: fbb03f7c-3fdf-4b0d-9b9f-9be287cfdefc
     type: yaml
