@@ -90,6 +90,12 @@ public class UserController extends BaseController {
         return userService.updateUserinfo(fenleiBaohuUserinfo);
     }
 
+    @ApiOperation(value = "更新个人密码")
+    @PostMapping("/changePssword/{oldPassword}/{newPassword}/{loginname}")
+    public QueryResponseResult changePssword(@PathVariable("oldPassword") String oldPassword,@PathVariable("newPassword") String newPassword,@PathVariable("loginname") String loginname){
+        return userService.updatePasswordByLoinname(oldPassword,newPassword,loginname);
+    }
+
     @ApiOperation(value = "检查邮箱是否唯一")
     @PostMapping("/chenckUserEmail/{email}")
     public QueryResponseResult chenckUserEmail(@PathVariable String email){

@@ -4,7 +4,8 @@ public enum UserInfoResponseEnum implements ResultCode {
     SUCCESS(true,20201,"用户查询成功"),
     FAIL(false,10201,"用户查询失败"),
     EMAIL_FAIL(false,10202,"用户邮箱校验失败"),
-    USER_PARAMS_ERROE(false,10203,"人员参数异常，请刷新页面重新尝试");
+    USER_PARAMS_ERROE(false,10203,"人员参数异常，请刷新页面重新尝试"),
+    CHANG_PASSWORD_ERROE(false,10204,"修改密码异常，无法通过登录名和密码进行更新，请确认旧密码正常");
 
     //操作是否成功
     boolean success;

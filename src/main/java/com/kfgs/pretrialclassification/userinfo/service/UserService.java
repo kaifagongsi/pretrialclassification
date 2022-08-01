@@ -33,4 +33,6 @@ public interface UserService {
     QueryResponseResult getInitDep2s(String dep1);
 
     List<String> getUserFullNameByList(List<String> loginList);
+
+    QueryResponseResult updatePasswordByLoinname(String oldPassword, String newPassword, String loginname);
 }

@@ -27,6 +27,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -77,6 +78,17 @@ public class UserServiceImpl implements UserService {
     }
     private BoundHashOperations<String, String, Object> tokenStorage(String key) {
         return redisTemplate.boundHashOps(key);
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public QueryResponseResult updatePasswordByLoinname(String oldPassword, String newPassword, String loginname) {
+        if( 1 == userinfoMapper.updatePasswordByLoginname(oldPassword,newPassword,loginname)){
+            return new QueryResponseResult(CommonCode.SUCCESS,null);
+        }else{
+            return new QueryResponseResult(UserInfoResponseEnum.CHANG_PASSWORD_ERROE,null);
+        }
     }
 
     @Override
