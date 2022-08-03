@@ -702,7 +702,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             String updateDate = DateUtil.formatFullTime(LocalDateTime.now());
             fenleiBaohuUpdateipc.setUploadtime(updateDate);
             fenleiBaohuUpdateipc.setState("0");
-            log.info("开始包存");
+            log.info("分类号更正，开始保存至分类号更正表。。。");
             res = fenleiBaohuUpdateipcMapper.insert(fenleiBaohuUpdateipc);
             //更改result表状态
             // 发现bug  在点击更正以后，result表中的内容直接被修改了 应该只该表state 当前案件的当前人员的state
@@ -716,6 +716,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             fenleiBaohuMain.setState("9");
             res = fenleiBaohuMainMapper.updateById(fenleiBaohuMain);
             if (res == 1){
+                log.error("分类员{}，提出案件{}更正成功。",user,id);
                 return new QueryResponseResult(CommonCode.SUCCESS,null);
             }else {
                 log.error("分类员"+user+"提出案件"+id+"更正失败，无法判断原因。");
