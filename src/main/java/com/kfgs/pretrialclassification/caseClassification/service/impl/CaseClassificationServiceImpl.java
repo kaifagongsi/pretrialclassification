@@ -1,4 +1,6 @@
 package com.kfgs.pretrialclassification.caseClassification.service.impl;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -11,6 +13,7 @@ import com.kfgs.pretrialclassification.common.utils.SecurityUtil;
 import com.kfgs.pretrialclassification.dao.*;
 import com.kfgs.pretrialclassification.domain.*;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuAdjudicationExt;
+import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainFuzzyMatchABCD;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.response.*;
@@ -63,9 +66,11 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     @Override
     @Transactional
     //按状态查询分类员下案件
-    public List<FenleiBaohuMainResultExt> findCaseByState(String limit, String state, String classtype, String user,String begintime,String endtime) {
+    public IPage findCaseByState(String pageNo,String limit, String state, String classtype, String user,String begintime,String endtime) {
         Map resultMap = new HashMap();
-        List<FenleiBaohuMainResultExt> list = fenleiBaohuResultMapper.selectCaseByState(state,classtype,user,begintime,endtime);
+        Page<FenleiBaohuMainResultExt> page = new Page<>(Long.parseLong(pageNo),Long.parseLong(limit));
+        IPage<FenleiBaohuMainResultExt> iPage = fenleiBaohuResultMapper.selectCaseByState(page, state, classtype, user, begintime, endtime);
+        List<FenleiBaohuMainResultExt> list = iPage.getRecords();
         // 遍历查询结果确定已出案案件出案类型
         if (state == "2"){
             for(int i=0;i<list.size();i++){
@@ -90,7 +95,15 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                 }
             }
         }
-        return list;
+        // 判断是否有相似件
+        for(int i=0;i<list.size();i++){
+            FenleiBaohuMainResultExt fenleiBaohuMainResultExt = list.get(i);
+            FenleiBaohuMainFuzzyMatchABCD abcd = JSON.parseObject(fenleiBaohuMainResultExt.getFuzzyMatchResult(), FenleiBaohuMainFuzzyMatchABCD.class);
+            if(StringUtils.isNotBlank(abcd.getA()) || StringUtils.isNotBlank(abcd.getB())){
+                fenleiBaohuMainResultExt.setSimilarCases(true);
+            }
+        }
+        return iPage;
     }
 
     @Override
@@ -903,5 +916,20 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         QueryResult queryResult = new QueryResult();
         queryResult.setMap(map);
         return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
+    }
+
+    @Override
+    public QueryResponseResult searchFuzzyMatchResult(String id, FenleiBaohuMainFuzzyMatchABCD abcd){
+        FenleiBaohuMain main = fenleiBaohuMainMapper.selectById(id);
+        String fuzzyMatchResult = main.getFuzzyMatchResult();
+        if(StringUtils.equals(fuzzyMatchResult,JSONObject.toJSONString(abcd))){
+            List<String> list = Arrays.asList( (abcd.getA() + "," + abcd.getB()).split(","));
+            List<FenleiBaohuMain> mainList = fenleiBaohuMainMapper.selectByList(list);
+            QueryResult queryResult = new QueryResult();
+            queryResult.setList(mainList);
+            return new QueryResponseResult(CommonCode.SUCCESS,queryResult);
+        }else{
+            return new QueryResponseResult(CaseClassificationEnum.MAIN_FUZZY_MATCH_REULT,null);
+        }
     }
 }

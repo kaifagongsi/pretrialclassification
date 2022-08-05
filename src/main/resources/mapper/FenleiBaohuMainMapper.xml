@@ -242,7 +242,7 @@
         select id,mingcheng,type,oraginization,jinantime,ipci,cci,cca,csets from fenlei_baohu_main
     </select>
     <select id="findDataToMapComma" resultMap="BaseResultMap">
-        select * from FENLEI_BAOHU_MAIN where (mingcheng is not null and sqr is not null) and (mingcheng is not null) and (sqr is not null)
+        select id,mingcheng,sqr from FENLEI_BAOHU_MAIN where mingcheng is not null and sqr is not null
     </select>
     <select id="selectIdByExactMatchMingChengAndExactMatchSqr" resultType="java.lang.String">
         select id from fenlei_baohu_main where mingcheng = #{mingcheng} and sqr = #{sqr}  and id != #{exclude}
@@ -257,10 +257,24 @@
         select id from fenlei_baohu_main where fuzzy_match_name = #{mingcheng} and id != #{exclude}
     </select>
     <select id="selectByExactMatchMingCheng" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
-        select * from fenlei_baohu_main where mingcheng = #{mingcheng} and id != #{id} and sqr is not null
+        select id,mingcheng,sqr from fenlei_baohu_main where mingcheng = #{mingcheng} and id != #{id} and sqr is not null
     </select>
     <select id="selectByFuzzyMatchMingCheng" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
-        select * from fenlei_baohu_main where fuzzy_match_name = #{mingcheng} and id != #{id} and sqr is not null
+        select id,mingcheng,sqr from fenlei_baohu_main where fuzzy_match_name = #{mingcheng} and id != #{id} and sqr is not null
+    </select>
+    <select id="selectByFuzzyMatchMingChengLengLt"
+            resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
+        select id,mingcheng,sqr from fenlei_baohu_main where substr(mingcheng,0,#{length}) = #{mingcheng} and id != #{id} and sqr is not null
+    </select>
+    <select id="selectByList" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
+        select id,oraginization,mingcheng,sqr,ipci,cci,cca,csets from  fenlei_baohu_main where
+        <foreach collection="list" item="item"   close=")" open="(" separator=" or ">
+            id = #{item}
+        </foreach>
+
+    </select>
+    <select id="findDataToMapCommaWhereFuzzyResultIsNull" resultMap="BaseResultMap">
+        select id,mingcheng,sqr from FENLEI_BAOHU_MAIN where mingcheng is not null and sqr is not null and fuzzy_match_result is null
     </select>
 
     <update id="updateMainRule">
@@ -303,6 +317,9 @@
     </update>
     <update id="updateFuzzyResultById">
         update fenlei_baohu_main set FUZZY_MATCH_RESULT = #{result} where id = #{id}
+    </update>
+    <update id="updateFuzzyColumnNullWhereFuzzyColumnisNull">
+        update fenlei_baohu_main set fuzzy_match_name = substr(replace(mingcheng,'一种',''),0,8) where fuzzy_match_name is null
     </update>
 
 </mapper>

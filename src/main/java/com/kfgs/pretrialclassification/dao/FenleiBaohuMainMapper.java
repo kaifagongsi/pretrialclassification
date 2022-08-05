@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,7 +71,7 @@ public interface FenleiBaohuMainMapper extends BaseMapper<FenleiBaohuMain> {
      * @return
      */
     @MapKey("id")
-    Map<String,FenleiBaohuMain> findDataToMapComma();
+    HashMap<String,FenleiBaohuMain> findDataToMapComma();
 
     /** 将中文逗号替换为英文逗号  */
     void updateSqrComma();
@@ -100,4 +101,16 @@ public interface FenleiBaohuMainMapper extends BaseMapper<FenleiBaohuMain> {
 
     /** 查找名称模糊相同的案件 */
     List<FenleiBaohuMain> selectByFuzzyMatchMingCheng(@Param("mingcheng")String mingcheng, @Param("id")String id);
+
+    /** 查找名称前 length 位相同的案件*/
+    List<FenleiBaohuMain> selectByFuzzyMatchMingChengLengLt(@Param("mingcheng")String mingcheng, @Param("id")String id, @Param("length")int length);
+
+    /** 按照list 查找相关案件信息 */
+    List<FenleiBaohuMain> selectByList(List<String> list);
+
+    /** 返回main表中，当前时间 FUZZY_MATCH_RESULT 为空的  */
+    @MapKey("id")
+    HashMap<String, FenleiBaohuMain> findDataToMapCommaWhereFuzzyResultIsNull();
+
+    void updateFuzzyColumnNullWhereFuzzyColumnisNull();
 }

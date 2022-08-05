@@ -2,6 +2,7 @@ package com.kfgs.pretrialclassification.caseClassification.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kfgs.pretrialclassification.caseClassification.service.CaseClassificationService;
 import com.kfgs.pretrialclassification.common.controller.BaseController;
 import com.kfgs.pretrialclassification.common.log.Log;
@@ -10,14 +11,18 @@ import com.kfgs.pretrialclassification.common.utils.DateUtil;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
+import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainFuzzyMatchABCD;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
+import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.response.CommonCode;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 import com.kfgs.pretrialclassification.domain.response.QueryResult;
+import com.kfgs.pretrialclassification.fuzzymatch.service.FuzzyMatchService;
 import com.kfgs.pretrialclassification.userinfo.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -43,12 +48,21 @@ public class caseClassificationController extends BaseController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    FuzzyMatchService fuzzyMatchService;
+
     @ApiOperation("result表，按状态查询案件")
     @GetMapping("/findCaseByState")
     public Map findCaseByState(String page,String limit,String state,String beginTime,String endTime){
         Map resultMap = new HashMap();
         //获取当前登录用户信息
         Map usermap = userService.findUserInfo();
+        FenleiBaohuUserinfoExt userWorkerName = userService.findUserWorkerName();
+        String dep1 = userWorkerName.getDep1();
+        String workerName = userWorkerName.getWorkername();
+        if(dep1.contains("专利业务研究与发展部")){
+            limit = "100";
+        }
         if(null == usermap){
             return null;
         }
@@ -110,10 +124,12 @@ public class caseClassificationController extends BaseController {
                 beginTime="";
                 endTime="";
             }
-            List<FenleiBaohuMainResultExt> list = caseClassificationService.findCaseByState(limit, state, classtype, user,beginTime,endTime);
+//            List<FenleiBaohuMainResultExt> list = caseClassificationService.findCaseByState(page,limit, state, classtype, workerName,beginTime,endTime);
+            IPage iPage = caseClassificationService.findCaseByState(page, limit, state, classtype, workerName, beginTime, endTime);
             resultMap.put("code", 20000);
-            resultMap.put("data", list);
+            resultMap.put("data", iPage.getRecords());
             resultMap.put("user",user);
+            resultMap.put("total",iPage.getTotal());
         }
         return resultMap;
     }
@@ -329,6 +345,18 @@ public class caseClassificationController extends BaseController {
             cca = cca.replaceAll(" ","");
         }
         return caseClassificationService.cpcToIpc(cci,cca);
+    }
+
+    @ApiOperation("查询相似案件")
+    @PostMapping("/searchfuzzymatchresult/{id}")
+    public QueryResponseResult searchFuzzyMatchResult(@PathVariable("id")String id, @RequestBody FenleiBaohuMainFuzzyMatchABCD fenleiBaohuMainFuzzyMatchABCD){
+        return caseClassificationService.searchFuzzyMatchResult(id,fenleiBaohuMainFuzzyMatchABCD);
+    }
+
+    @ApiOperation("执行相似案件匹配，仅限于fuzzy_match_result字段为null的")
+    @GetMapping("/matchNeed")
+    public QueryResponseResult matchNeed(){
+        return fuzzyMatchService.matchNeed();
     }
 
 }

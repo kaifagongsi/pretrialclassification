@@ -6,17 +6,24 @@ import com.kfgs.pretrialclassification.common.utils.ListUtils;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuMainMapper;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainFuzzyMatchABCD;
+import com.kfgs.pretrialclassification.domain.response.CommonCode;
+import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 import lombok.experimental.var;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.text.FieldPosition;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@Slf4j
 public class FuzzyMatchService {
 
     //p
@@ -24,26 +31,85 @@ public class FuzzyMatchService {
     @Autowired
     FenleiBaohuMainMapper fenleiBaohuMainMapper;
 
+    /** 查看当前任务的执行百分比 */
+    private String progressState = "0";
+    /**
+     * 查看当前任务的执行状态 0/1
+     * 0没有执行
+     * 1表示执行中。。。
+     * */
+    private int state = 0;
+
+    public int getState(){
+        return this.state;
+    }
+    public String getProgressState(){
+        return this.progressState;
+    }
+
+    /**
+     * 补充相似案件
+     * @return
+     */
+    public QueryResponseResult matchNeed(){
+        try {
+            //0.更新fuzzy_match_name 字段
+            fenleiBaohuMainMapper.updateFuzzyColumnNullWhereFuzzyColumnisNull();
+            //1.查询不包含逗号的所有，放入map 单个申请人
+            HashMap<String, FenleiBaohuMain> withOutComma = fenleiBaohuMainMapper.findDataToMapCommaWhereFuzzyResultIsNull();
+            dealWithMap(withOutComma,true);
+            return new QueryResponseResult(CommonCode.SUCCESS,null);
+        }catch (Exception e){
+            return new QueryResponseResult(CommonCode.FAIL,null);
+        }
+    }
+
 
     @Async
     public void matchAll(){
-        //0.初始化列表
-        //0.1制空
-        fenleiBaohuMainMapper.updateFuzzyColumnNull();
-        //0.2将FUZZY_MATCH_NAME更新
-        fenleiBaohuMainMapper.updateFuzzyNameColumn();
-        //0.3将中文逗号代替为英文逗号，将中、英文封号替换为因为逗号
-        fenleiBaohuMainMapper.updateSqrComma();
-        fenleiBaohuMainMapper.updateSqrSemicolonCN();
-        fenleiBaohuMainMapper.updateSqrSemicolonEN();
-        //1.查询不包含逗号的所有，放入map 单个申请人
-        Map<String, FenleiBaohuMain> withOutComma = fenleiBaohuMainMapper.findDataToMapComma();
+        // 判断没有任务执行过
+        if(state == 0){
+            state = 1;
+            //0.初始化列表
+            //0.1制空
+            fenleiBaohuMainMapper.updateFuzzyColumnNull();
+            //0.2将FUZZY_MATCH_NAME更新
+            fenleiBaohuMainMapper.updateFuzzyNameColumn();
+            //0.3将中文逗号代替为英文逗号，将中、英文封号替换为因为逗号
+            fenleiBaohuMainMapper.updateSqrComma();
+            fenleiBaohuMainMapper.updateSqrSemicolonCN();
+            fenleiBaohuMainMapper.updateSqrSemicolonEN();
+            //1.查询不包含逗号的所有，放入map 单个申请人
+            HashMap<String, FenleiBaohuMain> withOutComma = fenleiBaohuMainMapper.findDataToMapComma();
+            log.info("待处理的集合{}:",withOutComma.size());
+            dealWithMap(withOutComma,true);
+            progressState = "100";
+            //状态重置
+            state = 0;
+        }
+    }
+
+    /**
+     *
+     * @param withOutComma 待处理的map
+     * @param isCalculation 是否进行计算
+     */
+    private void dealWithMap(HashMap<String, FenleiBaohuMain> withOutComma,   boolean isCalculation){
+        //0.当前执行的下标
+        float progressIndex = 0;
         ConcurrentHashMap<String, FenleiBaohuMain> concurrentHashMap = new ConcurrentHashMap(withOutComma);
-        System.out.println("待处理的集合："+ concurrentHashMap.size());
-        //2.处理map
-        for(Map.Entry<String,FenleiBaohuMain> map : concurrentHashMap.entrySet()){
+        //1.2格式处理
+        NumberFormat numberFormat =  NumberFormat.getNumberInstance();
+        float sumSize = (withOutComma.size() );
+        for(Iterator<Map.Entry<String, FenleiBaohuMain>> iterator = concurrentHashMap.entrySet().iterator(); iterator.hasNext();  ){
+            Map.Entry<String, FenleiBaohuMain> map = iterator.next();
+            if(isCalculation){
+                this.progressState = numberFormat.format(progressIndex / sumSize * 100);
+            }
             //所有相似案件的list
             List<String> moHuList = new ArrayList<>();
+            //把自己加进去
+            moHuList.add(map.getKey());
             FenleiBaohuMainFuzzyMatchABCD abcd = new FenleiBaohuMainFuzzyMatchABCD();
             FenleiBaohuMain entity   = map.getValue();
             // A类 申请人相同 名称相同
@@ -55,7 +121,8 @@ public class FuzzyMatchService {
             // C类 申请人不同 名称模糊相同
             StringBuilder d = new StringBuilder();
             //找到名称相同的
-            List<FenleiBaohuMain> nameEqualsList = fenleiBaohuMainMapper.selectByExactMatchMingCheng(entity.getMingcheng(),entity.getId());
+            String mingCheng = entity.getMingcheng();
+            List<FenleiBaohuMain> nameEqualsList = fenleiBaohuMainMapper.selectByExactMatchMingCheng(mingCheng,entity.getId());
             List<String> firstList = new ArrayList<>();
             for(FenleiBaohuMain main : nameEqualsList){
                 boolean equals = Arrays.equals(entity.getSqr().split(","), main.getSqr().split(","));
@@ -69,11 +136,14 @@ public class FuzzyMatchService {
                 moHuList.add(main.getId());
             }
             //找到名称模糊相同的
-            String mingcheng = entity.getMingcheng().replace("一种","");
-            if(mingcheng.length() >=8){
-                mingcheng = mingcheng.substring(0,8);
+            mingCheng = entity.getMingcheng().replace("一种","");
+            List<FenleiBaohuMain> nameLikeList = null;
+            if(mingCheng.length() >=8){
+                mingCheng = mingCheng.substring(0,8);
+                nameLikeList = fenleiBaohuMainMapper.selectByFuzzyMatchMingCheng(mingCheng,entity.getId());
+            }else{
+                nameLikeList = fenleiBaohuMainMapper.selectByFuzzyMatchMingChengLengLt(mingCheng,entity.getId(),mingCheng.length());
             }
-            List<FenleiBaohuMain> nameLikeList = fenleiBaohuMainMapper.selectByFuzzyMatchMingCheng(mingcheng,entity.getId());
             nameLikeList.removeAll(nameEqualsList);
             for(FenleiBaohuMain main : nameLikeList){
                 System.out.println(entity.getSqr() + "---" + entity.getId()  + "=============="+ main.getSqr() + "---"+ main.getId());
@@ -106,27 +176,6 @@ public class FuzzyMatchService {
             }else{
                 abcd.setD("");
             }
-            /*if(entity.getSqr().contains(",")){
-            }else{
-                //A 申请人相同 + 名称相同
-                List<String> firstList = fenleiBaohuMainMapper.selectIdByExactMatchMingChengAndExactMatchSqr(entity.getMingcheng(), entity.getSqr(),entity.getId());
-                abcd.setA(StringUtils.join(firstList, ","));
-                moHuList.addAll(firstList);
-                // B 申请人相同 + 名称去掉一种，前八个字符相同
-                List<String> secondList = fenleiBaohuMainMapper.selectIdByFuzzyMatchMingChengAndExactMatchSqr(entity.getMingcheng().replace("一种","").substring(0,8),entity.getSqr(),entity.getId());
-                secondList.removeAll(firstList);
-                abcd.setB(StringUtils.join(secondList, ","));
-                moHuList.addAll(secondList);
-                // C 名称相同 申请人不同
-                firstList = fenleiBaohuMainMapper.selectIdByExactMatchMingCheng(entity.getMingcheng(),entity.getId());
-                abcd.setC(StringUtils.join(firstList, ","));
-                moHuList.addAll(firstList);
-                // D 名称模糊相同 申请人不同
-                secondList = fenleiBaohuMainMapper.selectIdByFuzzyMatchMingCheng(entity.getMingcheng().replace("一种","").substring(0,8),entity.getId());
-                secondList.removeAll(firstList);
-                abcd.setD(StringUtils.join(secondList,","));
-                moHuList.addAll(secondList);
-            }*/
             //相似list
             moHuList.add(entity.getId());
             //list去重
@@ -148,7 +197,10 @@ public class FuzzyMatchService {
                 //更新
                 fenleiBaohuMainMapper.updateFuzzyResultById(JSONObject.toJSONString(temp),str);
                 //从map中移除
-                withOutComma.remove(str);
+                FenleiBaohuMain remove = concurrentHashMap.remove(str);
+                if(remove!=null && isCalculation){
+                    progressIndex++;
+                }
             }
         }
     }

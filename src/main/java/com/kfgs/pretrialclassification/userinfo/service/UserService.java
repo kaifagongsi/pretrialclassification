@@ -9,6 +9,9 @@ import java.util.Map;
 
 public interface UserService {
     Map findUserInfo();
+
+    FenleiBaohuUserinfoExt findUserWorkerName();
+
     //登录时要验证的用户名密码
     FenleiBaohuUserinfoExt validateUsername(String username);
 

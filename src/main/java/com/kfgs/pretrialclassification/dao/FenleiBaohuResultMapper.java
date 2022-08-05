@@ -35,9 +35,9 @@ public interface FenleiBaohuResultMapper extends BaseMapper<FenleiBaohuResult> {
 
     List<FenleiBaohuResult> selectListByID(@Param("id")String id);
 
-    //IPage<FenleiBaohuMainResultExt> selectCaseByState(IPage<FenleiBaohuMainResultExt> page, @Param("state") String state,@Param("classtype") String classtype, @Param("user") String user,@Param("begintime") String begintime, @Param("endtime") String endtime);
+    IPage<FenleiBaohuMainResultExt> selectCaseByState(IPage<FenleiBaohuMainResultExt> page, @Param("state") String state,@Param("classtype") String classtype, @Param("user") String user,@Param("begintime") String begintime, @Param("endtime") String endtime);
 
-    List<FenleiBaohuMainResultExt> selectCaseByState(@Param("state") String state,@Param("classtype") String classtype, @Param("user") String user,@Param("begintime") String begintime, @Param("endtime") String endtime);
+//    List<FenleiBaohuMainResultExt> selectCaseByState(@Param("state") String state,@Param("classtype") String classtype, @Param("user") String user,@Param("begintime") String begintime, @Param("endtime") String endtime);
 
     Map selectCaseInfo (@Param("id")String id, @Param("worker") String worker);
 

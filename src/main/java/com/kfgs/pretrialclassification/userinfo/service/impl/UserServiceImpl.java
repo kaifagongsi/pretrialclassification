@@ -138,6 +138,29 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public FenleiBaohuUserinfoExt findUserWorkerName(){
+        // 从SecurityContextHolder中获取到，当前登录的用户信息。
+        FenleiBaohuUserinfoExt userDetails = null;
+        try{
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            //未登录
+            if("anonymousUser".equalsIgnoreCase(principal.toString())){ //anonymousUser
+                log.error("当前用户未登录");
+                return null;
+            }
+            userDetails = (FenleiBaohuUserinfoExt) principal;
+            // 根据用户Id，获取用户详细信息。    //   getUserinfoByLoginName
+            //getUserinfoByLoginNameWithRole  改表以后携带权限查询
+            //getUserinfoByLoginName         改表之前不带权限查询
+            return userinfoMapper.getUserinfoByLoginNameWithRole(userDetails.getLoginname()).get(0);
+        }catch (Exception e){
+            log.error("当前用户未登录");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     @Override
     public QueryResponseResult findUserList(String pageNo,String pageSize,Map map) {
