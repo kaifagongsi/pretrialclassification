@@ -67,7 +67,6 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     @Transactional
     //按状态查询分类员下案件
     public IPage findCaseByState(String pageNo,String limit, String state, String classtype, String user,String begintime,String endtime) {
-        Map resultMap = new HashMap();
         Page<FenleiBaohuMainResultExt> page = new Page<>(Long.parseLong(pageNo),Long.parseLong(limit));
         IPage<FenleiBaohuMainResultExt> iPage = fenleiBaohuResultMapper.selectCaseByState(page, state, classtype, user, begintime, endtime);
         List<FenleiBaohuMainResultExt> list = iPage.getRecords();

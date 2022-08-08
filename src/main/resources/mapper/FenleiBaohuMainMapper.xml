@@ -257,14 +257,14 @@
         select id from fenlei_baohu_main where fuzzy_match_name = #{mingcheng} and id != #{exclude}
     </select>
     <select id="selectByExactMatchMingCheng" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
-        select id,mingcheng,sqr from fenlei_baohu_main where mingcheng = #{mingcheng} and id != #{id} and sqr is not null
+        select id,mingcheng,sqr,oraginization,mingcheng,sqr,ipci,cci,cca,csets from fenlei_baohu_main where mingcheng = #{mingcheng} and id != #{id} and sqr is not null
     </select>
     <select id="selectByFuzzyMatchMingCheng" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
-        select id,mingcheng,sqr from fenlei_baohu_main where fuzzy_match_name = #{mingcheng} and id != #{id} and sqr is not null
+        select id,mingcheng,sqr,oraginization,mingcheng,sqr,ipci,cci,cca,csets from fenlei_baohu_main where fuzzy_match_name = #{mingcheng} and id != #{id} and sqr is not null
     </select>
     <select id="selectByFuzzyMatchMingChengLengLt"
             resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
-        select id,mingcheng,sqr from fenlei_baohu_main where substr(mingcheng,0,#{length}) = #{mingcheng} and id != #{id} and sqr is not null
+        select id,mingcheng,sqr,oraginization,mingcheng,sqr,ipci,cci,cca,csets from fenlei_baohu_main where substr(mingcheng,0,#{length}) = #{mingcheng} and id != #{id} and sqr is not null
     </select>
     <select id="selectByList" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
         select id,oraginization,mingcheng,sqr,ipci,cci,cca,csets from  fenlei_baohu_main where
