@@ -215,9 +215,9 @@ public class FuzzyMatchService {
      * @param list 待处理的list
      * @param fileName 文件名称
      */
-    public void matchExcel(List<FuzzyMatchReadExcel> list,String fileName) throws IOException {
+    public String matchExcel(List<FuzzyMatchReadExcel> list,String fileName) throws IOException {
         ArrayList<FuzzyMatchWriteExcel>  writeExcelList = new ArrayList<>();
-
+        String resultPath =  fileSve + fileName.replaceAll(".xls","").replaceAll(".xlsx","") + "_匹配后文件.xlsx";
         for(FuzzyMatchReadExcel item : list){
             FuzzyMatchWriteExcel writeExcelModel = new FuzzyMatchWriteExcel();
             BeanUtils.copyProperties(item,writeExcelModel);
@@ -277,7 +277,7 @@ public class FuzzyMatchService {
         }
         ClassPathResource resource = new ClassPathResource("已分类案件相似匹配.xlsx");
         InputStream inputStream = resource.getInputStream();
-        fileName = fileName.replaceAll("xls","").replaceAll("xlsx","");
-        EasyExcel.write(fileSve + fileName + "匹配后文件.xlsx",FuzzyMatchWriteExcel.class).withTemplate(inputStream).sheet().needHead(false).doWrite(writeExcelList);
+        EasyExcel.write(resultPath,FuzzyMatchWriteExcel.class).withTemplate(inputStream).sheet().needHead(false).doWrite(writeExcelList);
+        return resultPath;
     }
 }

@@ -20,6 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +70,9 @@ public class FuzzyMatchController {
     }
 
     @PostMapping("/uploadFile")
-    public QueryResponseResult uploadFile(MultipartFile file){
+    public void uploadFile(MultipartFile file, HttpServletResponse response){
+        FileInputStream in = null;
+        OutputStream out = null;
         try {
             List<FuzzyMatchReadExcel> list = new ArrayList<>();
             MultipartFileToFile.multipartFileToFile(fileSve,file);
@@ -79,13 +85,41 @@ public class FuzzyMatchController {
                 public void doAfterAllAnalysed(AnalysisContext analysisContext) {
                 }
             }).sheet().doRead();
-            fuzzyMatchService.matchExcel(list,file.getOriginalFilename());
-            return new QueryResponseResult(CommonCode.SUCCESS,null);
-        }catch (Exception e){
-            e.printStackTrace();
-            return new QueryResponseResult(CommonCode.FAIL,null);
-        }
+            //0.处理文件
+            String filePath = fuzzyMatchService.matchExcel(list,file.getOriginalFilename());
 
+            //1.开始响应文件
+            String filename = filePath.substring(filePath.lastIndexOf("/")+1);
+            filename = new String(filename.getBytes("iso8859-1"),"UTF-8");
+
+            String downloadpath = filePath;
+            //如果文件不存在
+			/*if(!file.exists()){
+			    return false;
+			}*/
+            //设置响应头，控制浏览器下载该文件
+            response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
+            //读取要下载的文件，保存到文件输入流
+            in= new FileInputStream(downloadpath);
+            //创建输出流
+            out= response.getOutputStream();
+            //缓存区
+            byte buffer[] = new byte[1024];
+            int len = 0;
+            //循环将输入流中的内容读取到缓冲区中
+            while((len = in.read(buffer)) > 0){
+                out.write(buffer, 0, len);
+            }
+         }catch (Exception e){
+            e.printStackTrace();
+         } finally {
+            try {
+                in.close();
+                out.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
     }
 
 
