@@ -362,13 +362,10 @@
                 </configuration>
             </plugin>
             <!--   热部署所需的插件  -->
-            <!--<plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <fork>true</fork>
-                </configuration>
-            </plugin>-->
+            </plugin>
         </plugins>
     </build>
 
