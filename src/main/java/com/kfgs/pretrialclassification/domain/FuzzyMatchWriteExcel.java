@@ -29,28 +29,32 @@ public class FuzzyMatchWriteExcel {
 
     /**  申请主题 */
     @ExcelProperty(index = 5)
+    private String bhzxfmmc;
+
+    /**  申请主题 */
+    @ExcelProperty(index = 6)
     private String sqzt;
 
     /**  ipc */
-    @ExcelProperty(index = 6)
+    @ExcelProperty(index = 7)
     private String ipc;
 
     /**  cci */
-    @ExcelProperty(index = 7)
+    @ExcelProperty(index = 8)
     private String cci;
     /**  cca */
-    @ExcelProperty(index = 8)
+    @ExcelProperty(index = 9)
     private String cca;
     /**  csets */
-    @ExcelProperty(index = 9)
+    @ExcelProperty(index = 10)
     private String csets;
     /**  分类员 */
-    @ExcelProperty(index = 10)
-    private String fly;
+   /* @ExcelProperty(index = 11)
+    private String fly;*/
     /**  匹配类型 */
-    @ExcelProperty(index = 11)
+    @ExcelProperty(index = 12)
     private String pplx;
     /**  出案日期 */
-    @ExcelProperty(index = 12)
+    @ExcelProperty(index = 11)
     private String carq;
 }

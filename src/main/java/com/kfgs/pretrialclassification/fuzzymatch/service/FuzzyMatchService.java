@@ -234,12 +234,13 @@ public class FuzzyMatchService {
                 boolean equals = Arrays.equals(item.getSqr().split(","), main.getSqr().split(","));
                 writeExcelModel.setYsbh(main.getId());
                 writeExcelModel.setBhzx(main.getOraginization());
-                writeExcelModel.setFmmc(main.getMingcheng());
+                writeExcelModel.setBhzxfmmc(main.getMingcheng());
                 writeExcelModel.setSqzt(main.getSqr());
                 writeExcelModel.setIpc(main.getIpci());
                 writeExcelModel.setCci(main.getCci());
                 writeExcelModel.setCca(main.getCca());
                 writeExcelModel.setCsets(main.getCsets());
+                writeExcelModel.setCarq(main.getChuantime()+ "");
                 //相同表示，名称相同+申请人相同
                 if(equals){
                     writeExcelModel.setPplx("名称相同，并且申请人相同");
@@ -260,12 +261,13 @@ public class FuzzyMatchService {
             for(FenleiBaohuMain main : nameLikeList){
                 writeExcelModel.setYsbh(main.getId());
                 writeExcelModel.setBhzx(main.getOraginization());
-                writeExcelModel.setFmmc(main.getMingcheng());
+                writeExcelModel.setBhzxfmmc(main.getMingcheng());
                 writeExcelModel.setSqzt(main.getSqr());
                 writeExcelModel.setIpc(main.getIpci());
                 writeExcelModel.setCci(main.getCci());
                 writeExcelModel.setCca(main.getCca());
                 writeExcelModel.setCsets(main.getCsets());
+                writeExcelModel.setCarq(main.getChuantime()+ "");
                 //相同表示，名称模糊相同+申请人相同
                 if(Arrays.equals(item.getSqr().split(","), main.getSqr().split(","))){
                     writeExcelModel.setPplx("名称模糊相同，并且申请人相同");

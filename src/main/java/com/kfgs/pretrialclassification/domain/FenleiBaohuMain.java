@@ -71,7 +71,7 @@ public class FenleiBaohuMain implements Serializable {
     /**
      * 出案日期（最后）
      */
-        @TableField("CHUANTIME")
+    @TableField("CHUANTIME")
     private Long chuantime;
 
     /**
