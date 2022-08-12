@@ -127,8 +127,6 @@ public class FuzzyMatchService {
             StringBuilder b = new StringBuilder();
             // C类 申请人不同 名称相同
             StringBuilder c = new StringBuilder();
-            // C类 申请人不同 名称模糊相同
-            StringBuilder d = new StringBuilder();
             //找到名称相同的
             String mingCheng = entity.getMingcheng();
             List<FenleiBaohuMain> nameEqualsList = fenleiBaohuMainMapper.selectByExactMatchMingCheng(mingCheng,entity.getId());
@@ -156,8 +154,6 @@ public class FuzzyMatchService {
                 //相同表示，名称模糊相同+申请人相同
                 if(Arrays.equals(entity.getSqr().split(","), main.getSqr().split(","))){
                     b.append(main.getId()).append(",");
-                }else{
-                    d.append(main.getId()).append(",");
                 }
                 moHuList.add(main.getId());
             }
@@ -176,11 +172,6 @@ public class FuzzyMatchService {
             }else{
                 abcd.setC("");
             }
-            if(StringUtils.isNotEmpty(d.toString())){
-                abcd.setD(d.toString().substring(0,d.toString().length() - 1));
-            }else{
-                abcd.setD("");
-            }
             //相似list
             moHuList.add(entity.getId());
             //list去重
@@ -196,8 +187,6 @@ public class FuzzyMatchService {
                     temp.setB(temp.getB().replace(str,entity.getId()));
                 }else if(temp.getC().contains(str)){
                     temp.setC(temp.getC().replace(str,entity.getId()));
-                }else if(abcd.getD().contains(str)){
-                    temp.setD(temp.getD().replace(str,entity.getId()));
                 }
                 //更新
                 fenleiBaohuMainMapper.updateFuzzyResultById(JSONObject.toJSONString(temp),str);

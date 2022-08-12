@@ -98,7 +98,8 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         for(int i=0;i<list.size();i++){
             FenleiBaohuMainResultExt fenleiBaohuMainResultExt = list.get(i);
             FenleiBaohuMainFuzzyMatchABCD abcd = JSON.parseObject(fenleiBaohuMainResultExt.getFuzzyMatchResult(), FenleiBaohuMainFuzzyMatchABCD.class);
-            if(StringUtils.isNotBlank(abcd.getA()) || StringUtils.isNotBlank(abcd.getB())){
+            //2022-08-12 16:36:27 王磊-2 确认将名称完全一致，申请人不一致进行提醒
+            if(StringUtils.isNotBlank(abcd.getA()) || StringUtils.isNotBlank(abcd.getB()) || StringUtils.isNotBlank(abcd.getC())){
                 fenleiBaohuMainResultExt.setSimilarCases(true);
             }
         }
@@ -922,7 +923,8 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         FenleiBaohuMain main = fenleiBaohuMainMapper.selectById(id);
         String fuzzyMatchResult = main.getFuzzyMatchResult();
         if(StringUtils.equals(fuzzyMatchResult,JSONObject.toJSONString(abcd))){
-            List<String> list = Arrays.asList( (abcd.getA() + "," + abcd.getB()).split(","));
+            /** 20220812 16:51:54  王磊-2 提出需要将 名称完成一直，申请人不一致进行提示显示 */
+            List<String> list = Arrays.asList( (abcd.getA() + "," + abcd.getB() + "," + abcd.getC()).split(","));
             List<FenleiBaohuMain> mainList = fenleiBaohuMainMapper.selectByList(list);
             QueryResult queryResult = new QueryResult();
             queryResult.setList(mainList);

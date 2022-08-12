@@ -267,10 +267,13 @@
         select id,mingcheng,sqr,oraginization,mingcheng,sqr,ipci,cci,cca,csets,chuantime from fenlei_baohu_main where substr(mingcheng,0,#{length}) = #{mingcheng} and id != #{id} and sqr is not null
     </select>
     <select id="selectByList" resultType="com.kfgs.pretrialclassification.domain.FenleiBaohuMain">
-        select id,oraginization,mingcheng,sqr,ipci,cci,cca,csets,chuantime from  fenlei_baohu_main where
-        <foreach collection="list" item="item"   close=")" open="(" separator=" or ">
-            id = #{item}
-        </foreach>
+        select id,oraginization,mingcheng,sqr,ipci,cci,cca,csets,chuantime from  fenlei_baohu_main
+        <where>
+            <foreach collection="list" item="item"   close=")" open="(" separator=" or ">
+                id = #{item}
+            </foreach>
+        </where>
+
 
     </select>
     <select id="findDataToMapCommaWhereFuzzyResultIsNull" resultMap="BaseResultMap">
