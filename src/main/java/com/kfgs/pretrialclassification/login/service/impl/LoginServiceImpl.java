@@ -48,7 +48,8 @@ public class LoginServiceImpl implements LoginService {
         UsernamePasswordAuthenticationToken upToken = new UsernamePasswordAuthenticationToken(username, password);
         Authentication authentication = authenticationManager.authenticate(upToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        FenleiBaohuUserinfoExt userDetails = (FenleiBaohuUserinfoExt) userDetailsService.loadUserByUsername(username);
+        FenleiBaohuUserinfoExt userDetails = (FenleiBaohuUserinfoExt) authentication.getPrincipal();
+//        FenleiBaohuUserinfoExt userDetails = (FenleiBaohuUserinfoExt) userDetailsService.loadUserByUsername(username);
         String token = jwtTokenUtils.generateToken(userDetails);
         log.info("redis存储：userDetails: {}" +  userDetails);
         BoundHashOperations<String, String, Object> stringStringObjectBoundHashOperations = tokenStorage();
