@@ -154,8 +154,12 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
 
 
     @Override
-    public boolean sendEmail(String[] ids) {
-         return sendEmailService.sendEmail(ids);
+    public boolean sendEmail(String[] ids)  {
+        try {
+            return sendEmailService.sendEmail(ids);
+        }catch (Exception e){
+            return false;
+        }
     }
 
 }

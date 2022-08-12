@@ -3,6 +3,8 @@ package com.kfgs.pretrialclassification.sendEmail.service.impl;
 
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.kfgs.pretrialclassification.common.utils.FreeMarkerUtils;
+import com.kfgs.pretrialclassification.common.utils.SimpleDateFormateUtils;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuMainMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuUserinfoMapper;
@@ -151,29 +153,19 @@ public class SendEmailService {
      * @param ids
      * @return
      */
-    public boolean sendEmail(String[] ids) {
+    public boolean sendEmail(String[] ids) throws Exception {
         List<FenleiBaohuResultExt> fenleiBaohuResultExts = fenleiBaohuResultMapper.AfterDeploymentSendEmail(ids);
-        List<String> to = new ArrayList<>();
-        List<String> cc = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
-        List<String> adjudicatorList = new ArrayList<>();
-        int state = -1;
-        sb.append("&nbsp;&nbsp;&nbsp;<table  border='1px' cellpadding='5px' style='font-size:14px;border-collapse: collapse;margin: 20px; '><thead><tr><th>预审编号</th><th>部门</th><th>主分人</th><th>发明名称</th><th>粗分号</th><th>分配时间</th></tr></thead><tbody>");
+        List<String> to = new ArrayList<>(), cc = new ArrayList<>(),adjudicatorList = new ArrayList<>();
         for (int i = 0; i < fenleiBaohuResultExts.size(); i++) {
             FenleiBaohuResultExt r = fenleiBaohuResultExts.get(i);
-            String fenpeitime = r.getFenpeitime();
-            // 添加收件人
+            /** 添加收件人 */
             to.add(r.getEmail());
             if(StringUtils.isNotEmpty(r.getAdjudicator())){
                 adjudicatorList.add(r.getAdjudicator());
             }else{
                 log.error("当前人员的裁决组长为空，"+ r.toString());
             }
-
-            /**
-             * 20210317修改
-             */
-            // 添加抄送人
+            /** 添加抄送人 20210317修改  */
             if("三部".equals(r.getDep1())){
                 cc.addAll(Arrays.asList(toSanBu.split(",")));
             }else if ("四部".equals(r.getDep1())){
@@ -183,25 +175,9 @@ public class SendEmailService {
             }else if ("二部".equals(r.getDep1())){
                 cc.addAll(Arrays.asList(toErBu.split(",")));
             }
-            /*if("FL".equals(r.getOrgname()) && state != 2){//只有分类
-                state = 1;
-            }else if("JG".equals(r.getOrgname()) && state !=1){//只有加工
-                state = 2;
-            }else{
-                state = 3;
-            }*/
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
-                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMddHHmmss");
-                sb.append("<tr><td>"+ r.getId() + "</td><td>" + r.getDep1() + r.getDep2() + "</td><td>" + r.getWorker() + "</td><td>" + r.getMingcheng() + "</td><td>" + r.getSimpleclasscode()+ "</td><td>" +  sdf.format(sdf1.parse(fenpeitime)) + "</td></tr>" );
-            } catch (java.text.ParseException e1) {
-                e1.printStackTrace();
-            }
+            r.setFenpeitime(SimpleDateFormateUtils.getFormat(r.getFenpeitime()));
         }
-        sb.append("</tbody></table>");
-
-        String content = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;各位领导，以下是今天新分配的保护中心案件列表! &nbsp;&nbsp;&nbsp;请注意查收！" + sb.toString();
-        // 首先添加规划部门
+        /** 首先添加规划部门 */
         cc.addAll(Arrays.asList(toGuiHua.split(",")));
         // 20210520 新增案件对应人员的裁决组长为收件人
         List<String> adjudicatorEmailList = fenleiBaohuUserinfoMapper.selectEmailByList(adjudicatorList);
@@ -209,6 +185,7 @@ public class SendEmailService {
         //list 去重
         to = to.stream().distinct().collect(Collectors.toList());
         cc = cc.stream().distinct().collect(Collectors.toList());
+        String content = FreeMarkerUtils.newlyAssignedCases(fenleiBaohuResultExts);
         //发送邮件
         return mailService.sendHtmlMail(to.toArray(new String[to.size()]),cc.toArray(new String[cc.size()]),"保护中心案件列表", content);
     }
@@ -371,7 +348,7 @@ public class SendEmailService {
      * 查询数据库中还未完成的案件（状态不为2）
      * @return
      */
-    private HashMap<String, List<EmailIntervalEntity>> findAll() {
+    public HashMap<String, List<EmailIntervalEntity>> findAll() {
         List<EmailIntervalEntity> all = fenleiBaohuResultMapper.findAll();
         HashMap<String,List<EmailIntervalEntity>> map = new HashMap<String, List<EmailIntervalEntity>>();
         for(EmailIntervalEntity b : all){
