@@ -158,6 +158,7 @@ public class CaseAllocationServiceImpl implements CaseAllocationService {
         try {
             return sendEmailService.sendEmail(ids);
         }catch (Exception e){
+            e.printStackTrace();
             return false;
         }
     }
