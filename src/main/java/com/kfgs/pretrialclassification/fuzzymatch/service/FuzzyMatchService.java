@@ -208,18 +208,11 @@ public class FuzzyMatchService {
         ArrayList<FuzzyMatchWriteExcel>  writeExcelList = new ArrayList<>();
         String resultPath =  fileSve + fileName.replaceAll(".xls","").replaceAll(".xlsx","") + "_匹配后文件.xlsx";
         for(FuzzyMatchReadExcel item : list){
-            FuzzyMatchWriteExcel writeExcelModel = new FuzzyMatchWriteExcel();
-            BeanUtils.copyProperties(item,writeExcelModel);
             //0.名称匹配
             List<FenleiBaohuMain> nameEqualsList = fenleiBaohuMainMapper.selectByExactMatchMingCheng(item.getFmmc(), item.getSqh());
-            /**
-             * A类 申请人相同 名称相同
-             * B类 申请人相同 名称模糊相同
-             * C类 申请人不同 名称相同
-             * D类 申请人不同 名称模糊相同
-             */
-//            StringBuilder a = new StringBuilder(),b = new StringBuilder(),c = new StringBuilder(),d = new StringBuilder();
             for(FenleiBaohuMain main : nameEqualsList){
+                FuzzyMatchWriteExcel writeExcelModel = new FuzzyMatchWriteExcel();
+                BeanUtils.copyProperties(item,writeExcelModel);
                 boolean equals = Arrays.equals(item.getSqr().split(","), main.getSqr().split(","));
                 writeExcelModel.setYsbh(main.getId());
                 writeExcelModel.setBhzx(main.getOraginization());
@@ -236,6 +229,7 @@ public class FuzzyMatchService {
                 }else{
                     writeExcelModel.setPplx("名称相同，申请人不同");
                 }
+                writeExcelList.add(writeExcelModel);
             }
             //找到名称模糊相同的
             String mingCheng = item.getFmmc().replace("一种","");
@@ -247,24 +241,27 @@ public class FuzzyMatchService {
                 nameLikeList = fenleiBaohuMainMapper.selectByFuzzyMatchMingChengLengLt(mingCheng,item.getSqh(),mingCheng.length());
             }
             nameLikeList.removeAll(nameEqualsList);
+
             for(FenleiBaohuMain main : nameLikeList){
-                writeExcelModel.setYsbh(main.getId());
-                writeExcelModel.setBhzx(main.getOraginization());
-                writeExcelModel.setBhzxfmmc(main.getMingcheng());
-                writeExcelModel.setSqzt(main.getSqr());
-                writeExcelModel.setIpc(main.getIpci());
-                writeExcelModel.setCci(main.getCci());
-                writeExcelModel.setCca(main.getCca());
-                writeExcelModel.setCsets(main.getCsets());
-                writeExcelModel.setCarq(main.getChuantime()+ "");
+                FuzzyMatchWriteExcel writeExcelNameLikeModel = new FuzzyMatchWriteExcel();
+                BeanUtils.copyProperties(item,writeExcelNameLikeModel);
+                writeExcelNameLikeModel.setYsbh(main.getId());
+                writeExcelNameLikeModel.setBhzx(main.getOraginization());
+                writeExcelNameLikeModel.setBhzxfmmc(main.getMingcheng());
+                writeExcelNameLikeModel.setSqzt(main.getSqr());
+                writeExcelNameLikeModel.setIpc(main.getIpci());
+                writeExcelNameLikeModel.setCci(main.getCci());
+                writeExcelNameLikeModel.setCca(main.getCca());
+                writeExcelNameLikeModel.setCsets(main.getCsets());
+                writeExcelNameLikeModel.setCarq(main.getChuantime()+ "");
                 //相同表示，名称模糊相同+申请人相同
                 if(Arrays.equals(item.getSqr().split(","), main.getSqr().split(","))){
-                    writeExcelModel.setPplx("名称模糊相同，并且申请人相同");
+                    writeExcelNameLikeModel.setPplx("名称模糊相同，并且申请人相同");
                 }else{
-                    writeExcelModel.setPplx("名称模糊相同，申请人不同");
+                    writeExcelNameLikeModel.setPplx("名称模糊相同，申请人不同");
                 }
+                writeExcelList.add(writeExcelNameLikeModel);
             }
-            writeExcelList.add(writeExcelModel);
         }
         ClassPathResource resource = new ClassPathResource("已分类案件相似匹配.xlsx");
         InputStream inputStream = resource.getInputStream();
