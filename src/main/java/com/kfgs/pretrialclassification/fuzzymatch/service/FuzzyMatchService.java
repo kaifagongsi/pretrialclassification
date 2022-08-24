@@ -206,9 +206,12 @@ public class FuzzyMatchService {
      */
     public String matchExcel(List<FuzzyMatchReadExcel> list,String fileName) throws IOException {
         ArrayList<FuzzyMatchWriteExcel>  writeExcelList = new ArrayList<>();
+        ArrayList<FuzzyMatchWriteExcel>  writeExcelTempList = new ArrayList<>();
         String resultPath =  fileSve + fileName.replaceAll(".xls","").replaceAll(".xlsx","") + "_匹配后文件.xlsx";
         for(FuzzyMatchReadExcel item : list){
             //0.名称匹配
+            // 判断是否名称相同 是否已存在
+            int size = writeExcelList.size();
             List<FenleiBaohuMain> nameEqualsList = fenleiBaohuMainMapper.selectByExactMatchMingCheng(item.getFmmc(), item.getSqh());
             for(FenleiBaohuMain main : nameEqualsList){
                 FuzzyMatchWriteExcel writeExcelModel = new FuzzyMatchWriteExcel();
@@ -226,11 +229,29 @@ public class FuzzyMatchService {
                 //相同表示，名称相同+申请人相同
                 if(equals){
                     writeExcelModel.setPplx("名称相同，并且申请人相同");
+                    writeExcelList.add(writeExcelModel);
                 }else{
                     writeExcelModel.setPplx("名称相同，申请人不同");
+                    writeExcelTempList.add(writeExcelModel);
                 }
-                writeExcelList.add(writeExcelModel);
             }
+            /**
+             * 检查看第一种情况有没有
+             *   有的list的size会变化，会进入第二个if
+             *   没有将第二种情况，加进去，然后清空templist
+             *      在检查看第二种清空，有没有
+             *          有的list的size会变化，直接退出
+             *          没有就继续
+             */
+            if(writeExcelList.size() == size){
+                writeExcelList.addAll(writeExcelTempList);
+                writeExcelTempList.clear();
+            }
+            if(writeExcelList.size() != size){
+                continue;
+            }
+            // 执行到此处说明list没有变化
+            size = writeExcelList.size();
             //找到名称模糊相同的
             String mingCheng = item.getFmmc().replace("一种","");
             List<FenleiBaohuMain> nameLikeList = null;
@@ -257,11 +278,18 @@ public class FuzzyMatchService {
                 //相同表示，名称模糊相同+申请人相同
                 if(Arrays.equals(item.getSqr().split(","), main.getSqr().split(","))){
                     writeExcelNameLikeModel.setPplx("名称模糊相同，并且申请人相同");
-                }else{
+                    writeExcelList.add(writeExcelNameLikeModel);
+                 }else{
                     writeExcelNameLikeModel.setPplx("名称模糊相同，申请人不同");
-                }
-                writeExcelList.add(writeExcelNameLikeModel);
+                    writeExcelTempList.add(writeExcelNameLikeModel);
+                 }
             }
+            // 如果第三种情况没有，则将第四种情况加入，并见tempList清空
+            if(writeExcelList.size() == size){
+                writeExcelList.addAll(writeExcelTempList);
+                writeExcelTempList.clear();
+            }
+            writeExcelTempList.clear();
         }
         ClassPathResource resource = new ClassPathResource("已分类案件相似匹配.xlsx");
         InputStream inputStream = resource.getInputStream();

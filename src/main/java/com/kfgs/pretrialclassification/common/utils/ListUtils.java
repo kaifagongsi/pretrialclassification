@@ -96,12 +96,20 @@ public class ListUtils {
         return result;
     }
 
-    //list 去重
+    /**
+     * list 去重
+     * @param list 待去重的list
+     * @return 返回新的list列表
+     */
     public static List<String> delRepeatReturnList(List<String> list){
         return list.stream().distinct().collect(Collectors.toList());
     }
 
-    //list 去重
+    /**
+     *  list 去重
+     * @param list 待去重的list
+     * @return 返回String字符串，以逗号分隔
+     */
     public static String delRepeatReturnString(List<String> list){
         List<String> collect = list.stream().distinct().collect(Collectors.toList());
         return collect.stream().collect(Collectors.joining(","));
