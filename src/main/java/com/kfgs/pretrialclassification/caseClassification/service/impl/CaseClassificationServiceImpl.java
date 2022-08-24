@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.caseArbiter.service.CaseArbiterService;
 import com.kfgs.pretrialclassification.caseClassification.service.CaseClassificationService;
-import com.kfgs.pretrialclassification.common.utils.AdjudicationBusinessUtils;
-import com.kfgs.pretrialclassification.common.utils.DateUtil;
-import com.kfgs.pretrialclassification.common.utils.ListUtils;
-import com.kfgs.pretrialclassification.common.utils.SecurityUtil;
+import com.kfgs.pretrialclassification.common.utils.*;
 import com.kfgs.pretrialclassification.dao.*;
 import com.kfgs.pretrialclassification.domain.*;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuAdjudicationExt;
@@ -17,10 +14,12 @@ import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainFuzzyMatchABCD;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.response.*;
+import com.kfgs.pretrialclassification.gen.service.IFenleiBaohuAdjuInforBackupService;
 import com.kfgs.pretrialclassification.sendEmail.service.impl.SendEmailService;
 import com.kfgs.pretrialclassification.updateIpc.service.FenleiBaohuUpdateipcService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -63,6 +62,12 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     @Autowired
     FenleiBaohuCpctoipcMapper fenleiBaohuCpctoipcMapper;
 
+    @Autowired
+    FenleiBaohuAdjuInforBackupMapper fenleiBaohuAdjuInforBackupMapper;
+
+    @Autowired
+    IFenleiBaohuAdjuInforBackupService fenleiBaohuAdjuInforBackupService;
+
     @Override
     @Transactional
     //按状态查询分类员下案件
@@ -99,8 +104,10 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             FenleiBaohuMainResultExt fenleiBaohuMainResultExt = list.get(i);
             FenleiBaohuMainFuzzyMatchABCD abcd = JSON.parseObject(fenleiBaohuMainResultExt.getFuzzyMatchResult(), FenleiBaohuMainFuzzyMatchABCD.class);
             //2022-08-12 16:36:27 王磊-2 确认将名称完全一致，申请人不一致进行提醒
-            if(StringUtils.isNotBlank(abcd.getA()) || StringUtils.isNotBlank(abcd.getB()) || StringUtils.isNotBlank(abcd.getC())){
-                fenleiBaohuMainResultExt.setSimilarCases(true);
+            if(abcd != null){
+                if(StringUtils.isNotBlank(abcd.getA()) || StringUtils.isNotBlank(abcd.getB()) || StringUtils.isNotBlank(abcd.getC())){
+                    fenleiBaohuMainResultExt.setSimilarCases(true);
+                }
             }
         }
         return iPage;
@@ -538,17 +545,17 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         //判断是否进入裁决
         queryResponseResult = caseRule(id);
         int code = queryResponseResult.getCode();
-        String message = queryResponseResult.getMessage();
-        if (code != 20000){
+         if (code != 20000){
             /**
              * 进入裁决，更改案件为裁决状态
              */
             // 01.21更改 最后一个出案进裁决先写入出案时间
             fenleiBaohuResult.setChuantime(Long.parseLong(chuantime));
             int result = fenleiBaohuResultMapper.update(fenleiBaohuResult,queryWrapper);
-
+            /** 备份当前 result表中案件信息*/
+            backUpResult(id);
             if (result == 1){
-                int rule = updateCaseRule(id,queryResponseResult);
+                int rule = updateCaseRule(id,queryResponseResult,clzss);
                 if (rule == 1) {
                     // 01.22 2021年2月25日 10:31:55  新增发送邮件功能
                     String arbiter = ((FenleiBaohuAdjudication)queryResponseResult.getQueryResult().getMap().get("item")).getProcessingPerson();
@@ -558,6 +565,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                     }else{
                         queryResponseResult.setMessage("邮件发送失败，请自行告知裁决组长" +queryResponseResult.getMessage() );
                     }
+                    // 如果是更正表引起的裁决，需要将当前案件其他更正信息 进行更改状态
                     if(clzss == FenleiBaohuUpdateipcService.class){
                         fenleiBaohuUpdateipcMapper.updateOtherState(id,user);
                     }
@@ -571,7 +579,6 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             } else {
                 return new QueryResponseResult(CommonCode.FAIL,null);
             }
-
         }else {
             //不用裁决
             //更改result表和main表状态
@@ -608,7 +615,10 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                 fenleiBaohuMain.setCci(map.get("cci").toString());
                 fenleiBaohuMain.setCca(map.get("cca").toString());
                 fenleiBaohuMain.setCsets(map.get("csets").toString());
-                fenleiBaohuMain.setChuantime(Long.parseLong(chuantime));
+                /**  更正不更新出案时间 20220819  lxl */
+                if(clzss != FenleiBaohuUpdateipcService.class){
+                    fenleiBaohuMain.setChuantime(Long.parseLong(chuantime));
+                }
                 fenleiBaohuMain.setState("2");
                 int main = fenleiBaohuMainMapper.update(fenleiBaohuMain,queryWrapper1);
                 if (main == 1){
@@ -619,6 +629,23 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             }
             return queryResponseResult;
         }
+    }
+
+    /**
+     * 将触发裁决的案件信息，保存到处决备份表中
+     * @param id  触发裁决的案件编号
+     */
+    private void backUpResult(String id) {
+        List<FenleiBaohuResult> fenleiBaohuResults = fenleiBaohuResultMapper.selectListByID(id);
+        List<FenleiBaohuAdjuInforBackup> saveList = new ArrayList<>();
+        for(FenleiBaohuResult result : fenleiBaohuResults){
+            FenleiBaohuAdjuInforBackup backup = new FenleiBaohuAdjuInforBackup();
+            BeanUtils.copyProperties(result,backup);
+            backup.setFenpeitime(LocalDateTimeUtils.getTime(Long.parseLong(result.getFenpeitime())));
+            backup.setChuantime(LocalDateTimeUtils.getTime(result.getChuantime()));
+            saveList.add(backup);
+        }
+        fenleiBaohuAdjuInforBackupService.saveBatch(saveList);
     }
 
     @Override
@@ -746,13 +773,13 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
      * @return
      */
     @Transactional
-    public int updateCaseRule(String id,QueryResponseResult responseResult){
+    public int updateCaseRule(String id,QueryResponseResult responseResult,Class clzss){
         int res = 0;
         String chuantime = DateUtil.formatFullTime(LocalDateTime.now());
         //result表
         res = fenleiBaohuResultMapper.updateResultRule(id,"7");
         res = fenleiBaohuMainMapper.updateMainRule(id,chuantime,"7");
-        QueryResponseResult queryResponseResult = caseArbiterService.insertIntoAdjudication(id,responseResult);
+        QueryResponseResult queryResponseResult = caseArbiterService.insertIntoAdjudication(id,responseResult,clzss);
         return res;
     }
 

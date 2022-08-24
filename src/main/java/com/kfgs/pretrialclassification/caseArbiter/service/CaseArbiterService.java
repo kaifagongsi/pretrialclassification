@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.common.exception.ArbiterEnum;
 import com.kfgs.pretrialclassification.common.exception.CommonResponseEnum;
 import com.kfgs.pretrialclassification.common.utils.AdjudicationBusinessUtils;
+import com.kfgs.pretrialclassification.common.utils.ListUtils;
+import com.kfgs.pretrialclassification.common.utils.LocalDateTimeUtils;
 import com.kfgs.pretrialclassification.dao.*;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuAdjudication;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
@@ -15,6 +17,8 @@ import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.request.ArbiterParam;
 import com.kfgs.pretrialclassification.domain.response.*;
+import com.kfgs.pretrialclassification.updateIpc.service.FenleiBaohuUpdateipcService;
+import com.kfgs.pretrialclassification.userinfo.service.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +31,9 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import java.applet.AppletContext;
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -53,6 +60,8 @@ public class CaseArbiterService   {
     FenleiBaohuUserinfoMapper fenleiBaohuUserinfoMapper;
     @Autowired
     FenleiBaohuMainMapper fenleiBaohuMainMapper;
+    @Autowired
+    UserServiceImpl userServiceImpl;
 
     /**
      * 获取裁决组长案件列表
@@ -190,7 +199,7 @@ public class CaseArbiterService   {
         /**
          * 20190523 接收徐勇需求，添加ipc，cpc分类号版本校验
          */
-        if(!checkClassCodeVersion(linkset,codeType)){
+        if(!checkClassCodeVersion(new ArrayList<String>(linkset),codeType)){
             return new QueryResponseResult(ArbiterResponseEnum.CANNOT_RESOLVE_CLASSVERSION,null);
         }
         String newIpc= "";
@@ -346,6 +355,7 @@ public class CaseArbiterService   {
             return true;
         }
     }
+/*
 
     private boolean checkClassCodeVersion(LinkedHashSet<String> list, String codeName) {
         HashSet<String> set = new HashSet<>();
@@ -364,7 +374,7 @@ public class CaseArbiterService   {
             return true;
         }
     }
-
+*/
     //校验ipca,ipcmi,ipcoi之间的重复
     private boolean checkRepeatIpc(FenleiBaohuAdjudicationExt ext) {
         ArrayList list = new ArrayList();
@@ -478,7 +488,7 @@ public class CaseArbiterService   {
     @Transactional(rollbackFor = Exception.class)
     public QueryResponseResult arbiterChuAn(String id) {
         //1.修改案件状态以及出案时间
-        String finishTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        String finishTime = LocalDateTimeUtils.getCurrentTime();
         // 没卡人员不知道是否存在bug
         // 获取当前登录人员
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -493,7 +503,6 @@ public class CaseArbiterService   {
             queryWrapperAD.eq("state","7");
             queryWrapperAD.eq("PROCESSINGPERSON",userDetails.getLoginname());
             FenleiBaohuAdjudication adjudication = fenleiBaohuAdjudicationMapper.selectOne(queryWrapperAD);
-
             // 1.更新了裁决表
             int i = fenleiBaohuAdjudicationMapper.updateCaseStateAndFinishTime("8",finishTime,id,userDetails.getLoginname());
             //2 将分类号插入main表中
@@ -506,24 +515,17 @@ public class CaseArbiterService   {
             if(adjudication.getIpca() != null){
                 ipci = ipci + "*" + adjudication.getIpca();
             }
-            //3. 更新main表状态 以及分类号
-            int main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(finishTime,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id,"2");
-            //4. 更新result表中的状态 以及 6个分类号
-            QueryWrapper<FenleiBaohuResult> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("id",id);
-            List<FenleiBaohuResult> fenleiBaohuResults = fenleiBaohuResultMapper.selectList(queryWrapper);
-            queryWrapper.eq("state","7");
-            FenleiBaohuResult result = new FenleiBaohuResult();
-            result.setIPCMI(adjudication.getIpcmi());
-            result.setIPCOI(adjudication.getIpcoi());
-            result.setIpca(adjudication.getIpca());
-            result.setCca(adjudication.getCca());
-            result.setCci(adjudication.getCci());
-            result.setCsets(adjudication.getCsets());
-            result.setState("2");
-            //int update_int = fenleiBaohuResultMapper.updateStateById(id,"2");
-            int update_int = fenleiBaohuResultMapper.update(result,queryWrapper);
-            if(main_j == 1 && i == 1 && (update_int == fenleiBaohuResults.size())){
+            int main_j = 0;
+            //3. 更新main表状态 以及分类号  此处区分 更正引起的裁决 和 正常出案的裁决区分
+            if(adjudication.getProcessingreasons().contains("由于更正引起的裁决")){
+                main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(null,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id,"2");
+            }else{
+                main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(finishTime,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id,"2");
+            }
+            //4. 更正result表信息
+//            boolean updateResultInfo = updateResultTableInfo(adjudication,id);
+            boolean updateResultInfo = updateResultTableInfoNew(adjudication,id);
+            if(main_j == 1 && i == 1 && (updateResultInfo)){
                 return new QueryResponseResult(CommonCode.SUCCESS,null);
             }else{
                 //手动回滚事务
@@ -533,33 +535,108 @@ public class CaseArbiterService   {
         }
     }
 
-    public QueryResponseResult insertIntoAdjudication(String id, QueryResponseResult responseResult){
+    /**
+     * 裁决组长出案，更正result表信息,
+     *  裁决组长给的分类号，是否在这些人的主分号中：
+     *      不在：裁决组长做为主分，其他人员作为副分
+     *      在：在的人做主分，其他人做副分。
+     * @param adjudication 裁决表的实体
+     * @param id 案件id
+     * @return
+     */
+    private boolean updateResultTableInfoNew(FenleiBaohuAdjudication adjudication,String id){
+        //4. 更新result表中的状态 以及 6个分类号
+        QueryWrapper<FenleiBaohuResult> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",id);
+        queryWrapper.eq("state","7");
+        List<FenleiBaohuResult> fenleiBaohuResults = fenleiBaohuResultMapper.selectList(queryWrapper);
+        // 0. 初始化主分的list
+        List<FenleiBaohuResult> mainResultList = new ArrayList<>();
+        //1.遍历result表中所有的ipcmi 判断是否在裁决组长的主分中
+        for(FenleiBaohuResult result : fenleiBaohuResults){
+            if(adjudication.getIpcmi().equals(result.getIPCMI())){
+                mainResultList.add(result);
+                // 移除以后退出循环，不会报错
+                fenleiBaohuResults.remove(result);
+                break;
+            }
+        }
+        FenleiBaohuUserinfoExt userinfoExt = userServiceImpl.findUserWorkerName();
+        // 主分人
+        int mainTag = 0,outhTag = 0;
+        //2.如果主分不在所有用户的主分号中
+        if(mainResultList.size() == 0){
+            //2.1将裁决组长新增一条记录到result 表中
+            FenleiBaohuResult adjuResult = new FenleiBaohuResult();
+            String currentTime = LocalDateTimeUtils.getCurrentTime();
+            adjuResult.setId(id);
+            adjuResult.setIPCMI(adjudication.getIpcmi());
+            adjuResult.setWorker(userinfoExt.getWorkername());
+            adjuResult.setClasstype("主");
+            adjuResult.setFenpeiren("裁决加入");
+            adjuResult.setFenpeitime(currentTime);
+            adjuResult.setState("2");
+            adjuResult.setChuantime(Long.parseLong(currentTime));
+            adjuResult.setIPCMI(adjudication.getIpcmi());
+            mainTag = fenleiBaohuResultMapper.insert(adjuResult);
+        }else{
+            //2.2将主分类人副分设置为空，其他人员副分均设置为裁决组长的副分，其他信息一直
+            FenleiBaohuResult main = mainResultList.get(0);
+            main.setIPCOI("");
+            main.setIpca("");
+            main.setCci("");
+            main.setCca("");
+            main.setCsets("");
+            main.setState("2");
+            mainTag = fenleiBaohuResultMapper.saveClassificationInfo(main,main.getWorker());
+        }
+        // 除去主分外，其他人员全作为副分
+        for(FenleiBaohuResult result : fenleiBaohuResults){
+            result.setIPCMI("");
+            result.setClasstype("副");
+            result.setIPCOI(adjudication.getIpcoi());
+            result.setIpca(adjudication.getIpca());
+            result.setCci(adjudication.getCci());
+            result.setCca(adjudication.getCca());
+            result.setCsets(adjudication.getCsets());
+            result.setState("2");
+            outhTag = outhTag + fenleiBaohuResultMapper.saveClassificationInfo(result,result.getWorker());
+        }
+        return mainTag == 1 && (outhTag == fenleiBaohuResults.size() || outhTag == (fenleiBaohuResults.size() -1));
+    }
 
-        //获取相应参数根据id获取实体 此sql有排序
-        //List<FenleiBaohuResultExt> fenleiBaohuResultExtList =  fenleiBaohuResultMapper.selectSimpleClassCodeAndClassificationById(id);
-        //获取主分类号ipcmi
-        /*List<String> ipcmiList = new ArrayList<>();
-        ipcmiList = fenleiBaohuResultMapper.getIPCMI(id);
-        //获取副分类号ipcoi
-        List<String> ipcoiList = new ArrayList<>();
-        ipcoiList = fenleiBaohuResultMapper.getIPCOI(id);
-        //获取附加信息ipca
-        List<String> ipcaList = new ArrayList<>();
-        ipcaList = fenleiBaohuResultMapper.getIPCA(id);
-        //获取CCI
-        List<String> cciList = new ArrayList<>();
-        cciList = fenleiBaohuResultMapper.getCCI(id);
-        //获取组合码csets
-        List<String> csetsList = new ArrayList<>();
-        csetsList = fenleiBaohuResultMapper.getCSETS(id);
-        //获取案件类型
-        String type = fenleiBaohuMainMapper.getType(id);
-        String cci = AdjudicationBusinessUtils.margeCci(cciList);
-        //拼接组合码,不用去重
-        String csets = AdjudicationBusinessUtils.margeCsets(csetsList);
-        QueryResponseResult responseResult = AdjudicationBusinessUtils.JudgeWhetherToEnterTheRuling(id,ipcmiList, ipcoiList,ipcaList, csetsList, csets, cci, type);*/
+    /**
+     * 裁决组长出案，更正result表信息，此方法将更新所有与此案件相关的所有分类号，均更新成与裁决组长的号一直。
+     * @param adjudication 裁决表的实体
+     * @param id 案件id
+     * @return
+     */
+    private boolean updateResultTableInfo(FenleiBaohuAdjudication adjudication,String id){
+        //4. 更新result表中的状态 以及 6个分类号
+        QueryWrapper<FenleiBaohuResult> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",id);
+        queryWrapper.eq("state","7");
+        List<FenleiBaohuResult> fenleiBaohuResults = fenleiBaohuResultMapper.selectList(queryWrapper);
+        FenleiBaohuResult result = new FenleiBaohuResult();
+        result.setIPCMI(adjudication.getIpcmi());
+        result.setIPCOI(adjudication.getIpcoi());
+        result.setIpca(adjudication.getIpca());
+        result.setCca(adjudication.getCca());
+        result.setCci(adjudication.getCci());
+        result.setCsets(adjudication.getCsets());
+        result.setState("2");
+        //int update_int = fenleiBaohuResultMapper.updateStateById(id,"2");
+        return fenleiBaohuResultMapper.update(result,queryWrapper) == fenleiBaohuResults.size();
+    }
+
+    public QueryResponseResult insertIntoAdjudication(String id, QueryResponseResult responseResult,Class clzss){
         FenleiBaohuAdjudication item = (FenleiBaohuAdjudication)responseResult.getQueryResult().getMap().get("item");
-        item.setProcessingreasons(responseResult.getMessage());
+        // 将 更正引起的裁决和本身出案引起的裁决 区分
+        if(clzss == FenleiBaohuUpdateipcService.class){
+            item.setProcessingreasons("由于更正引起的裁决。"+responseResult.getMessage());
+        }else{
+            item.setProcessingreasons(responseResult.getMessage());
+        }
         if(responseResult.getCode() == 20000){
             log.error("出现逻辑问题：案件id:" + id + ",当前案件无法判断出触发裁决的原因。");
             return new QueryResponseResult(CommonCode.FAIL,null);
@@ -636,131 +713,6 @@ public class CaseArbiterService   {
             log.error("出现逻辑问题：案件id:" + id + ",当前案件无法判断出触发裁决的原因。");
             return new QueryResponseResult(CommonCode.FAIL,null);
         }
-
-        /*//1.无分类号
-        if( ipcmiList.size() == 0 && ipcoiList.size() ==0 && ipcaList.size() == 0){
-            fenleiBaohuAdjudication.setProcessingreasons("无分类号");
-            //设置裁决组长
-            //获取案件处理人员
-            String worker = fenleiBaohuResultExtList.get(0).getWorker();
-            String Adjudicator = fenleiBaohuUserinfoMapper.selectAdjudicatorByWorkerName(worker);
-            fenleiBaohuAdjudication.setProcessingPerson(Adjudicator);
-            int insert = fenleiBaohuAdjudicationMapper.insert(fenleiBaohuAdjudication);
-            if( insert == 1){
-                return new QueryResponseResult(CaseFinishResponseEnum.NO_CLASSIFICATION,null);
-            }else{
-                return new QueryResponseResult(CommonCode.FAIL,null);
-            }
-        } else if(ipcmiList.size() > 1){//2.多个主分
-            //设置随机裁决组长
-            int xiabiao = getArrayXiaoBiao(fenleiBaohuResultExtList,"ipcmi");
-            //int xiabiao =(int) ( fenleiBaohuResultExtList.size() * Math.random());
-            // 获取到随机到给出主分号的某个人
-            String workerName = fenleiBaohuResultExtList.get(xiabiao).getWorker();
-            //获取对应人的裁决组长
-            String Adjudicator = fenleiBaohuUserinfoMapper.selectAdjudicatorByWorkerName(workerName);
-            fenleiBaohuAdjudication.setProcessingPerson(Adjudicator);
-            int insert = fenleiBaohuAdjudicationMapper.insert(fenleiBaohuAdjudication);
-            if( insert == 1){
-                return new QueryResponseResult(CaseFinishResponseEnum.ONE_MORE_IPCMI,null);
-            }else{
-                return new QueryResponseResult(CommonCode.FAIL,null);
-            }
-        } else if(ipcmiList.size() == 0){ //3.无主分
-            if(ipcoiList.size() == 1){
-                //3.1无主分有一个分类员给副分：案件发给副分分类员对应的裁决组长
-                String workerName = fenleiBaohuResultExtList.get(0).getWorker();
-                //获取对应人的裁决组长
-                String Adjudicator = fenleiBaohuUserinfoMapper.selectAdjudicatorByWorkerName(workerName);
-                fenleiBaohuAdjudication.setProcessingPerson(Adjudicator);
-                int insert = fenleiBaohuAdjudicationMapper.insert(fenleiBaohuAdjudication);
-                if( insert == 1){
-                    return new QueryResponseResult(CaseFinishResponseEnum.NO_IPCMI_ONE_IPCOI,null);
-                }else{
-                    return new QueryResponseResult(CommonCode.FAIL,null);
-                }
-
-            }else if(ipcoiList.size() > 1){
-                //3.2无主分有多个个分类元给副分：案件发给随机裁决组长
-                // 获取到随机到给出副分号的某个人
-                int xiabiao = getArrayXiaoBiao(fenleiBaohuResultExtList,"ipcoi");
-                String workerName = fenleiBaohuResultExtList.get(xiabiao).getWorker();
-                //获取对应人的裁决组长
-                String Adjudicator = fenleiBaohuUserinfoMapper.selectAdjudicatorByWorkerName(workerName);
-                fenleiBaohuAdjudication.setProcessingPerson(Adjudicator);
-                int insert = fenleiBaohuAdjudicationMapper.insert(fenleiBaohuAdjudication);
-                if( insert == 1){
-                    return new QueryResponseResult(CaseFinishResponseEnum.NO_IPCMI_MORE_IPCOI,null);
-                }else{
-                    return new QueryResponseResult(CommonCode.FAIL,null);
-                }
-
-            }else if(ipcoiList.size() == 0 && ipcaList.size() == 1){
-                //3.3无主分，无副分，仅有一个人有附加信息:给附加信息的分类员对应的裁决组长
-                String workerName = fenleiBaohuResultExtList.get(0).getWorker();
-                String Adjudicator = fenleiBaohuUserinfoMapper.selectAdjudicatorByWorkerName(workerName);
-                fenleiBaohuAdjudication.setProcessingPerson(Adjudicator);
-                int insert = fenleiBaohuAdjudicationMapper.insert(fenleiBaohuAdjudication);
-                if( insert == 1){
-                    return new QueryResponseResult(CaseFinishResponseEnum.NO_IPCMI_NO_IPCOI_ONE_IPCA,null);
-                }else{
-                    return new QueryResponseResult(CommonCode.FAIL,null);
-                }
-            }else if(ipcoiList.size() == 0 && ipcaList.size() > 1){
-                //3.4无主分，无副分，有多个人有附加信息:给附加信息的随机分类员的裁决组长
-                //获取到随机下标
-                int xiabiao = getArrayXiaoBiao(fenleiBaohuResultExtList,"ipcai");
-                String worker = fenleiBaohuResultExtList.get(xiabiao).getWorker();
-                String adjudicator = fenleiBaohuUserinfoMapper.selectAdjudicatorByWorkerName(worker);
-                fenleiBaohuAdjudication.setProcessingPerson(adjudicator);
-                int insert = fenleiBaohuAdjudicationMapper.insert(fenleiBaohuAdjudication);
-                if( insert == 1){
-                    return new QueryResponseResult(CaseFinishResponseEnum.NO_IPCMI_NO_IPCOI_MORE_IPCA,null);
-                }else{
-                    return new QueryResponseResult(CommonCode.FAIL,null);
-                }
-            }else {
-                //3.5 无主分无副分无附加信息（当前情况不应该出现，逻辑出现bug）
-                log.error("出现逻辑问题：案件id:" + id + ",当前案件无法判断出触发裁决的原因。");
-                return new QueryResponseResult(CommonCode.FAIL,null);
-            }
-        } else if("FM".equals(type) ){
-            //拼接CCI,需要去重
-            String cci = "";
-            //先去重
-            if (cciList.size() > 1){
-                List<String> list_cci = new ArrayList<>();
-                StringBuffer sb_cci = new StringBuffer();
-                for (int i=0;i<cciList.size();i++){
-                    if(!list_cci.contains(cciList.get(i))){
-                        list_cci.add(cciList.get(i));
-                        sb_cci.append(cciList.get(i) + ",");
-                    }
-                }
-                cci = sb_cci.toString().substring(0,sb_cci.toString().length()-1);
-            }else if (cciList.size() == 1) {
-                cci = cciList.get(0);
-            }
-            if("FM".equals(type) && "".equals(cci)) {
-                //若是发明案件，判断CPC是否为空，为空进裁决
-                fenleiBaohuAdjudication.setProcessingreasons("发明案件的的CPC分类号为空");
-                String worker = fenleiBaohuResultExtList.get(0).getWorker();
-                String adjudicator = fenleiBaohuUserinfoMapper.selectAdjudicatorByWorkerName(worker);
-                fenleiBaohuAdjudication.setProcessingPerson(adjudicator);
-                int insert = fenleiBaohuAdjudicationMapper.insert(fenleiBaohuAdjudication);
-                if( insert == 1){
-                    return new QueryResponseResult(CaseFinishResponseEnum.NO_IPCMI_NO_IPCOI_MORE_IPCA,null);
-                }else{
-                    return new QueryResponseResult(CommonCode.FAIL,null);
-                }
-            }else{
-                log.error("出现逻辑问题：案件id:" + id + ",当前案件无法判断出触发裁决的原因。");
-                return new QueryResponseResult(CommonCode.FAIL,null);
-            }
-        } else {
-            log.error("出现逻辑问题：案件id:" + id + ",当前案件无法判断出触发裁决的原因。");
-            return new QueryResponseResult(CommonCode.FAIL,null);
-        }*/
     }
 
     /**

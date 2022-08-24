@@ -94,7 +94,7 @@ public class CaseArbiterController {
     @ApiOperation("案件触发裁决，向裁决表中添加数据")
     @PostMapping("/insertIntoAdjudication/{id}")
     public QueryResponseResult insertIntoAdjudication(@PathVariable("id") String id, QueryResponseResult responseResult){
-        return caseArbiterService.insertIntoAdjudication(id,responseResult);
+        return caseArbiterService.insertIntoAdjudication(id,responseResult,CaseArbiterController.class);
     }
 
     @ApiOperation("裁决组长出案之前进行，该案件的校验")
