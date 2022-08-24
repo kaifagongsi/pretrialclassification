@@ -212,7 +212,7 @@ public class AdjudicationBusinessUtils {
     }
 
     /**
-     * 合并ipci
+     * 合并ipci 并去重
      * @param ipcmiList 主分类号
      * @param ipcoiList 副分类号
      * @param ipcaList 附加信息
@@ -225,6 +225,8 @@ public class AdjudicationBusinessUtils {
         ipci.append(ipcmiList.get(0));
         //拼接副分类号
         String ipcoi = "";
+//        ipcoiList = ListUtils.delRepeatReturnList(ipcoiList);
+//        ipcaList = ListUtils.delRepeatReturnList(ipcaList);
         if (ipcoiList != null && ipcoiList.size()!=0){
             //ipci += ";"; 修改ipcmi 和ipcoi 以逗号区分
             ipci.append(",");
