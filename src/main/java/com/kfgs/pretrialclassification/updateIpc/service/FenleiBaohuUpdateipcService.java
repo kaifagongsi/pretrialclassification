@@ -94,9 +94,11 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
             queryWrapper.eq("id",id);
             queryWrapper.in("state",new ArrayList<>(Arrays.asList("0","1")));
             List<FenleiBaohuResult> fenleiBaohuResultsStateTwoCount = fenleiBaohuResultMapper.selectList(queryWrapper);
-            if(fenleiBaohuResultsStateTwoCount.size() == 0){//表述均已出案
+            if(fenleiBaohuResultsStateTwoCount.size() == 0){
+                //表述均已出案
                 return AllProChuanCaoZuo(id,worker,state);
-            }else{ // 表示有一人未出案
+            }else{
+                // 表示有一人未出案
                 return OneOrMoreNotChuAn(id,worker,state);
             }
         }
@@ -179,17 +181,8 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
             try {
                 FenleiBaohuUpdateIpc fenleiBaohuUpdateIpc = fenleiBaohuUpdateipcMapper.selectOne(queryWrapperUpdate);
                 FenleiBaohuResult result = new FenleiBaohuResult();
-                /*result.setId(id);
-                result.setIPCMI(fenleiBaohuUpdateIpc.getIpcmi());
-                result.setIPCOI(fenleiBaohuUpdateIpc.getIpcoi());
-                result.setIpca(fenleiBaohuUpdateIpc.getIpca());
-                result.set*/
                 BeanUtils.copyProperties(fenleiBaohuUpdateIpc,result);
                 result.setState("2");
-               /* QueryWrapper queryWrapper  = new QueryWrapper<>();
-                queryWrapper.eq("id",id);
-                queryWrapper.eq("worker",worker);
-                queryWrapper.eq("state","9");*/
                 // 0.2 更新result表的分类号信息和案子状态
                 int update = fenleiBaohuResultMapper.updateByModel(result,id,worker,"9");
                 if(update == 1){
