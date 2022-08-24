@@ -1,2 +1,5 @@
 .idea
 target
+/hs_err_pid7300.log
+/hs_err_pid13960.log
+/src/test/java/
