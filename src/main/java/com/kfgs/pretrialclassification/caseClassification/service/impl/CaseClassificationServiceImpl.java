@@ -14,16 +14,13 @@ import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainFuzzyMatchABCD;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.response.*;
-import com.kfgs.pretrialclassification.gen.service.IFenleiBaohuAdjuInforBackupService;
+import com.kfgs.pretrialclassification.caseArbiter.service.IFenleiBaohuAdjuInforBackupService;
 import com.kfgs.pretrialclassification.sendEmail.service.impl.SendEmailService;
 import com.kfgs.pretrialclassification.updateIpc.service.FenleiBaohuUpdateipcService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -461,8 +458,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     public QueryResponseResult caseFinish(String id, String user) {
         QueryResponseResult queryResponseResult = new QueryResponseResult();
         //2021.02.20修改  增加出案前案件状态验证(只有状态为1时才可进行出案)
-        String myFinish = "";
-        myFinish = fenleiBaohuResultMapper.getMyFinish(id,user);
+        String myFinish = fenleiBaohuResultMapper.getMyFinish(id,user);
         if ("7".equals(myFinish)){
             return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_RULED,null);
         }
@@ -769,6 +765,8 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
 
     /**
      * 更改案件为裁决状态
+     *  1.将result表 id案件的所有列，修改为裁决状态：7
+     *  2.如果是由于更正引起的裁决，则不修改出案时间
      * @param id
      * @return
      */
@@ -778,7 +776,12 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         String chuantime = DateUtil.formatFullTime(LocalDateTime.now());
         //result表
         res = fenleiBaohuResultMapper.updateResultRule(id,"7");
-        res = fenleiBaohuMainMapper.updateMainRule(id,chuantime,"7");
+        if(clzss  != FenleiBaohuUpdateipcService.class){
+            res = fenleiBaohuMainMapper.updateMainRule(id,chuantime,"7");
+        }else{
+            res = fenleiBaohuMainMapper.updateMainRule(id,null,"7");
+        }
+
         QueryResponseResult queryResponseResult = caseArbiterService.insertIntoAdjudication(id,responseResult,clzss);
         return res;
     }

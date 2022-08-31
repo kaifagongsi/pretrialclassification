@@ -281,7 +281,16 @@
     </select>
 
     <update id="updateMainRule">
-        update fenlei_baohu_main m set m.state=#{state},m.chuantime=#{chuantime} where m.id=#{id}
+        update fenlei_baohu_main m
+        <set>
+            <if test="state != null">
+                m.state=#{state},
+            </if>
+            <if test="chuantime != null">
+                m.chuantime=#{chuantime}
+            </if>
+        </set>
+        where m.id=#{id}
     </update>
     <update id="updateByIdAndWithOutNotExport">
          update
