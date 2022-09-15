@@ -41,7 +41,7 @@ import java.util.*;
  * Module:
  * Description:
  *
- * @author:
+ * @author: mango
  */
 @Slf4j
 @Service
@@ -67,7 +67,7 @@ public class CaseArbiterService   {
      * 获取裁决组长案件列表
      * @param pageNum 起始页
      * @param pageSize 每页条数
-     * @return
+     * @return 返回分页列表
      */
     public QueryResponseResult getArbiterInitList( int pageNum,int pageSize){
 
@@ -554,7 +554,8 @@ public class CaseArbiterService   {
         List<FenleiBaohuResult> mainResultList = new ArrayList<>();
         //1.遍历result表中所有的ipcmi 判断是否在裁决组长的主分中
         for(FenleiBaohuResult result : fenleiBaohuResults){
-            if(adjudication.getIpcmi().equals(result.getIPCMI())){
+            // 也有可能裁决组长也是当前案子的分类员
+            if(adjudication.getIpcmi().equals(result.getIPCMI()) || result.getWorker().split("-")[0].equals(adjudication.getProcessingPerson())){
                 mainResultList.add(result);
                 // 移除以后退出循环，不会报错
                 fenleiBaohuResults.remove(result);
