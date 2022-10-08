@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kfgs.pretrialclassification.caseClassification.service.CaseClassificationService;
 import com.kfgs.pretrialclassification.common.exception.UpdateIpcEnum;
+import com.kfgs.pretrialclassification.common.utils.DateUtil;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuMainMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuUpdateipcMapper;
@@ -29,8 +30,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -145,6 +149,8 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
             int j = fenleiBaohuMainMapper.updateStateById(id,"1");
             //更新裁决表的状态
             updateIpc.setState("1");
+            //2022-10-08 09:24:24 修正分类号通过以后，修改updateipc表中的时间
+            updateIpc.setChuantime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
             // queryWrapper 实体对象封装操作类（可以为 null,里面的 entity 用于生成 where 语句）
             int updateById = fenleiBaohuUpdateipcMapper.update(updateIpc,queryWrapper);
             if( i == j){
@@ -155,6 +161,8 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
         }else if("2".equals(state)){//管理员不同意出案
             // 偷懒不写sql文件了
             updateIpc.setState("2");
+            //2022-10-08 09:24:24 修正分类号通过以后，修改updateipc表中的时间
+            updateIpc.setChuantime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
             int updateById = fenleiBaohuUpdateipcMapper.update(updateIpc,queryWrapper);
             int i = fenleiBaohuResultMapper.updateStateByIdAndWorker(id,worker,"2");
             int j = fenleiBaohuMainMapper.updateStateById(id,"1");
@@ -170,7 +178,8 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
     /**
      * 管理员点击后，该案件所有案件均正常出案
      */
-    private QueryResponseResult AllProChuanCaoZuo(String id, String worker,String state) {
+    @Transactional(rollbackFor = Exception.class)
+    QueryResponseResult AllProChuanCaoZuo(String id, String worker,String state) {
         if("1".equals(state)){//管理员同意出案
             // 0.更新result表中的分类号
             // 0.1查询新的分类号
@@ -190,8 +199,9 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
                      * 不考虑是否出发裁决，直接通过
                      */
                     fenleiBaohuUpdateIpc.setState("1");
+                    //2022-10-08 09:24:24 修正分类号通过以后，修改updateipc表中的时间
+                    fenleiBaohuUpdateIpc.setChuantime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
                     fenleiBaohuUpdateipcMapper.update(fenleiBaohuUpdateIpc,queryWrapperUpdate);
-
                     return caseClassificationService.lastFinish(id, worker,null,FenleiBaohuUpdateipcService.class);
                 }else{
                     return new QueryResponseResult(UpdateIpcResponseEnum.CANNOT_PASS_AMEND_UPDATEIPC,null);
@@ -203,10 +213,15 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
             }
         }else if("2".equals(state)){//管理员不同意出案
             //仅修改main/result表的状态
-            FenleiBaohuMain main = new FenleiBaohuMain();
-            main.setId(id);
-            main.setState("2");
-            int j = fenleiBaohuMainMapper.updateById(main);
+            FenleiBaohuMain baohuMain = fenleiBaohuMainMapper.selectById(id);
+            /*FenleiBaohuMain main = new FenleiBaohuMain();
+            main.setId(id);*/
+            baohuMain.setState("2");
+            // 如果main 表的没有出案时间
+            if( null ==baohuMain.getChuantime() || 0 == baohuMain.getChuantime()){
+                baohuMain.setChuantime(Long.parseLong(DateUtil.formatFullTime(LocalDateTime.now())));
+            }
+            int j = fenleiBaohuMainMapper.updateById(baohuMain);
             FenleiBaohuResult result = new FenleiBaohuResult();
             result.setId(id);
             result.setState("2");
@@ -215,6 +230,8 @@ public class FenleiBaohuUpdateipcService extends ServiceImpl<FenleiBaohuUpdateip
             FenleiBaohuUpdateIpc updateIpc = new FenleiBaohuUpdateIpc();
             updateIpc.setId(id);
             updateIpc.setState("2");
+            //2022-10-08 09:24:24 修正分类号通过以后，修改updateipc表中的时间
+            updateIpc.setChuantime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
             fenleiBaohuUpdateipcMapper.updateById(updateIpc);
             if( j == 1){
                 return new QueryResponseResult(CommonCode.SUCCESS,null);

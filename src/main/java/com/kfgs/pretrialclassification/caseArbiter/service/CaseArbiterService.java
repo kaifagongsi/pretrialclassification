@@ -10,6 +10,7 @@ import com.kfgs.pretrialclassification.common.utils.ListUtils;
 import com.kfgs.pretrialclassification.common.utils.LocalDateTimeUtils;
 import com.kfgs.pretrialclassification.dao.*;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuAdjudication;
+import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuUserinfo;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuAdjudicationExt;
@@ -518,7 +519,13 @@ public class CaseArbiterService   {
             int main_j = 0;
             //3. 更新main表状态 以及分类号  此处区分 更正引起的裁决 和 正常出案的裁决区分
             if(adjudication.getProcessingreasons().contains("由于更正引起的裁决")){
-                main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(null,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id,"2");
+                //3.1 判断main表是否有出案时间，有就不可修改，没有就可以修改
+                FenleiBaohuMain main = fenleiBaohuMainMapper.selectById(id);
+                if(null == main.getChuantime() || 0 == main.getChuantime()){
+                    main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(finishTime,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id,"2");
+                }else{
+                    main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(null,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id,"2");
+                }
             }else{
                 main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(finishTime,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id,"2");
             }

@@ -196,7 +196,6 @@ public class SendEmailService {
      * @param arbiter 裁决组长id
      * @return
      */
-
     public boolean sendEmailCaseArbiter(String id, String arbiter){
         List<String> to = new ArrayList<>();
         QueryWrapper qwMain = new QueryWrapper();

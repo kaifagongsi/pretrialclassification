@@ -312,20 +312,20 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         }
     }
 
+    //获取案件出案情况
     @Override
     @Transactional
-    //获取案件出案情况
     public List<String> getCaseUnFinish(String id) {
         List<String> list = new ArrayList<>();
         list = fenleiBaohuResultMapper.getCaseUnFinish(id);
         return list;
     }
 
-    @Override
     /*最后一人出案时判断是否需要进入裁决
-      裁决：返回理由
-      不裁决：返回分类号
-    */
+     *  裁决：返回理由
+     *  不裁决：返回分类号
+     */
+    @Override
     public QueryResponseResult caseRule(String id) {
 
         //获取result表中案件分类号情况
@@ -523,6 +523,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
      * @param queryResponseResult 响应结果
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public QueryResponseResult lastFinish( String id,String user,QueryResponseResult queryResponseResult,Class clzss ){
         if(queryResponseResult == null){
@@ -614,6 +615,11 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                 /**  更正不更新出案时间 20220819  lxl */
                 if(clzss != FenleiBaohuUpdateipcService.class){
                     fenleiBaohuMain.setChuantime(Long.parseLong(chuantime));
+                }else{
+                    // 如果是由更正走到这里，那就判断有没有出案时间，没有就加上，有就不修改
+                    if(null == fenleiBaohuMain.getChuantime() || 0 == fenleiBaohuMain.getChuantime()){
+                        fenleiBaohuMain.setChuantime(Long.parseLong(chuantime));
+                    }
                 }
                 fenleiBaohuMain.setState("2");
                 int main = fenleiBaohuMainMapper.update(fenleiBaohuMain,queryWrapper1);
@@ -779,10 +785,16 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         if(clzss  != FenleiBaohuUpdateipcService.class){
             res = fenleiBaohuMainMapper.updateMainRule(id,chuantime,"7");
         }else{
-            res = fenleiBaohuMainMapper.updateMainRule(id,null,"7");
-        }
+            // 表示由更正引起的裁决
+            FenleiBaohuMain baohuMain = fenleiBaohuMainMapper.selectById(id);
+            if( null == baohuMain.getChuantime() || 0 == baohuMain.getChuantime()){
+                res = fenleiBaohuMainMapper.updateMainRule(id,chuantime,"7");
+            }else{
+                res = fenleiBaohuMainMapper.updateMainRule(id,null,"7");
+            }
 
-        QueryResponseResult queryResponseResult = caseArbiterService.insertIntoAdjudication(id,responseResult,clzss);
+        }
+        caseArbiterService.insertIntoAdjudication(id,responseResult,clzss);
         return res;
     }
 

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,7 @@ public class MailServiceImpl implements MailService {
      * @param content 内容
      */
     @Override
+//    @Async("pretroalclassificationAsyncExecutor")
     public boolean sendHtmlMail(String[] to, String subject, String content) {
         MimeMessage message=mailSender.createMimeMessage();
         try {
@@ -67,6 +69,7 @@ public class MailServiceImpl implements MailService {
      */
     @Override
     @Transactional(propagation = Propagation.NOT_SUPPORTED )
+//    @Async("pretroalclassificationAsyncExecutor")
     public boolean sendHtmlMail(String[] to,String[] cc,String subject,String content) {
         MimeMessage message=mailSender.createMimeMessage();
         try {
