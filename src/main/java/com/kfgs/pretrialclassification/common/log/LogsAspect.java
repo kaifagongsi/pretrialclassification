@@ -2,7 +2,6 @@ package com.kfgs.pretrialclassification.common.log;
 
 import com.alibaba.fastjson.JSON;
 import com.kfgs.pretrialclassification.common.jwt.JwtTokenUtils;
-import com.kfgs.pretrialclassification.dao.FenleiBaohuLogMapper;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuLog;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -29,8 +28,7 @@ import java.util.Map;
 public class LogsAspect {
     private static final Logger logger = LoggerFactory.getLogger(LogsAspect.class);
 
-    @Autowired
-    FenleiBaohuLogMapper fenleiBaohuLogMapper;
+
 
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
