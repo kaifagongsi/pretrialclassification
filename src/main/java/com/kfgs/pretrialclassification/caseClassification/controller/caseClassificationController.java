@@ -2,17 +2,20 @@ package com.kfgs.pretrialclassification.caseClassification.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.kfgs.pretrialclassification.caseClassification.service.CaseClassificationService;
 import com.kfgs.pretrialclassification.common.controller.BaseController;
 import com.kfgs.pretrialclassification.common.log.Log;
 import com.kfgs.pretrialclassification.common.repeatsubmit.NoRepeatSubmit;
 import com.kfgs.pretrialclassification.common.utils.DateUtil;
+import com.kfgs.pretrialclassification.common.utils.SecurityUtil;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainFuzzyMatchABCD;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
+import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
 import com.kfgs.pretrialclassification.domain.response.CommonCode;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
@@ -50,6 +53,9 @@ public class caseClassificationController extends BaseController {
 
     @Autowired
     FuzzyMatchService fuzzyMatchService;
+
+    @NacosValue(value = "${editIpc:000000}",autoRefreshed = true)
+    private String editIpc;
 
     @ApiOperation("result表，按状态查询案件")
     @GetMapping("/findCaseByState")
@@ -137,30 +143,40 @@ public class caseClassificationController extends BaseController {
     @ApiOperation("分类员界面条件查询，三个查询参数")
     @GetMapping("/searchByCondition")
     public Map searchByCondition(String id,String sqr,String mingcheng){
-        if (id == null){
-            id = "";
-        }
-        if (sqr == null){
-            sqr = "";
-        }
-        if (mingcheng == null){
-            mingcheng = "";
-        }
+        String workername = SecurityUtil.getLoginUser().getWorkername().split("-")[0];
+        List<String> edisIpcs = Arrays.asList(editIpc.split(","));
         Map resultMap = new HashMap();
-        FenleiBaohuMain fenleiBaohuMain = new FenleiBaohuMain();
-        fenleiBaohuMain = caseClassificationService.searchByCondition(id, sqr, mingcheng);
-        if(fenleiBaohuMain != null){
-            if (id == ""){
-                id = fenleiBaohuMain.getId();
+        if(edisIpcs.contains(workername)){
+            if (id == null){
+                id = "";
             }
-            List<FenleiBaohuResult> list = new ArrayList<>();
-            list = caseClassificationService.getSingleResult(id,sqr,mingcheng);
-            resultMap.put("singleInfo",list);
-            resultMap.put("case",fenleiBaohuMain);
-            return resultMap;
-        }
-        else {
+            if (sqr == null){
+                sqr = "";
+            }
+            if (mingcheng == null){
+                mingcheng = "";
+            }
+            FenleiBaohuMain fenleiBaohuMain = new FenleiBaohuMain();
+            fenleiBaohuMain = caseClassificationService.searchByCondition(id, sqr, mingcheng);
+            if(fenleiBaohuMain != null){
+                if (id == ""){
+                    id = fenleiBaohuMain.getId();
+                }
+                List<FenleiBaohuResult> list = new ArrayList<>();
+                list = caseClassificationService.getSingleResult(id,sqr,mingcheng);
+                resultMap.put("singleInfo",list);
+                resultMap.put("case",fenleiBaohuMain);
+                resultMap.put("not_rule",false);
+                return resultMap;
+            }
+            else {
+                resultMap.put("case",null);
+                resultMap.put("not_rule",false);
+                return resultMap;
+            }
+        }else{
             resultMap.put("case",null);
+            resultMap.put("not_rule",true);
             return resultMap;
         }
     }
