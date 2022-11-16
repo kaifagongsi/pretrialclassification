@@ -9,10 +9,7 @@ import com.kfgs.pretrialclassification.caseClassification.service.CaseClassifica
 import com.kfgs.pretrialclassification.common.utils.*;
 import com.kfgs.pretrialclassification.dao.*;
 import com.kfgs.pretrialclassification.domain.*;
-import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuAdjudicationExt;
-import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainFuzzyMatchABCD;
-import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
-import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuUserinfoExt;
+import com.kfgs.pretrialclassification.domain.ext.*;
 import com.kfgs.pretrialclassification.domain.response.*;
 import com.kfgs.pretrialclassification.caseArbiter.service.IFenleiBaohuAdjuInforBackupService;
 import com.kfgs.pretrialclassification.sendEmail.service.impl.SendEmailService;
@@ -21,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -29,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -64,6 +64,10 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
 
     @Autowired
     IFenleiBaohuAdjuInforBackupService fenleiBaohuAdjuInforBackupService;
+
+    @Autowired
+    @Lazy
+    private RedisTemplate<String, String> redisTemplate;
 
     @Override
     @Transactional
@@ -227,6 +231,10 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         }*/
         queryWrapper.eq("id",id);
         List<FenleiBaohuResult> list = fenleiBaohuResultMapper.selectList(queryWrapper);
+        list.forEach(item -> {
+            item.setEdit(true);
+            item.setSetSet(false);
+        });
         return list;
     }
 
@@ -456,7 +464,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     @Override
     @Transactional
     public QueryResponseResult caseFinish(String id, String user) {
-        QueryResponseResult queryResponseResult = new QueryResponseResult();
+        QueryResponseResult queryResponseResult = null;
         //2021.02.20修改  增加出案前案件状态验证(只有状态为1时才可进行出案)
         String myFinish = fenleiBaohuResultMapper.getMyFinish(id,user);
         if ("7".equals(myFinish)){
@@ -465,29 +473,42 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         if (!myFinish.equals("1")){
             return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_STATE,null);
         }
-        List<String> unFinish = new ArrayList<>();
-        //待出案的案件
-        /*1.判断是否最后一个出案
-            查询除自己以外其他未出案
-            即当除自己之外其余人的案件状态为(0,1,9)时自己是最后一个未出案
-        */
-        boolean isLast = false;
-        unFinish = fenleiBaohuResultMapper.getCaseUnFinish(id);
-        if (unFinish.size() == 1){
-            //最后一个未出案
-            return lastFinish(id,user,queryResponseResult,CaseClassificationServiceImpl.class);
-        }else if (unFinish.size() > 1){
-            /**
-             * 不是最后一个出案,可直接出案,不改变main表状态
-             */
-            int res = finishMyResult(id,user);
-            if (res == 1){
-                return new QueryResponseResult(CommonCode.SUCCESS,null);
+        //加锁 没有值，则为true 2022年10月27日 15:40:56 lxl
+        Boolean lock = redisTemplate.opsForValue().setIfAbsent(id, "lock", 150, TimeUnit.SECONDS);
+        if(lock){
+            log.info(user+ "获取到锁("+id+")成功");
+            List<String> unFinish = new ArrayList<>();
+            //待出案的案件
+            /*1.判断是否最后一个出案
+                查询除自己以外其他未出案
+                即当除自己之外其余人的案件状态为(0,1,9)时自己是最后一个未出案
+            */
+            unFinish = fenleiBaohuResultMapper.getCaseUnFinish(id);
+            if (unFinish.size() == 1){
+                //最后一个未出案
+                queryResponseResult = lastFinish(id,user,queryResponseResult,CaseClassificationServiceImpl.class);
+            }else if (unFinish.size() > 1){
+                /**
+                 * 不是最后一个出案,可直接出案,不改变main表状态
+                 */
+                int res = finishMyResult(id,user);
+                if (res == 1){
+                    queryResponseResult = new QueryResponseResult(CommonCode.SUCCESS,null);
+                }else{
+                    queryResponseResult = new QueryResponseResult(CaseClassificationEnum.INVALID_ERROR,null);
+                }
+            } else { //02.20修改  unFinish.size==0 案件已进入裁决不可再进行出案
+                queryResponseResult = new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_RULED,null);
             }
-        } else { //02.20修改  unFinish.size==0 案件已进入裁决不可再进行出案
-            return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_RULED,null);
+            //删除锁
+            redisTemplate.delete(id);
+            log.info(user+ "释放锁("+id+")");
+        }else{
+            log.info(user+ "获取到锁失败");
+            //获得锁失败
+            queryResponseResult =  new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_MORE_FINISH,null);
         }
-        return null;
+        return queryResponseResult;
     }
 
     @Override

@@ -10,6 +10,8 @@ import lombok.ToString;
 @NoArgsConstructor
 public enum CaseClassificationEnum implements ResultCode {
 
+    INVALID_CASE_MORE_FINISH(false,30010,"出案失败，有其他人员正在出案，请稍后尝试"),
+    INVALID_ERROR(false,30009,"出案失败，请重新尝试"),
     INVALID_RESAVE(false,30001,"非法操作,该案件已出案"),
     INVALID_CASE_RULED(false,30002,"非法操作,该案件在裁决中"),
     INVALID_CASE_UPDATE(false,30003,"非法操作,该案件已提出更正"),

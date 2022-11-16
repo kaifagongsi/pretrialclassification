@@ -5,6 +5,7 @@ import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuResult;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainFuzzyMatchABCD;
 import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuMainResultExt;
+import com.kfgs.pretrialclassification.domain.ext.FenleiBaohuResultExt;
 import com.kfgs.pretrialclassification.domain.response.QueryResponseResult;
 
 import javax.servlet.http.HttpServletResponse;
