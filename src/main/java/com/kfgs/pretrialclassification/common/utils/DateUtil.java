@@ -20,6 +20,10 @@ public class DateUtil {
         return formatFullTime(localDateTime, FULL_TIME_PATTERN);
     }
 
+    public static String formatFullTimeSplitPattern(LocalDateTime localDateTime) {
+        return formatFullTime(localDateTime, FULL_TIME_SPLIT_PATTERN);
+    }
+
     public static String formatFullTime(LocalDateTime localDateTime, String pattern) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
         return localDateTime.format(dateTimeFormatter);
