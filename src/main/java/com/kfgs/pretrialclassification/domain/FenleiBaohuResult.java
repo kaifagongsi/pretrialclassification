@@ -109,4 +109,16 @@ public class FenleiBaohuResult implements Serializable {
 
     @TableField("MESSAGE")
     private String MESSAGE;
+
+    /**
+     * 默认不可编辑，用在前端页面caseChangeAll.vue
+     */
+    @TableField(exist = false)
+    private boolean edit;
+
+    /**
+     * 默认不可编辑，用在前端页面caseChangeAll.vue
+     */
+    @TableField(exist = false)
+    private boolean setSet;
 }
