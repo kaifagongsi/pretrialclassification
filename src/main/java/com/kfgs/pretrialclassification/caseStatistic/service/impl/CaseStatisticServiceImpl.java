@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.caseStatistic.service.CaseStatisticService;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuAdjudicationMapper;
-import com.kfgs.pretrialclassification.dao.FenleiBaohuLogMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuMainMapper;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuResultMapper;
 import com.kfgs.pretrialclassification.domain.FenleiBaohuMain;
@@ -28,9 +27,6 @@ public class CaseStatisticServiceImpl implements CaseStatisticService {
 
     @Autowired
     FenleiBaohuResultMapper fenleiBaohuResultMapper;
-
-    @Autowired
-    FenleiBaohuLogMapper fenleiBaohuLogMapper;
 
     @Autowired
     FenleiBaohuMainMapper fenleiBaohuMainMapper;

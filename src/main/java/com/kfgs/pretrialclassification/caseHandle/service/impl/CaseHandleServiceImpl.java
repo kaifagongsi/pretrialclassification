@@ -21,8 +21,6 @@ public class CaseHandleServiceImpl implements CaseHandleService {
     @Autowired
     FenleiBaohuResultMapper fenleiBaohuResultMapper;
 
-    @Autowired
-    FenleiBaohuLogMapper fenleiBaohuLogMapper;
 
     @Autowired
     FenleiBaohuMainMapper fenleiBaohuMainMapper;
