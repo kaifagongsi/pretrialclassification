@@ -23,7 +23,7 @@ public class ExecutorConfig {
     private int corePoolSize;
 
     /** 最大线程数 */
-    @NacosValue(value = "${async.executor.thread.max_pool_size:30}",autoRefreshed = true)
+    @NacosValue(value = "${async.executor.thread.max_pool_size:50}",autoRefreshed = true)
     private int maxPoolSize;
 
     /** 允许线程空闲时间(单位：默认为秒) */
@@ -35,7 +35,7 @@ public class ExecutorConfig {
     private  int queueCapacity;
 
     /** 线程池名前缀 */
-    @NacosValue(value = "${async.executor.thread.thread_name_prefix:30}",autoRefreshed = true)
+    @NacosValue(value = "${async.executor.thread.thread_name_prefix:bhzx_}",autoRefreshed = true)
     private String threadNamePrefix;
 
     @Bean(name = "pretroalclassificationAsyncExecutor") // bean的名称，默认为首字母小写的方法名
