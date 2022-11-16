@@ -81,32 +81,32 @@ public class caseClassificationController extends BaseController {
             }
             String classtype = "主";
             //新分待审
-            if (state == "0" || state.equals("0")) {
+            if ( "0" == state  || "0".equals(state)) {
                 classtype = "主";
             }
             //转案待审,作为副分，状态为0
-            if (state == "1" || state.equals("1")) {
+            if ("1" == state  || "1".equals(state)) {
                 state = "0";
                 classtype = "副";
             }
             //已分待出
-            if (state == "2" || state.equals("2")) {
+            if ("2" == state  || "2".equals(state)) {
                 state = "1";
                 classtype = "";
             }
             //已出案,状态为2
             //只在出案案件中按时间查询
-            if (state == "3" || state.equals("3")) {
+            if ("3" == state || "3".equals(state)) {
                 state = "2";
                 classtype = "";
             }
             //分类号更正待审
-            if (state == "4" || state.equals("4")) {
+            if ("4" == state || "4".equals(state)) {
                 state = "9";
                 classtype = "";
             }
             //分类号裁决待审
-            if (state == "5" || state.equals("5")) {
+            if ("5" == state || "5".equals(state)) {
                 state = "7";
                 classtype = "";
             }
@@ -116,14 +116,14 @@ public class caseClassificationController extends BaseController {
             if (endTime == null){
                 endTime = "";
             }
-            if(beginTime == "" && endTime != ""){
+            if( "" == beginTime &&  "" != endTime ){
                 beginTime = "19000000000000";
                 endTime = endTime.replace("-","")+"235959";
-            }else if(beginTime != "" && endTime == ""){
+            }else if("" != beginTime   &&  "" == endTime){
                 beginTime = beginTime.replace("-","")+"000000";
                 endTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString();
                 endTime = endTime.replace("-","")+"235959";
-            }else if(beginTime != "" && endTime != ""){
+            }else if("" != beginTime   && "" !=  endTime  ){
                 beginTime = beginTime.replace("-","")+"000000";
                 endTime = endTime.replace("-","")+"235959";
             }else{

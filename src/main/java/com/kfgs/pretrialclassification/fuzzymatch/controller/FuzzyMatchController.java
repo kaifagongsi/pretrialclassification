@@ -44,7 +44,7 @@ public class FuzzyMatchController {
     @GetMapping("/matchAll")
     public QueryResponseResult matchAll(){
         FenleiBaohuUserinfoExt user = userService.findUserWorkerName();
-        if(user.getDep1().equals("系统建设与运维部")){
+        if("系统建设与运维部".equals(user.getDep1())){
             if(fuzzyMatchService.getState() == 0){
                 fuzzyMatchService.matchAll();
                 try {

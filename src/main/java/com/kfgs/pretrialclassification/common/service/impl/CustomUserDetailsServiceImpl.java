@@ -26,7 +26,7 @@ import java.util.Objects;
  */
 @Service
 
-public class CustomUserDetailsService  implements UserDetailsService {
+public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     FenleiBaohuUserinfoMapper fenleiBaohuUserinfoMapper;

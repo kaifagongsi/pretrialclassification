@@ -21,7 +21,7 @@ public class MultipartFileToFile {
             direct.mkdirs();
         }
         File toFile = null;
-        if (file.equals("") || file.getSize() <= 0) {
+        if ("".equals(file) || file.getSize() <= 0) {
             file = null;
         } else {
             InputStream ins = null;
@@ -42,7 +42,7 @@ public class MultipartFileToFile {
     public static File multipartFileToFile(MultipartFile file) throws Exception {
 
         File toFile = null;
-        if (file.equals("") || file.getSize() <= 0) {
+        if ("".equals(file) || file.getSize() <= 0) {
             file = null;
         } else {
             InputStream ins = null;

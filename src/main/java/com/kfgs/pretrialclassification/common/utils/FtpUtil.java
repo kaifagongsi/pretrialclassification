@@ -80,7 +80,9 @@ public class FtpUtil {
 			ftpClient.changeWorkingDirectory(ftpPath);
 			
 			for (int i = 0; i < uploadList.length; i++) {
-				if(!uploadList[i].getName().endsWith(".doc")) continue;
+				if(!uploadList[i].getName().endsWith(".doc")) {
+					continue;
+				}
 				input = new FileInputStream(uploadList[i]);
 				ftpClient.storeFile(uploadList[i].getName(), input);
 			}

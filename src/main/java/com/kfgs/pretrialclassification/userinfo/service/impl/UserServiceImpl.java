@@ -73,6 +73,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     ReadisInitService readisInitService;
 
+    private String adjudicatorPattern = "\\d{6}";
+
     private BoundHashOperations<String, String, Object> tokenStorage() {
         return redisTemplate.boundHashOps(jwtTokenUtils.getTokenHeader());
     }
@@ -179,7 +181,7 @@ public class UserServiceImpl implements UserService {
         if(map.get("dep2") != null && StringUtils.isNotEmpty(map.get("dep2").toString())){
             dep2 = map.get("dep2").toString();
         }
-        if(map.get("isOnline") != null && !map.get("isOnline").toString().equals("all") && StringUtils.isNotEmpty(map.get("isOnline").toString())){
+        if(map.get("isOnline") != null && !"all".equals(map.get("isOnline").toString()) && StringUtils.isNotEmpty(map.get("isOnline").toString())){
             isOnline = map.get("isOnline").toString();
         }
         IPage<FenleiBaohuUserinfo> pageInfo = userinfoMapper.getUserList(page,dep1,dep2,isOnline);
@@ -322,7 +324,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
             String adjudicator = fenleiBaohuUserinfo.getAdjudicator();
-            if( StringUtils.isNotEmpty(adjudicator) && adjudicator.length() ==6 && Pattern.compile("\\d{6}").matcher(adjudicator).find()){
+            if( StringUtils.isNotEmpty(adjudicator) && adjudicator.length() ==6 && Pattern.compile(adjudicatorPattern).matcher(adjudicator).find()){
                 String time = fenleiBaohuUserinfo.getLastTime();
                 TrimeUtil.objectToTrime(fenleiBaohuUserinfo);
                 QueryWrapper<FenleiBaohuUserinfo> wrapper = new QueryWrapper();

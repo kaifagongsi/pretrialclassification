@@ -65,7 +65,7 @@ public class  CaseHandleController extends BaseController {
             }
         }
         if(newFile != null && newFile.exists()) {
-            HashMap<String,FenleiBaohuMain> map = readExcel_xml(newFile);
+            HashMap<String,FenleiBaohuMain> map = readExcelXml(newFile);
             if(map.isEmpty()){
                 System.out.println(" 获取Excel文件内容失败");
             }
@@ -90,8 +90,8 @@ public class  CaseHandleController extends BaseController {
 
     @ApiOperation(value = "跟据id，删除数据" )
     @DeleteMapping("/deleteDataByID/{id}")
-    public QueryResponseResult deleteDataByID(@PathVariable("id") String id){
-        return  caseHandleService.deleteDataByID(id);
+    public QueryResponseResult deleteDataById(@PathVariable("id") String id){
+        return  caseHandleService.deleteDataById(id);
     }
 
     @ApiOperation("更新粗分号")
@@ -114,7 +114,7 @@ public class  CaseHandleController extends BaseController {
 
 
     //解析excel文件
-    private HashMap<String, FenleiBaohuMain> readExcel_xml(File excelFile) {
+    private HashMap<String, FenleiBaohuMain> readExcelXml(File excelFile) {
         String fileName = excelFile.getName();
         HashMap<String,FenleiBaohuMain> map = new HashMap<String,FenleiBaohuMain>();
         try {
@@ -134,33 +134,33 @@ public class  CaseHandleController extends BaseController {
                         continue;
                     }
                     FenleiBaohuMain bean = new FenleiBaohuMain();
-                    Cell cell_id = row.getCell(0);
+                    Cell cellId = row.getCell(0);
                     String id = "";
-                    if(cell_id != null){//预审编号，预审申请号
-                        id = cell_id.getStringCellValue();
-                        if(id.trim().equals("")){
+                    if(cellId != null){//预审编号，预审申请号
+                        id = cellId.getStringCellValue();
+                        if("".equals(id.trim())){
                             continue;
                         }
                         bean.setId(id);
                     }else{
                         continue;
                     }
-                    Cell cell_sqr = row.getCell(1);
-                    if(cell_sqr != null){//申请主题，申请人
-                        bean.setSqr(cell_sqr.getStringCellValue());
+                    Cell cellSqr = row.getCell(1);
+                    if(cellSqr != null){//申请主题，申请人
+                        bean.setSqr(cellSqr.getStringCellValue());
                     }
-                    Cell cell_title = row.getCell(2);
-                    if(cell_title != null){//发明名称
-                        bean.setMingcheng(cell_title.getStringCellValue());
+                    Cell cellTitle = row.getCell(2);
+                    if(cellTitle != null){//发明名称
+                        bean.setMingcheng(cellTitle.getStringCellValue());
                     }
-                    Cell cell_type = row.getCell(3);
-                    if(cell_type != null){//发明类型
-                        String typeVal = cell_type.getStringCellValue().trim();
-                        if(typeVal.equals("发明")||typeVal.equals("发明专利")||"发明".equals(typeVal.trim())||"fm".equals(typeVal.toLowerCase())){
+                    Cell cellType = row.getCell(3);
+                    if(cellType != null){//发明类型
+                        String typeVal = cellType.getStringCellValue().trim();
+                        if("发明".equals(typeVal) || "发明专利".equals(typeVal) ||"发明".equals(typeVal.trim())||"fm".equals(typeVal.toLowerCase())){
                             typeVal = "FM";
-                        }else if(typeVal.equals("新型")||typeVal.equals("实用新型")||typeVal.equals("实用新型专利")||"xx".equals(typeVal.toLowerCase())){
+                        }else if("新型".equals(typeVal) || "实用新型".equals(typeVal) || "实用新型专利".equals(typeVal) ||"xx".equals(typeVal.toLowerCase())){
                             typeVal = "XX";
-                        }else if(typeVal.equals("外观设计")){
+                        }else if("外观设计".equals(typeVal)){
                             continue;
                         }
                         bean.setType(typeVal);

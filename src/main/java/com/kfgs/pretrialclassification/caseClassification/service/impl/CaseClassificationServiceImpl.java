@@ -367,7 +367,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
 
         //拼接CCA，需要去重
         String cca = AdjudicationBusinessUtils.margeCca(ccaList);
-        QueryResponseResult responseResult = AdjudicationBusinessUtils.JudgeWhetherToEnterTheRuling(id,ipcmiList, ipcoiList,ipcaList, csetsList, csets, cci, type);
+        QueryResponseResult responseResult = AdjudicationBusinessUtils.judgeWhetherToEnterTheRuling(id,ipcmiList, ipcoiList,ipcaList, csetsList, csets, cci, type);
         if(!"20000".equals(responseResult.getCode()) && responseResult.getCode() != 20000){
             // 表示进裁决
             return  responseResult;
@@ -377,7 +377,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             //不用进裁决则保存合并后的分类号
             //合并ipci
             //拼接主分类号
-            String ipci= AdjudicationBusinessUtils.mergeIPCI(ipcmiList,ipcoiList,ipcaList);
+            String ipci= AdjudicationBusinessUtils.mergeIpci(ipcmiList,ipcoiList,ipcaList);
             //分类号存入main表
             /*QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("id",id);
@@ -470,7 +470,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         if ("7".equals(myFinish)){
             return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_RULED,null);
         }
-        if (!myFinish.equals("1")){
+        if (!"1".equals(myFinish)){
             return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_STATE,null);
         }
         //加锁 没有值，则为true 2022年10月27日 15:40:56 lxl
@@ -865,7 +865,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
 
     //时间戳转字符串
     public static String timeStampToDate(Long timestamp,String format){
-        if (timestamp == null || timestamp.equals("null")){
+        if (timestamp == null || "null".equals(timestamp)){
             return "";
         }
         if (format == null || format.isEmpty()){
@@ -968,7 +968,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         }
         if(StringUtils.isNotEmpty(ipca)){
             ipca = ipca.replaceAll("CPCONLY","").replaceAll(",,",",");
-            if(ipca.equalsIgnoreCase(",")){
+            if(",".equalsIgnoreCase(ipca)){
                 map.put("ipca","");
             }else{
                 map.put("ipca",ipca);

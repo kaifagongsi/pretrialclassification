@@ -14,7 +14,7 @@ public interface CaseHandleService {
     IPage findByState(String pageNo, String limit);
 
     //删除数据
-    QueryResponseResult deleteDataByID(String id);
+    QueryResponseResult deleteDataById(String id);
 
     //更新粗分号
     QueryResponseResult updateSimpleclasscode(String id, String simpleclasscode);

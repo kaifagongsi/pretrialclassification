@@ -96,7 +96,7 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
     @Override
     @Transactional
     //根据预审编号查询案件
-    public List<FenleiBaohuResult> findClassInfoByID(String id) {
+    public List<FenleiBaohuResult> findClassInfoById(String id) {
         QueryWrapper queryWrapper = new QueryWrapper();
         //模糊查询
         queryWrapper.eq("id",id);
@@ -107,7 +107,7 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
     }
 
     @Override
-    public List findUpdateInfoByID(String id, String worker) {
+    public List findUpdateInfoById(String id, String worker) {
         QueryWrapper queryWrapper = new QueryWrapper();
         //精确查询
         queryWrapper.eq("id",id);
@@ -121,7 +121,7 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
     @Override
     @Transactional
     //根据申请号查询案件
-    public IPage findBySQH(String pageNo, String limit,String sqh) {
+    public IPage findBySqh(String pageNo, String limit,String sqh) {
         Map resultMap = new HashMap();
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("sqh",sqh);
@@ -145,7 +145,7 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
     @Override
     @Transactional
     //根据申请人查询案件
-    public IPage findBySQR(String pageNo, String limit,String sqr) {
+    public IPage findBySqr(String pageNo, String limit,String sqr) {
         Map resultMap = new HashMap();
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.like("sqr",sqr);

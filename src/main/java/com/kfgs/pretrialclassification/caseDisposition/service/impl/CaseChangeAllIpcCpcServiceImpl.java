@@ -174,7 +174,7 @@ public class CaseChangeAllIpcCpcServiceImpl implements CaseChangeAllIpcCpcServic
         String cci = AdjudicationBusinessUtils.margeCci(cciList);
         //拼接CCA，需要去重
         String cca = AdjudicationBusinessUtils.margeCca(ccaList);
-        String ipci= AdjudicationBusinessUtils.mergeIPCI(ipcmiList,ipcoiList,ipcaList);
+        String ipci= AdjudicationBusinessUtils.mergeIpci(ipcmiList,ipcoiList,ipcaList);
         FenleiBaohuMain main = new FenleiBaohuMain();
         main.setId(list.get(0).getId());
         main.setIpci(ipci);

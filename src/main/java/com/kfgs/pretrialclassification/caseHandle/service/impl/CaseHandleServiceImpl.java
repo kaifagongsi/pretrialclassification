@@ -49,7 +49,7 @@ public class CaseHandleServiceImpl implements CaseHandleService {
 
     //删除数据
     @Override
-    public QueryResponseResult deleteDataByID(String id) {
+    public QueryResponseResult deleteDataById(String id) {
         QueryWrapper<FenleiBaohuMain> wrapper = new QueryWrapper();
         wrapper.eq("id",id);
         int delete = fenleiBaohuMainMapper.delete(wrapper);

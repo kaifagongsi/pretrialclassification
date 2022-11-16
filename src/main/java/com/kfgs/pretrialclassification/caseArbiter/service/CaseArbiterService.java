@@ -179,7 +179,7 @@ public class CaseArbiterService   {
                 dazuClass = ipc_.substring(0,ipc_.indexOf("/"));
                 linkset.add(ipc_);
             }else if(ipc_.matches("[0-9]+/[0-9]+")){
-                if(!subClass.equals("")){
+                if(!"".equals(subClass)){
                     ipc_ = subClass + ipc_;
                     linkset.add(ipc_);
                 }else{
@@ -275,7 +275,7 @@ public class CaseArbiterService   {
                     list.add(s_csets);
                     temp.add(s_csets);
                 }else if(s_csets.matches("[0-9]+/[0-9]+")){
-                    if(!subClass.equals("")){
+                    if(!"".equals(subClass)){
                         s_csets = subClass + s_csets;
                         list.add(s_csets);
                         temp.add(s_csets);
@@ -342,9 +342,9 @@ public class CaseArbiterService   {
 
     private boolean checkClassCodeVersion(ArrayList<String> list, String codeName) {
         HashSet<String> set = new HashSet<>();
-        if(codeName.equalsIgnoreCase("IPC")){
+        if("IPC".equalsIgnoreCase(codeName)){
             set = fenleiBaohuIPCMapper.getHashSetFromIPCList(list );
-        }else if(codeName.equalsIgnoreCase("CPC")){
+        }else if("CPC".equalsIgnoreCase(codeName)){
             set = fenleiBaohuCPCMapper.getHashSetFromCPCList(list);
         }
         //将数据库对比出来的和传入的进行对比

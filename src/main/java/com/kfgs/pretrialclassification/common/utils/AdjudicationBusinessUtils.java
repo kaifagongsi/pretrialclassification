@@ -55,7 +55,7 @@ public class AdjudicationBusinessUtils {
      * @param type 0获取数组第一个，其他表示为随机
      * @return
      */
-    public static QueryResponseResult JudgeWhetherToEnterTheRuling(String id,List<String> ipcmiList,List<String> ipcoiList,List<String> ipcaList, List<String> csetsList, String csets, String cci, String type){
+    public static QueryResponseResult judgeWhetherToEnterTheRuling(String id,List<String> ipcmiList,List<String> ipcoiList,List<String> ipcaList, List<String> csetsList, String csets, String cci, String type){
         //0.设置返回的实体
         FenleiBaohuAdjudication fenleiBaohuAdjudication = new FenleiBaohuAdjudication();
         //0.1设置id
@@ -218,7 +218,7 @@ public class AdjudicationBusinessUtils {
      * @param ipcaList 附加信息
      * @return
      */
-    public static String mergeIPCI(List<String> ipcmiList,List<String> ipcoiList,List<String> ipcaList){
+    public static String mergeIpci(List<String> ipcmiList,List<String> ipcoiList,List<String> ipcaList){
         StringBuffer ipci = new StringBuffer();
         //String ipcmi = ipcmiList.get(0);
         //ipci += ipcmi;
@@ -284,15 +284,15 @@ public class AdjudicationBusinessUtils {
         String cci = "";
         //先去重
         if (cciList.size() > 1){
-            List<String> list_cci = new ArrayList<>();
-            StringBuffer sb_cci = new StringBuffer();
+            List<String> listCci = new ArrayList<>();
+            StringBuffer sbCci = new StringBuffer();
             for (int i=0;i<cciList.size();i++){
-                if(!list_cci.contains(cciList.get(i))){
-                    list_cci.add(cciList.get(i));
-                    sb_cci.append(cciList.get(i) + ",");
+                if(!listCci.contains(cciList.get(i))){
+                    listCci.add(cciList.get(i));
+                    sbCci.append(cciList.get(i) + ",");
                 }
             }
-            cci = sb_cci.toString().substring(0,sb_cci.toString().length()-1);
+            cci = sbCci.toString().substring(0,sbCci.toString().length()-1);
         }else if (cciList.size() == 1) {
             cci = cciList.get(0);
         }
@@ -308,15 +308,15 @@ public class AdjudicationBusinessUtils {
         String cca = "";
         //去重
         if (ccaList.size() >1){
-            List<String> list_cca = new ArrayList<>();
-            StringBuffer sb_cca = new StringBuffer();
+            List<String> listCca = new ArrayList<>();
+            StringBuffer sbCca = new StringBuffer();
             for (int i=0;i<ccaList.size();i++){
-                if (!list_cca.contains(ccaList.get(i))){
-                    list_cca.add(ccaList.get(i));
-                    sb_cca.append(ccaList.get(i)+",");
+                if (!listCca.contains(ccaList.get(i))){
+                    listCca.add(ccaList.get(i));
+                    sbCca.append(ccaList.get(i)+",");
                 }
             }
-            cca = sb_cca.toString().substring(0,sb_cca.toString().length()-1);
+            cca = sbCca.toString().substring(0,sbCca.toString().length()-1);
         }else if (ccaList.size() == 1){
             cca = ccaList.get(0);
         }

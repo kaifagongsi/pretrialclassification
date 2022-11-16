@@ -34,7 +34,7 @@ public class caseConditionQueryController extends BaseController{
     public Map findAllCase(String page,String limit,String id,String mingcheng,String oraginization,String sqr,String sqh,String worker,String state,String beginTime,String endTime,String enterBeginTime,String enterEndTime) throws PretrialClassificationException {
         //获取查询条件
         Map resultMap = new HashMap();
-        if(state == null || state == "all" || state.equals("all") || state==""){
+        if(state == null || state == "all" || "all".equals(state) || state==""){
             state = "";
         }
         if (id == null){
@@ -111,10 +111,10 @@ public class caseConditionQueryController extends BaseController{
 
     @ApiOperation("main表，根据预审编号查询案件分类信息")
     @GetMapping("/findClassInfoByID")
-    public Map findClassInfoByID(String id) throws PretrialClassificationException{
+    public Map findClassInfoById(String id) throws PretrialClassificationException{
 
         Map resultMap = new HashMap();
-        List list = caseConditionQueryService.findClassInfoByID(id);
+        List list = caseConditionQueryService.findClassInfoById(id);
         resultMap.put("code",20000);
         resultMap.put("data",list);
         return resultMap;
@@ -122,9 +122,9 @@ public class caseConditionQueryController extends BaseController{
 
     @ApiOperation("更正列表,根据预审编号查询案件分类信息")
     @GetMapping("/findUpdateInfoByID")
-    public Map findUpdateInfoByID(String id, String worker) throws PretrialClassificationException{
+    public Map findUpdateInfoById(String id, String worker) throws PretrialClassificationException{
         Map resultMap = new HashMap();
-        List list = caseConditionQueryService.findUpdateInfoByID(id,worker);
+        List list = caseConditionQueryService.findUpdateInfoById(id,worker);
         resultMap.put("code",20000);
         resultMap.put("data",list);
         return resultMap;
@@ -132,9 +132,9 @@ public class caseConditionQueryController extends BaseController{
 
     @ApiOperation("main表，根据申请号查询案件")
     @GetMapping("/findBySQH")
-    public Map findBySQH(String page,String limit,String sqh) throws PretrialClassificationException{
+    public Map findBySqh(String page,String limit,String sqh) throws PretrialClassificationException{
         Map resultMap = new HashMap();
-        Map<String,Object> dataTable = getDataTable(caseConditionQueryService.findBySQH(page,limit,sqh));
+        Map<String,Object> dataTable = getDataTable(caseConditionQueryService.findBySqh(page,limit,sqh));
         resultMap.put("code",20000);
         resultMap.put("data",dataTable);
         return resultMap;
@@ -152,9 +152,9 @@ public class caseConditionQueryController extends BaseController{
 
     @ApiOperation("main表，根据申请人查询案件")
     @GetMapping("/findBySQR")
-    public Map findBySQR(String page,String limit,String sqr) throws PretrialClassificationException{
+    public Map findBySqr(String page,String limit,String sqr) throws PretrialClassificationException{
         Map resultMap = new HashMap();
-        Map<String,Object> dataTable = getDataTable(caseConditionQueryService.findBySQR(page,limit,sqr));
+        Map<String,Object> dataTable = getDataTable(caseConditionQueryService.findBySqr(page,limit,sqr));
         resultMap.put("code",20000);
         resultMap.put("data",dataTable);
         return resultMap;

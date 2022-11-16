@@ -61,7 +61,7 @@ public class CaseArbiterController {
 
     @ApiOperation("根据预审编号查询案件分类信息,并返回裁决员给出的分类号")
     @GetMapping("/findClassInfoByID/{sid}/{state}/{processingPerson}")
-    public QueryResponseResult findClassInfoByID(@PathVariable("sid") String id,@PathVariable("state") String state,@PathVariable("processingPerson") String processingPerson ){
+    public QueryResponseResult findClassInfoById(@PathVariable("sid") String id,@PathVariable("state") String state,@PathVariable("processingPerson") String processingPerson ){
         return caseArbiterService.findClassInfoByID(id,state,processingPerson);
     }
 
