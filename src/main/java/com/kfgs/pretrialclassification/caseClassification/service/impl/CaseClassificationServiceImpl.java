@@ -611,7 +611,7 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
              */
             //获取相关案件的result信息
             String mainClassifiers = "";
-            String viceClassifiers = "";
+            StringBuilder viceClassifiers = new StringBuilder();
             QueryWrapper mainWrapper = new QueryWrapper();
             QueryWrapper viceWrapper = new QueryWrapper();
             //主分类员,未进裁决的案子一定有且仅有唯一一个主分类员
@@ -619,20 +619,24 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             mainWrapper.isNotNull("ipcmi");
             FenleiBaohuResult mainClassResult = fenleiBaohuResultMapper.selectOne(mainWrapper);
             mainClassifiers = mainClassResult.getWorker();
-
             //副分类员,可以有多个给了副分类号的分类员
-
-            /*List<FenleiBaohuResult> resultList = fenleiBaohuResultMapper.selectList(resultWrapper);
-            if (resultList != null) {
-
-            }*/
-
+            viceWrapper.eq("id",id);
+            viceWrapper.isNull("ipcmi");
+            List<FenleiBaohuResult> resultList = fenleiBaohuResultMapper.selectList(viceWrapper);
+            if (resultList != null && resultList.size()!=0) {
+                resultList.forEach(item ->{
+                    viceClassifiers.append(item.getWorker()).append(",");
+                });
+            }
             if (result == 1){
                 //fenleiBaohuMain.setId(map.get("id").toString());
                 fenleiBaohuMain.setIpci(map.get("ipci").toString());
                 fenleiBaohuMain.setCci(map.get("cci").toString());
                 fenleiBaohuMain.setCca(map.get("cca").toString());
                 fenleiBaohuMain.setCsets(map.get("csets").toString());
+                fenleiBaohuMain.setMainClassifiers(mainClassifiers);
+                String viceClassifiersString = viceClassifiers.toString();
+                fenleiBaohuMain.setViceClassifiers(viceClassifiersString.substring(0,viceClassifiersString.length() -1));
                 /**  更正不更新出案时间 20220819  lxl */
                 if(clzss != FenleiBaohuUpdateipcService.class){
                     fenleiBaohuMain.setChuantime(Long.parseLong(chuantime));

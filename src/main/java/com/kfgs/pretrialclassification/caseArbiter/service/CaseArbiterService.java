@@ -517,21 +517,43 @@ public class CaseArbiterService   {
                 ipci = ipci + "*" + adjudication.getIpca();
             }
             int main_j = 0;
-            //3. 更新main表状态 以及分类号  此处区分 更正引起的裁决 和 正常出案的裁决区分
+            //3. 更正result表信息
+//            boolean updateResultInfo = updateResultTableInfo(adjudication,id);
+            boolean updateResultInfo = updateResultTableInfoNew(adjudication,id);
+            //4.设置主副分
+            //获取相关案件的result信息
+            String mainClassifiers = "";
+            StringBuilder viceClassifiers = new StringBuilder();
+            QueryWrapper mainWrapper = new QueryWrapper();
+            QueryWrapper viceWrapper = new QueryWrapper();
+            //主分类员,未进裁决的案子一定有且仅有唯一一个主分类员
+            mainWrapper.eq("id",id);
+            mainWrapper.isNotNull("ipcmi");
+            FenleiBaohuResult mainClassResult = fenleiBaohuResultMapper.selectOne(mainWrapper);
+            mainClassifiers = mainClassResult.getWorker();
+            //副分类员,可以有多个给了副分类号的分类员
+            viceWrapper.eq("id",id);
+            viceWrapper.isNull("ipcmi");
+            List<FenleiBaohuResult> resultList = fenleiBaohuResultMapper.selectList(viceWrapper);
+            if (resultList != null && resultList.size()!=0) {
+                resultList.forEach(item ->{
+                    viceClassifiers.append(item.getWorker()).append(",");
+                });
+            }
+            String viceClassifiersString = viceClassifiers.toString();
+            viceClassifiersString=viceClassifiersString.substring(0,viceClassifiersString.length() -1);
+            //5. 更新main表状态 以及分类号  此处区分 更正引起的裁决 和 正常出案的裁决区分
             if(adjudication.getProcessingreasons().contains("由于更正引起的裁决")){
                 //3.1 判断main表是否有出案时间，有就不可修改，没有就可以修改
                 FenleiBaohuMain main = fenleiBaohuMainMapper.selectById(id);
                 if(null == main.getChuantime() || 0 == main.getChuantime()){
-                    main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(finishTime,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id,"2");
+                    main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(finishTime,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id,"2",mainClassifiers,viceClassifiersString);
                 }else{
-                    main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(null,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id,"2");
+                    main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(null,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id,"2",mainClassifiers,viceClassifiersString);
                 }
             }else{
-                main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(finishTime,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id,"2");
+                main_j = fenleiBaohuMainMapper.updateIpciCciCcaCsetsById(finishTime,ipci,adjudication.getCci(),adjudication.getCca(),adjudication.getCsets(),id,"2",mainClassifiers,viceClassifiersString);
             }
-            //4. 更正result表信息
-//            boolean updateResultInfo = updateResultTableInfo(adjudication,id);
-            boolean updateResultInfo = updateResultTableInfoNew(adjudication,id);
             if(main_j == 1 && i == 1 && (updateResultInfo)){
                 return new QueryResponseResult(CommonCode.SUCCESS,null);
             }else{

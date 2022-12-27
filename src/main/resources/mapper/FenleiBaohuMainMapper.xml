@@ -48,7 +48,13 @@
                 CHUANTIME = #{finishTime},
             </if>
             <if test="state != null">
-                STATE = #{state}
+                STATE = #{state},
+            </if>
+            <if test="mainClassifiers != null">
+                MAIN_CLASSIFIERS = #{mainClassifiers},
+            </if>
+            <if test="viceClassifiersString !=null">
+                VICE_CLASSIFIERS =#{viceClassifiersString},
             </if>
         </set>
         where
