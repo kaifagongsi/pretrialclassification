@@ -39,7 +39,7 @@ import java.time.Duration;
 @Slf4j
 @Configuration
 public class RedisTemplateConfiguration {
-    @Value("${spring.redis.host}")
+    /*@Value("${spring.redis.host}")
     private String host;
 
     @Value("${spring.redis.port}")
@@ -84,7 +84,7 @@ public class RedisTemplateConfiguration {
         jedisClientConfiguration.connectTimeout(Duration.ofMillis(timeout));
         jedisClientConfiguration.usePooling();
         return new JedisConnectionFactory(redisStandaloneConfiguration, jedisClientConfiguration.build());
-    }
+    }*/
 
     @Bean(name = "redisTemplate")
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
