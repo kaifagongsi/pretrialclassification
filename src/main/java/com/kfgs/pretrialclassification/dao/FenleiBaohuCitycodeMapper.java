@@ -1,7 +1,7 @@
 package com.kfgs.pretrialclassification.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.kfgs.pretrialclassification.domain.FenleiBaohuCpctoipc;
+import com.kfgs.pretrialclassification.domain.FenleiBaohuCitycode;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,7 +10,6 @@ import java.util.List;
  * @author mango
  */
 @Repository
-public interface FenleiBaohuCpctoipcMapper extends BaseMapper<FenleiBaohuCpctoipc> {
+public interface FenleiBaohuCitycodeMapper extends BaseMapper<FenleiBaohuCitycode> {
 
-    public String getIpcByCpcList(List list);
 }

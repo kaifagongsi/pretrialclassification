@@ -1,6 +1,7 @@
 package com.kfgs.pretrialclassification.common.service.impl;
 
 
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.kfgs.pretrialclassification.dao.FenleiBaohuUserinfoMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class ReadisInitService  implements CommandLineRunner {
     @Lazy
     private RedisTemplate<String, Object> redisTemplate;
 
-    @Value("${spring.application.name}")
+    @NacosValue("${spring.application.name}")
     private String serverName;
 
     @Autowired

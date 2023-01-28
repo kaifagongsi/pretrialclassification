@@ -1,6 +1,7 @@
 package com.kfgs.pretrialclassification.caseClassification.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -19,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,8 +69,14 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
 
     @Autowired
     @Lazy
-    private RedisTemplate<String, String> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
+    @NacosValue("${spring.application.name}")
+    private String serverName;
+
+    private BoundHashOperations<String, String, Object> pretrialClassification() {
+        return redisTemplate.boundHashOps(serverName);
+    }
     @Override
     @Transactional
     //按状态查询分类员下案件
@@ -110,6 +118,10 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                     fenleiBaohuMainResultExt.setSimilarCases(true);
                 }
             }
+            //查找citycde
+            BoundHashOperations<String, String, Object> operations = pretrialClassification();
+            HashMap map = (HashMap)operations.get("cityCode");
+            fenleiBaohuMainResultExt.setCityCode(map.get(fenleiBaohuMainResultExt.getOraginization()).toString());
         }
         return iPage;
     }

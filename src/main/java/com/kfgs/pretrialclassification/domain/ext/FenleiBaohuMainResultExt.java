@@ -53,4 +53,6 @@ public class FenleiBaohuMainResultExt extends FenleiBaohuMain {
      * 是否有相似案件
      */
     private boolean isSimilarCases;
+
+    private String cityCode;
 }
