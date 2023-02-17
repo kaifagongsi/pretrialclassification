@@ -114,7 +114,7 @@
         from fenlei_baohu_main a, fenlei_baohu_result t
         where a.id = t.id
         <if test="begintime!=''and endtime!=''">
-            AND t.chuantime between #{begintime} and #{endtime}
+            AND a.chuantime between #{begintime} and #{endtime}
         </if>
         <if test="type!='' ">
             AND t.classtype=#{type}
@@ -301,7 +301,7 @@
         from fenlei_baohu_main a, fenlei_baohu_result t
         where  a.id = t.id
         <if test="begintime!=''and endtime!=''">
-            AND t.chuantime between #{begintime} and #{endtime}
+            AND a.chuantime between #{begintime} and #{endtime}
         </if>
         <if test="type!='' ">
             AND t.classtype=#{type}
@@ -327,7 +327,7 @@
         from fenlei_baohu_result r,fenlei_baohu_main m
         where  r.id = m.id
         <if test="begintime!=''and endtime!=''">
-            AND r.chuantime between #{begintime} and #{endtime}
+            AND m.chuantime between #{begintime} and #{endtime}
         </if>
         <if test="type!='' ">
             AND r.classtype=#{type}

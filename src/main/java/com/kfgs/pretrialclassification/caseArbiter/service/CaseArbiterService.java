@@ -541,7 +541,9 @@ public class CaseArbiterService   {
                 });
             }
             String viceClassifiersString = viceClassifiers.toString();
-            viceClassifiersString=viceClassifiersString.substring(0,viceClassifiersString.length() -1);
+            if(StringUtils.isNotEmpty(viceClassifiersString)){
+                viceClassifiersString=viceClassifiersString.substring(0,viceClassifiersString.length() -1);
+            }
             //5. 更新main表状态 以及分类号  此处区分 更正引起的裁决 和 正常出案的裁决区分
             if(adjudication.getProcessingreasons().contains("由于更正引起的裁决")){
                 //3.1 判断main表是否有出案时间，有就不可修改，没有就可以修改

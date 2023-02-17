@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kfgs.pretrialclassification.caseArbiter.service.CaseArbiterService;
 import com.kfgs.pretrialclassification.caseClassification.service.CaseClassificationService;
+import com.kfgs.pretrialclassification.common.config.RedisLockUtils;
 import com.kfgs.pretrialclassification.common.utils.*;
 import com.kfgs.pretrialclassification.dao.*;
 import com.kfgs.pretrialclassification.domain.*;
@@ -68,6 +69,9 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     IFenleiBaohuAdjuInforBackupService fenleiBaohuAdjuInforBackupService;
 
     @Autowired
+    RedisLockUtils redisLockUtils;
+
+    @Autowired
     @Lazy
     private RedisTemplate<String, Object> redisTemplate;
 
@@ -121,7 +125,13 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             //查找citycde
             BoundHashOperations<String, String, Object> operations = pretrialClassification();
             HashMap map = (HashMap)operations.get("cityCode");
-            fenleiBaohuMainResultExt.setCityCode(map.get(fenleiBaohuMainResultExt.getOraginization()).toString());
+            Object cityCode = map.get(fenleiBaohuMainResultExt.getOraginization());
+            if(null != cityCode){
+                fenleiBaohuMainResultExt.setCityCode(cityCode.toString());
+            }else {
+                fenleiBaohuMainResultExt.setCityCode(null);
+            }
+
         }
         return iPage;
     }
@@ -485,8 +495,16 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
         if (!"1".equals(myFinish)){
             return new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_STATE,null);
         }
-        //加锁 没有值，则为true 2022年10月27日 15:40:56 lxl
-        Boolean lock = redisTemplate.opsForValue().setIfAbsent(id, "lock", 150, TimeUnit.SECONDS);
+        /**
+         *  加锁 没有值，则为true 2022年10月27日 15:40:56 lxl
+         *  SET lock_key unique_value NX PX 10000
+         *  lock_key 就是 key 键；
+         *  unique_value 是客户端生成的唯一的标识，区分来自不同客户端的锁操作；
+         *  NX 代表只在 lock_key 不存在时，才对 lock_key 进行设置操作；
+         *  PX 10000 表示设置 lock_key 的过期时间为 10s，这是为了避免客户端发生异常而无法释放锁。
+         *  Boolean lock = redisTemplate.opsForValue().setIfAbsent(id, "lock", 150, TimeUnit.SECONDS);
+         */
+        Boolean lock = redisLockUtils.getLock(id, "lock");
         if(lock){
             log.info(user+ "获取到锁("+id+")成功");
             List<String> unFinish = new ArrayList<>();
@@ -513,7 +531,8 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                 queryResponseResult = new QueryResponseResult(CaseClassificationEnum.INVALID_CASE_RULED,null);
             }
             //删除锁
-            redisTemplate.delete(id);
+//            redisTemplate.delete(id);
+            redisLockUtils.releaseLock(id,"lock");
             log.info(user+ "释放锁("+id+")");
         }else{
             log.info(user+ "获取到锁失败");
@@ -648,7 +667,12 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
                 fenleiBaohuMain.setCsets(map.get("csets").toString());
                 fenleiBaohuMain.setMainClassifiers(mainClassifiers);
                 String viceClassifiersString = viceClassifiers.toString();
-                fenleiBaohuMain.setViceClassifiers(viceClassifiersString.substring(0,viceClassifiersString.length() -1));
+                // 副分有可能为空
+                if(StringUtils.isNotEmpty(viceClassifiersString)){
+                    fenleiBaohuMain.setViceClassifiers(viceClassifiersString.substring(0,viceClassifiersString.length() -1));
+                }else{
+                }
+               
                 /**  更正不更新出案时间 20220819  lxl */
                 if(clzss != FenleiBaohuUpdateipcService.class){
                     fenleiBaohuMain.setChuantime(Long.parseLong(chuantime));
