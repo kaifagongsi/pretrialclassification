@@ -614,6 +614,8 @@ public class CaseArbiterService   {
         }else{
             //2.2将主分类人副分设置为空，其他人员副分均设置为裁决组长的副分，其他信息一直
             FenleiBaohuResult main = mainResultList.get(0);
+            // bug 2023-03-03裁决组长有可能是自己，然后都是主分为空， 那就重写主分   之前不写是因为：判断分类员主分和裁决主分一致所以不写
+            main.setIPCMI(adjudication.getIpcmi());
             main.setIPCOI("");
             main.setIpca("");
             main.setCci("");

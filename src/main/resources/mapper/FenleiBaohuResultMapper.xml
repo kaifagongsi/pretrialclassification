@@ -367,7 +367,7 @@
                 </otherwise>
             </choose>
             <choose>
-                <when test="ext.IPCOI">
+                <when test="ext.IPCOI != null">
                     IPCOI = #{ext.IPCOI},
                 </when>
                 <otherwise>
