@@ -300,6 +300,56 @@
     <select id="findDataToMapCommaWhereFuzzyResultIsNull" resultMap="BaseResultMap">
         select id,mingcheng,sqr from FENLEI_BAOHU_MAIN where mingcheng is not null and sqr is not null and fuzzy_match_result is null
     </select>
+    <select id="selectIdByCondition" resultType="java.lang.String">
+        select  m.id
+        from FENLEI_BAOHU_MAIN m
+        left join
+        (
+            select
+                id,
+                wm_concat(case when ipcmi is not null then worker end) as mainworker,
+                wm_concat(case when ipcmi is null then worker end) as assworker
+            from fenlei_baohu_result
+            <where>
+                <if test="worker!=''">
+                    and  worker like concat(concat('%',#{worker}),'%')
+                </if>
+            </where>
+             group by id
+         )t on m.id=t.id
+        <where>
+            <if test="id!=''">
+                AND m.id like concat(concat('%',#{id}),'%')
+            </if>
+            <if test="mingcheng!=''">
+                AND m.mingcheng like concat(concat('%',#{name}),'%')
+            </if>
+            <if test="oraginization!=''">
+                AND m.oraginization like concat(concat('%',#{oraginization}),'%')
+            </if>
+            <if test="sqr!=''">
+                AND m.sqr like concat(concat('%',#{sqr}),'%')
+            </if>
+            <if test="sqh!=''">
+                AND m.sqh like concat(concat('%',#{sqh}),'%')
+            </if>
+            <if test="worker!=''">
+                AND t.mainworker like concat(concat('%',#{worker}),'%') or t.assworker like concat(concat('%',#{worker}),'%')
+            </if>
+            <if test='state!="" and state=="1"' >
+                AND m.state in ('1','7','9')
+            </if>
+            <if test='state!="" and state!="1"' >
+                AND m.state = #{state}
+            </if>
+            <if test="beginTime!=''and endTime!=''">
+                AND m.chuantime between #{beginTime} and #{endTime}
+            </if>
+            <if test="enterBeginTime!=''and enterEndTime!=''">
+                AND m.jinantime between #{enterBeginTime} and #{enterEndTime}
+            </if>
+        </where>
+    </select>
 
     <update id="updateMainRule">
         update fenlei_baohu_main m

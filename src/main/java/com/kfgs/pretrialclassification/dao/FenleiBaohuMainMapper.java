@@ -113,4 +113,6 @@ public interface FenleiBaohuMainMapper extends BaseMapper<FenleiBaohuMain> {
     HashMap<String, FenleiBaohuMain> findDataToMapCommaWhereFuzzyResultIsNull();
 
     void updateFuzzyColumnNullWhereFuzzyColumnisNull();
+
+    List<String> selectIdByCondition(String id, String mingcheng, String oraginization, String sqr, String sqh, String worker, String state, String beginTime, String endTime, String enterBeginTime, String enterEndTime);
 }

@@ -15,13 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.Servlet;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Serializable;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -238,6 +235,24 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
         return null;
     }
 
+    @Override
+    public QueryResponseResult exportAllExcelToZip(String id, String mingcheng, String oraginization, String sqr, String sqh, String worker, String state, String beginTime, String endTime, String enterBeginTime, String enterEndTime, HttpServletResponse response) {
+        List<String> ids = fenleiBaohuMainMapper.selectIdByCondition(id,mingcheng,oraginization,sqr,sqh,worker,state,beginTime,endTime,enterBeginTime, enterEndTime);
+//      上传的excel里面标题为： 预审案件号	申请主体	发明名称	发明类型	所属保护中心	预审接收日	分类号
+        String[] headers = new String[]{"预审案件号","申请主体","发明名称","发明类型","所属保护中心","预审接收日","分类号"};
+        String[] headersKey = new String[]{"id","sqr","mingcheng","type","oraginization","jinantime","ipci"};
+        try {
+            //生成要导出的数据
+            Map<String, List<String>> map = createExcelInfo(ids);
+            //导出
+            excelsToZip(response,map,headers,headersKey);
+            return new QueryResponseResult(CommonCode.SUCCESS,null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public Map<String,List<String>> createExcelInfo(List<String> idlist) throws ParseException {
         Map<String,List<String>> dataMap = new LinkedHashMap<>();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
@@ -246,7 +261,8 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
         for (int i = 0; i < idlist.size(); i++) {
             FenleiBaohuMain fenleiBaohuMain = fenleiBaohuMainMapper.selectById(idlist.get(i));
             FenleiBaohuAdjudication fenleiBaohuAdjudication = fenleiBaohuAdjudicationMapper.selectById(idlist.get(i));
-            String sqr = fenleiBaohuMain.getSqr()==null?null:fenleiBaohuMain.getSqr();
+            // 将申请人中的逗号替换为 ***
+            String sqr = fenleiBaohuMain.getSqr()==null?null:fenleiBaohuMain.getSqr().replaceAll(",","***");
             String mingcheng = fenleiBaohuMain.getMingcheng()==null?null:fenleiBaohuMain.getMingcheng();
             String type = fenleiBaohuMain.getType()==null?null:fenleiBaohuMain.getType();
             String oraginization = fenleiBaohuMain.getOraginization()==null?null:fenleiBaohuMain.getOraginization();
@@ -281,7 +297,8 @@ public class CaseConditionQueryServiceImpl implements CaseConditionQueryService 
                     }
                 }
             }
-            List<String> row = Arrays.asList(idlist.get(i), sqr, mingcheng, type, oraginization, jinantime, ipci, cci, cca, csets, mainworker, assworker);
+            //将IPCI中的逗号替换为字符 ***
+            List<String> row = Arrays.asList(idlist.get(i), sqr, mingcheng, type, oraginization, jinantime, ipci.replaceAll(",","***"), cci, cca, csets, mainworker, assworker);
             //List dataList = new ArrayList(row);
             if (dataMap.containsKey(oraginization)){
                 System.out.println(row.toString());

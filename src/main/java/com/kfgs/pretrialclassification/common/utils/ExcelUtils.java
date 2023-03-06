@@ -1,5 +1,6 @@
 package com.kfgs.pretrialclassification.common.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -191,10 +192,20 @@ public class ExcelUtils {
             //HSSFRow row = hssfSheet.createRow(hssfSheet.getLastRowNum() + 1);
             HSSFRow row = hssfSheet.createRow(hssfSheet.getLastRowNum() + 1);
             int count = -1;
-            String line = dtos.get(i).replaceAll("\\[","").replaceAll("\\]","");
+            // 注意去掉空格
+            String line = dtos.get(i).replaceAll("\\[","").replaceAll("\\]","").replaceAll(" ","");
             String[] lines = line.split(",");
             for (int j = 0; j < headersKey.length; j++) {
-                row.createCell(++count).setCellValue(lines[j] == null?"":lines[j]);
+//                row.createCell(++count).setCellValue(lines[j] == null?"":lines[j]);
+                if(StringUtils.isNotEmpty(lines[j])){
+                    // ipci 特殊处理
+                    if(lines[j].contains("***")){
+                        lines[j] = lines[j].replaceAll("\\*\\*\\*",",");
+                    }
+                    row.createCell(++count).setCellValue(lines[j]);
+                }else{
+                    row.createCell(++count).setCellValue("");
+                }
             }
         }
     }

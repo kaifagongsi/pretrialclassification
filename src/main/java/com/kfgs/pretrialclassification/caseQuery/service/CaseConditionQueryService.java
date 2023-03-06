@@ -38,4 +38,6 @@ public interface CaseConditionQueryService {
 
     //批量导出Excel为压缩包
     QueryResponseResult exportExcelToZip(List<String> list,HttpServletResponse response);
+
+    QueryResponseResult exportAllExcelToZip(String id, String mingcheng, String oraginization, String sqr, String sqh, String worker, String state, String beginTime, String endTime, String enterBeginTime, String enterEndTime, HttpServletResponse response);
 }

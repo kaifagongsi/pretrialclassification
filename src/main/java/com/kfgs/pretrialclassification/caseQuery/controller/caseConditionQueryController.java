@@ -198,4 +198,70 @@ public class caseConditionQueryController extends BaseController{
         }
         return caseConditionQueryService.exportExcelToZip(idList,response);
     }
+
+    @GetMapping(value = "/exportAllExcelToZip")
+    public QueryResponseResult exportAllExcelToZip(String page,String limit,String id,String mingcheng,String oraginization,String sqr,String sqh,String worker,String state,String beginTime,String endTime,String enterBeginTime,String enterEndTime,HttpServletResponse response) throws  IOException {
+        if(state == null || state == "all" || "all".equals(state) || state==""){
+            state = "";
+        }
+        if (id == null){
+            id = "";
+        }
+        if(mingcheng == null){
+            mingcheng = "";
+        }
+        if(sqr == null){
+            sqr = "";
+        }
+        if(sqh == null){
+            sqh = "";
+        }
+        if (worker == null){
+            worker = "";
+        }
+        if(beginTime == null){
+            beginTime = "";
+        }
+        if (endTime == null){
+            endTime = "";
+        }
+        if(enterBeginTime == null){
+            enterBeginTime = "";
+        }
+        if (enterEndTime == null){
+            enterEndTime = "";
+        }
+        if(oraginization == null){
+            oraginization = "";
+        }
+        if(beginTime == "" && endTime != ""){
+            beginTime = "19000000000000";
+            endTime = endTime.replace("-","")+"235959";
+        }else if(beginTime != "" && endTime == ""){
+            beginTime = beginTime.replace("-","")+"000000";
+            endTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString();
+            endTime = endTime.replace("-","")+"235959";
+        }else if(beginTime != "" && endTime != ""){
+            beginTime = beginTime.replace("-","")+"000000";
+            endTime = endTime.replace("-","")+"235959";
+        }else{
+            beginTime="";
+            endTime="";
+        }
+        if(enterBeginTime == "" && enterEndTime != ""){
+            enterBeginTime = "19000000000000";
+            enterEndTime = enterEndTime.replace("-","")+"235959";
+        }else if(enterBeginTime != "" && enterEndTime == ""){
+            enterBeginTime = enterBeginTime.replace("-","")+"000000";
+            enterEndTime = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString();
+            enterEndTime = enterEndTime.replace("-","")+"235959";
+        }else if(enterBeginTime != "" && enterEndTime != ""){
+            enterBeginTime = enterBeginTime.replace("-","")+"000000";
+            enterEndTime = enterEndTime.replace("-","")+"235959";
+        }else{
+            enterBeginTime="";
+            enterEndTime="";
+        }
+        return caseConditionQueryService.exportAllExcelToZip(id,mingcheng,oraginization,sqr,sqh,worker,state,beginTime,endTime, enterBeginTime, enterEndTime,response);
+    }
 }
