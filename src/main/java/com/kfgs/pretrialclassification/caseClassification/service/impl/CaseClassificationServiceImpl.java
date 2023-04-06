@@ -69,6 +69,9 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
     IFenleiBaohuAdjuInforBackupService fenleiBaohuAdjuInforBackupService;
 
     @Autowired
+    FenleiBaohuCitycodeMapper fenleiBaohuCitycodeMapper;
+
+    @Autowired
     RedisLockUtils redisLockUtils;
 
     @Autowired
@@ -125,11 +128,24 @@ public class CaseClassificationServiceImpl implements CaseClassificationService 
             //查找citycde
             BoundHashOperations<String, String, Object> operations = pretrialClassification();
             HashMap map = (HashMap)operations.get("cityCode");
-            Object cityCode = map.get(fenleiBaohuMainResultExt.getOraginization());
+            String oraginization = fenleiBaohuMainResultExt.getOraginization();
+            Object cityCode = map.get(oraginization);
             if(null != cityCode){
                 fenleiBaohuMainResultExt.setCityCode(cityCode.toString());
             }else {
-                fenleiBaohuMainResultExt.setCityCode(null);
+//                这样写前端有bug
+//                fenleiBaohuMainResultExt.setCityCode(null);
+                QueryWrapper queryWrapper = new QueryWrapper();
+                queryWrapper.eq("city",oraginization);
+                FenleiBaohuCitycode selectOne = fenleiBaohuCitycodeMapper.selectOne(queryWrapper);
+                if(null != selectOne){
+                    map.put(oraginization,selectOne.getCode());
+                    operations.put("cityCode",map);
+                    fenleiBaohuMainResultExt.setCityCode(selectOne.getCode());
+                }else{
+                    fenleiBaohuMainResultExt.setCityCode("");
+                }
+
             }
 
         }
