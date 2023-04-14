@@ -8,7 +8,7 @@
 </head>
 <body>
 <div style="background-color:#ECECEC; padding: 35px;">
-    <h2>各位领导好，以下是今天新分配的保护中心案件列表! 请注意查收！</h2>
+    <h2>各位领导、同事，以下是今天新分配的保护中心案件列表! 请注意查收！</h2>
     <table  width="90%" class="table">
         <thead>
         <tr>

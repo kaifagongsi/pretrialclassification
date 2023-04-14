@@ -1,5 +1,6 @@
 package com.kfgs.pretrialclassification.sendEmail.service.impl;
 
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.kfgs.pretrialclassification.sendEmail.service.MailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,8 @@ public class MailServiceImpl implements MailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    @Value("${spring.mail.username}")
+//    @Value("${spring.mail.username}")
+    @NacosValue(value = "${spring.mail.username:wangzhiyun@cnipa.gov.cn}",autoRefreshed = true)
     private String username;
 
 

@@ -63,15 +63,22 @@ public class TextListUtils {
         list.add("四部");
         list.add("系统建设与运维部");
         list.add("二部");
-        Collections.sort(list, new Comparator<String>() {
+      /*  Collections.sort(list, new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
                 Comparator<Object> com = Collator.getInstance(java.util.Locale.CHINA);
                 return com.compare(o1, o2);
 
             }
-        });
+        });*/
 
+        for (String temp : list) {
+            if("四部".equals(temp)){
+                list.remove(temp);
+                break;
+            }
+            System.out.println(temp);
+        }
         for (String temp : list) {
             System.out.println(temp);
         }
