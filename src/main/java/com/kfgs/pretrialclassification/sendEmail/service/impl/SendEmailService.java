@@ -276,7 +276,7 @@ public class SendEmailService {
                         if(fist){
                             //距案件分配已过6小时
                             context.append("<h2>距案件分配已过"+hour+"小时，下列人员还未出案</h2>" +
-                                    "<h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;案件分配以及保护中心问题，请联系于惠（1839），李思瑶（1394）</h4>"+
+                                    "<h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;案件分配以及保护中心问题，请联系于惠（1839），孙泽文（1389）</h4>"+
                                     "<table style='font-family:verdana;font-size:22px;border-width:1px;border-color:#666666;border-collapse:collapse;'> " +
                                     //context.append("<h3>以下待完成案件"+hour+"小时之前已结束粗分</h3><br/><table style='font-family:verdana;font-size:22px;border-width:1px;border-color:#666666;border-collapse:collapse;'> " +
                                     "<tr> <th style='border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #dedede;'>预审编号</th>" +
